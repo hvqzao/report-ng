@@ -137,6 +137,12 @@ Conditional blocks have been introduced to findings in the following ways:
   only be rendered if finding have Finding.Description set.
 ```
 
+It is now also possible to add root conditional blocks for content itself.
+Example use would be e.g. adding Pentest? conditional block and few tags,
+like Pentest.Name, Pentest.Version etc. If at least one Pentest.* will
+be present and filled, block will be left, otherwise it will be removed
+from generated report.
+
 ## Content and Knowledge Base preparation
 
 Content could be provided in yaml or json format. Values could be one of

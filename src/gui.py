@@ -24,7 +24,7 @@ from resources.icon import icon
 from report import Report
 from scan import Scan
 
-#import datetime ; print datetime.datetime.ctime(datetime.datetime.now())
+import datetime ; print datetime.datetime.ctime(datetime.datetime.now())
 
 
 class GUI(object):
@@ -38,8 +38,11 @@ class GUI(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    date = 'Thu Jun 27 17:34:49 2014'
+    date = 'Fri Jun 27 21:17:50 2014'
     changelog = '''
+    0.2.9 - Fri Jun 27 21:17:50 2014
+    - added conditional root blocks in content
+    
     0.2.8 - Thu Jun 27 17:34:49 2014
     - minor formatting issues
     - added conditional blocks within findings
@@ -199,6 +202,12 @@ class GUI(object):
     - If finding includes some tag, e.g. Finding.Description, conditional
       block Finding.Description? could be added to the template. Content will
       only be rendered if finding have Finding.Description set.
+
+    It is now also possible to add root conditional blocks for content itself.
+    Example use would be e.g. adding Pentest? conditional block and few tags,
+    like Pentest.Name, Pentest.Version etc. If at least one Pentest.* will
+    be present and filled, block will be left, otherwise it will be removed
+    from generated report.
 
     ## Content and Knowledge Base preparation
 

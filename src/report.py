@@ -229,10 +229,10 @@ class Report(object):
         self._template_filename = filename
         return self._template_reload(clean=clean)
 
-    #def template_load_docx (self, filename, clean=False):
-    #   self._docx = docx.Document (docx=filename)
+    #def template_load_docx(self, filename, clean=False):
+    #   self._docx = docx.Document(docx=filename)
     #   self._xml = self._docx._document_part._element
-    #   self._template_parse (clean=clean)
+    #   self._template_parse(clean=clean)
     #   return self
     def save_report_xml(self, filename):
         if self._xml:
@@ -258,8 +258,9 @@ class Report(object):
         #del meta['Findings']
         self._meta['Data'] = meta.copy()
         #self._meta['Findings'] = self._meta['Data']['Findings'][:]
-        self._meta['Findings'] = filter(lambda x: x['Severity'] in self.severity.keys(), self._meta['Data']['Findings'])
-        del self._meta['Data']['Findings']
+        if 'Findings' in self._meta['Data']:
+            self._meta['Findings'] = filter(lambda x: x['Severity'] in self.severity.keys(), self._meta['Data']['Findings'])
+            del self._meta['Data']['Findings']
         if self._kb:
             self._kb_meta_update()
         return self
@@ -637,6 +638,11 @@ class Report(object):
         os.chdir(os.path.dirname(self._template_filename))
         # apply
         self._apply_scan()
+        # find conditional root elements and make them dictionaries
+        root = dict()
+        for i in filter(lambda x: len(x[0]) == 1 and x[0][-1][-1] == '?', self._struct):
+            root[i[0][-1][:-1]] = []
+        #print root
         # process Data.*
         #for i in self._struct:
         for i in filter(lambda x: x[0][-1][-1] != '?', self._struct):
@@ -649,7 +655,18 @@ class Report(object):
                 #print '+',i[0]
                 val = self._v(self._meta['Data'], i[0])
                 #print i[0], bool(val)
+                if i[0][0] in root.keys() and bool(val):
+                    root[i[0][0]] += [i[0]]
                 self._xml_apply_data(i[0], val, i[1], i[2])
+        # if conditional root element does not have any members with values, remove them
+        #print root
+        for i in root.keys():
+            i_struct = filter(lambda x: x[0] == [i+'?'], self._struct)
+            if len(root[i]):
+                self._xml_sdt_replace(i_struct[0][1], i_struct[0][2])
+            else:
+                self._xml_sdt_remove(i_struct[0][1])
+            del i_struct
         # Finding
         self._xml_apply_findings()
         # restore path
@@ -697,8 +714,9 @@ if __name__ == '__main__':
     #report.template_load_xml('../examples/example-2-webinspect-report-template.xml', clean=True)
     report.template_load_xml('../examples/example-2-scan-report-template.xml', clean=True)
     #print report.template_dump_yaml()
+    report.content_load_yaml ('../examples/example-2-content.yaml')
     #report.scan = Scan('../playground/b-webinspect.xml')
-    report.scan = Scan('../playground/b-webinspect.yaml')
+    report.scan = Scan('../examples/tmp/b-webinspect.yaml')
     #report.scan = Scan('../playground/b-burp.xml')
     #report.scan = Scan('../playground/b-burp.yaml')
     #report.scan = Scan('../playground/a-webinspect-http.xml')
