@@ -1,0 +1,8 @@
+syntax: glob
+.idea/
+build/
+examples/old/
+examples/tmp/
+tmp/
+*.pyc
+Thumbs.db
