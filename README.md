@@ -128,6 +128,8 @@ It is possible to prepare table templates as well, e.g.:
 ```
 It applies to both data and Finding structures.
 
+Conditionals
+
 Conditional blocks have been introduced to findings in the following ways:
 ```
 - Surrounding template data within e.g. Finding.Critical?
@@ -142,6 +144,11 @@ Example use would be e.g. adding Pentest? conditional block and few tags,
 like Pentest.Name, Pentest.Version etc. If at least one Pentest.* will
 be present and filled, block will be left, otherwise it will be removed
 from generated report.
+
+Counters
+
+When needed, summary.[finding].property# counter could be added to show
+lists volume. 
 
 ## Content and Knowledge Base preparation
 

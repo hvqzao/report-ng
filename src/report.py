@@ -151,7 +151,7 @@ class Report(object):
                 if len(value) == 3 and value[0] == 'Summary'\
                         and value[1] in map(lambda x: self._severity_tag(x),
                                             self.severity.keys()) and value[2] not in ['Finding']:
-                    if value[2] not in summary_fields:
+                    if value[2][-1] != '#' and value[2] not in summary_fields:
                         summary_fields += [value[2]]
 
         def leaf(skel):
@@ -531,8 +531,10 @@ class Report(object):
                         kb_val = None
                         if kb:
                             if i['struct'] not in [['Finding', 'Name'], ['Finding', 'Severity']]:
-                                if self._p(kb, i['struct'][1:]).has_key(i['struct'][1:][-1]):
+                                kb_p = self._p(kb, i['struct'][1:])
+                                if kb_p and kb_p.has_key(i['struct'][1:][-1]):
                                     kb_val = self._v(kb, i['struct'][1:])
+                                del kb_p
                         #self._xml_sdt_single (self._kb_val (finding_val, kb_val), i['sdt'], i['children'])
                         ultimate_val = self._kb_val(finding_val, kb_val)
                         self._xml_apply_data(i['struct'], ultimate_val, i['sdt'], i['children'])
@@ -563,8 +565,14 @@ class Report(object):
                         block.append(etree.fromstring(etree.tostring(i)))
                     aliases = self._xml_block_aliases(block)
                     for i in aliases:
+                        #print '+',i['struct']
                         if i['struct'] == ['Summary', severity_tag, 'Finding']:
                             self._xml_sdt_single(finding['Name'], i['sdt'], i['children'])
+                        elif i['struct'][-1][-1] == '#':
+                            i_hash = i['struct'][:]
+                            i_hash[-1] = i_hash[-1][:-1]
+                            self._xml_sdt_single(len(self._v(finding, i_hash[2:])), i['sdt'], i['children'])
+                            del i_hash
                         else:
                             if 'Summary' in finding and i['struct'][2] in finding['Summary']:
                                 finding_val = finding['Summary'][i['struct'][2]]
@@ -715,6 +723,7 @@ if __name__ == '__main__':
     report.template_load_xml('../examples/example-2-scan-report-template.xml', clean=True)
     #print report.template_dump_yaml()
     report.content_load_yaml ('../examples/example-2-content.yaml')
+    report.kb_load_yaml('../examples/example-2-kb.yaml')
     #report.scan = Scan('../playground/b-webinspect.xml')
     report.scan = Scan('../examples/tmp/b-webinspect.yaml')
     #report.scan = Scan('../playground/b-burp.xml')

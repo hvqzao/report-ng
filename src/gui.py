@@ -24,7 +24,7 @@ from resources.icon import icon
 from report import Report
 from scan import Scan
 
-import datetime ; print datetime.datetime.ctime(datetime.datetime.now())
+#import datetime ; print datetime.datetime.ctime(datetime.datetime.now())
 
 
 class GUI(object):
@@ -38,10 +38,11 @@ class GUI(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    date = 'Fri Jun 27 21:17:50 2014'
+    date = 'Sat Jun 28 00:21:41 2014'
     changelog = '''
-    0.2.9 - Fri Jun 27 21:17:50 2014
+    0.2.9 - Sat Jun 28 00:21:41 2014
     - added conditional root blocks in content
+    - counter capability added to findings summary
     
     0.2.8 - Thu Jun 27 17:34:49 2014
     - minor formatting issues
@@ -196,6 +197,8 @@ class GUI(object):
     ...
     It applies to both data and Finding structures.
 
+    Conditionals
+
     Conditional blocks have been introduced to findings in the following ways:
     - Surrounding template data within e.g. Finding.Critical?
       causes block to appear only for critical findings.
@@ -208,6 +211,11 @@ class GUI(object):
     like Pentest.Name, Pentest.Version etc. If at least one Pentest.* will
     be present and filled, block will be left, otherwise it will be removed
     from generated report.
+
+    Counters
+
+    When needed, summary.[finding].property# counter could be added to show
+    lists volume. 
 
     ## Content and Knowledge Base preparation
 
