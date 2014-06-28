@@ -175,8 +175,8 @@ Following tags are available:
 - <b>...</b> - bold
 - <i>...</i> - italic
 - <y>...</y> (or <yellow>...</yellow) - yellow highlight
-- <r>...</r> (or <red>...</red> or <redwhite>...</redwhite>) - red
-  highlight with white text
+- <r>...</r> (or <red>...</red>) - red text
+- <rw>...</rw> (or <redwhite>...</redwhite>) - red highlight with white text
 - <a href="...">...</a> - link (remember to use scheme in url, e.g.
   http://)
 - <font [face="..."] [size="..."]>...</font> - font, size should be

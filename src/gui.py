@@ -38,10 +38,11 @@ class GUI(object):
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
     version = '0.3.1'
-    date = 'Sat Jun 28 19:39:45 2014'
+    date = 'Sat Jun 28 20:23:14 2014'
     changelog = '''
-    0.3.1 - Sat Jun 28 19:39:45 2014
+    0.3.1 - Sat Jun 28 20:23:14 2014
     - Findings.VolumeChart tag added
+    - Pseudohtml tags change: r/red = red text, rw/redwhite = red highlight
 
     0.3.0 - Sat Jun 28 16:52:45 2014
     - HP WebInspect scan ~FullURL~ is now properly handled
@@ -247,8 +248,8 @@ class GUI(object):
     - <b>...</b> - bold
     - <i>...</i> - italic
     - <y>...</y> (or <yellow>...</yellow) - yellow highlight
-    - <r>...</r> (or <red>...</red> or <redwhite>...</redwhite>) - red
-      highlight with white text
+    - <r>...</r> (or <red>...</red>) - red text
+    - <rw>...</rw> (or <redwhite>...</redwhite>) - red highlight with white text
     - <a href="...">...</a> - link (remember to use scheme in url, e.g.
       http://)
     - <font [face="..."] [size="..."]>...</font> - font, size should be

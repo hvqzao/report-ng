@@ -35,9 +35,11 @@ class InlineHtmlParser(object):
             self._o.set_style(bold=True)
         if tag == 'i':
             self._o.set_style(italic=True)
+        if tag in ['r', 'red']:
+            self._o.set_style(color='red')
         if tag in ['y', 'yellow']:
             self._o.set_style(highlight='yellow')
-        if tag in ['r', 'red', 'redwhite']:
+        if tag in ['rw', 'redwhite']:
             self._o.set_style(highlight='redwhite')
         if tag == 'a' and 'href' in attrib:
             self._href = attrib['href']
@@ -46,7 +48,7 @@ class InlineHtmlParser(object):
                 self._o.set_style(font=attrib['face'])
             if 'size' in attrib:
                 self._o.set_style(size=int(float(attrib['size'] * 2)))
-        if tag in ['b', 'i', 'y', 'yellow', 'r', 'red', 'redwhite', 'ihtml', 'a', 'font']:
+        if tag in ['b', 'i', 'r', 'red', 'y', 'yellow', 'rw', 'redwhite', 'ihtml', 'a', 'font']:
             handled = True
 
     def end(self, tag):
@@ -55,15 +57,17 @@ class InlineHtmlParser(object):
             self._o.set_style(bold=False)
         if tag == 'i':
             self._o.set_style(italic=False)
+        if tag in ['r', 'red']:
+            self._o.set_style(color=None)
         if tag in ['y', 'yellow']:
             self._o.set_style(highlight=None)
-        if tag in ['r', 'red', 'redwhite']:
+        if tag in ['rw', 'redwhite']:
             self._o.set_style(highlight=None)
         if tag == 'a':
             self._href = None
         if tag == 'font':
             self._o.set_style(font=None, size=None)
-        if tag in ['b', 'i', 'y', 'yellow', 'r', 'red', 'redwhite', 'ihtml', 'a', 'font']:
+        if tag in ['b', 'i', 'r', 'red', 'y', 'yellow', 'rw', 'redwhite', 'ihtml', 'a', 'font']:
             handled = True
 
     def data(self, data):
@@ -94,9 +98,11 @@ class HtmlParser(object):
             self._o.set_style(bold=True)
         if tag == 'i':
             self._o.set_style(italic=True)
+        if tag in ['r', 'red']:
+            self._o.set_style(color='red')
         if tag in ['y', 'yellow']:
             self._o.set_style(highlight='yellow')
-        if tag in ['r', 'red', 'redwhite']:
+        if tag in ['rw', 'redwhite']:
             self._o.set_style(highlight='redwhite')
         if tag in ['ul', 'ol', 'xl', 'li', 'img']:
             if self._o.seq_len():
@@ -120,7 +126,7 @@ class HtmlParser(object):
             if 'width' in attrib:
                 args['cap'] = int(attrib['width'])
             self._o.picture(attrib['src'], **args)
-        if tag in ['b', 'i', 'y', 'yellow', 'r', 'red', 'redwhite', 'html', 'br', 'ul', 'ol', 'li', 'xl', 'a', 'font',
+        if tag in ['b', 'i', 'r', 'red', 'y', 'yellow', 'rw', 'redwhite', 'html', 'br', 'ul', 'ol', 'li', 'xl', 'a', 'font',
                    'img']:
             handled = True
         #print ['?','*'][handled],'start %s %r' % (tag, dict(attrib))
@@ -131,9 +137,11 @@ class HtmlParser(object):
             self._o.set_style(bold=False)
         if tag == 'i':
             self._o.set_style(italic=False)
+        if tag in ['r', 'red']:
+            self._o.set_style(color=None)
         if tag in ['y', 'yellow']:
             self._o.set_style(highlight=None)
-        if tag in ['r', 'red', 'redwhite']:
+        if tag in ['rw', 'redwhite']:
             self._o.set_style(highlight=None)
         if tag == 'br':
             self._o.p(self._o.seq_end())
@@ -148,7 +156,7 @@ class HtmlParser(object):
             self._href = None
         if tag == 'font':
             self._o.set_style(font=None, size=None)
-        if tag in ['b', 'i', 'y', 'yellow', 'r', 'red', 'redwhite', 'html', 'br', 'ul', 'ol', 'li', 'xl', 'a', 'font',
+        if tag in ['b', 'i', 'r', 'red', 'y', 'yellow', 'rw', 'redwhite', 'html', 'br', 'ul', 'ol', 'li', 'xl', 'a', 'font',
                    'img']:
             handled = True
         #print ['?','*'][handled],'end %s' % tag

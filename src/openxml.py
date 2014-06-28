@@ -282,6 +282,7 @@ class Openxml(object):
             'space': True,  # space preservation?
             'font': None,  # e.g. Consolas
             'size': None,  # 2x pt size
+            'color': None,  # possible: red
             'highlight': None,  # possible: yellow, redwhite
             'href': None  # url
         }
@@ -402,7 +403,7 @@ class Openxml(object):
         self._style['run'] = self._style_defaults['run'].copy()
 
     def set_style(self, **params):
-        for i in ['bold', 'italic', 'space', 'font', 'size', 'highlight', 'href']:
+        for i in ['bold', 'italic', 'space', 'font', 'size', 'color', 'highlight', 'href']:
             if i in params:
                 self._style['run'][i] = params[i]
 
@@ -433,6 +434,11 @@ class Openxml(object):
                 size = params[i]
             else:
                 size = self._style['run'][i]
+        for i in ['color']:
+            if i in params:
+                color = params[i]
+            else:
+                color = self._style['run'][i]
         for i in ['highlight']:
             if i in params:
                 highlight = params[i]
@@ -444,20 +450,21 @@ class Openxml(object):
             else:
                 href = self._style['run'][i]
         margins = [None, None]
-        style_set = bold or italic or font != None or size != None or highlight != None or href != None
-        return bold, italic, space, font, size, margins, highlight, href, style_set
+        style_set = bold or italic or font != None or size != None or color != None or highlight != None or href != None
+        return bold, italic, space, font, size, margins, color, highlight, href, style_set
 
     def get_style(self):
         return self._style
 
     def r(self, content, **params):
-        bold, italic, space, font, size, margins, highlight, href, style_set = self._get_style(params)
+        bold, italic, space, font, size, margins, color, highlight, href, style_set = self._get_style(params)
         e = etree.fromstring('''
 
   <w:r xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">''' + ['', '''
     <w:rPr>'''][style_set] + ['', '''
       <w:b />'''][bold] + ['', '''
       <w:i />'''][italic] + ['', '''
+      <w:color w:val="FF0000" />'''][color == 'red'] + ['', '''
       <w:highlight w:val="yellow" />'''][highlight == 'yellow'] + ['', '''
       <w:color w:val="FFFFFF" w:themeColor="background1" />
       <w:highlight w:val="red" />'''][highlight == 'redwhite'] + ['', '''

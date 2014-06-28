@@ -1,7 +1,7 @@
 # Todo:
 
 ```
-- r,red & rw,redwhite
+[nothing]
 ```
 
 # Ideas Under Consideration:
