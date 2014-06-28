@@ -24,7 +24,7 @@ from lxml.html import soupparser
 import re
 
 
-def fine_tune(content):
+def fine_tune(content, fullurl):
     if filter(lambda x: x == content[:len(x)], ['<html>', '<ihtml>']):
         content = re.sub('<br\/>(<br\/>)+', '<br/>', content)
         content = re.sub('(\s|\t|\n)+', ' ', content)
@@ -34,6 +34,7 @@ def fine_tune(content):
         #content = re.sub('><br\/>', '>', content)
         #content = re.sub('<br\/><', '<', content)
         content = re.sub('<\/li><br\/><li>', '</li><li>', content)
+    content = re.sub('~FullURL~', fullurl, content)
     content = content.strip()
     #print content
     #print
@@ -48,6 +49,11 @@ def webinspect_import(xml):
         scheme = session.xpath('./Scheme')[0].text
         host = session.xpath('./Host')[0].text
         port = int(session.xpath('./Port')[0].text)
+        # remove port if not needed
+        if scheme.lower() == 'http' and port == 80:
+            port = ''
+        if scheme.lower() == 'https' and port == 443:
+            port = ''
         #print scheme, host, port
         request = session.xpath('./RawRequest')[0].text
         #response = session.xpath('./RawResponse')[0].text
@@ -60,6 +66,7 @@ def webinspect_import(xml):
             status_code, status_description = (None, None)
         #print status_code, status_description
         location = ' '.join(request.split('\n')[0].split(' ')[1:-1])
+        fullurl = scheme+'://'+host+['', ':'+str(port)][bool(port)]+location
         #print method, location
         if method == 'POST':
             post = request.split('\n')[-1]
@@ -78,7 +85,7 @@ def webinspect_import(xml):
                               issue.xpath('./ReportSection'))
         for i in range(len(report_sections)):
             if report_sections[i][1]:
-                report_sections[i][1] = fine_tune(etree.tostring(soupparser.fromstring(report_sections[i][1])))
+                report_sections[i][1] = fine_tune(etree.tostring(soupparser.fromstring(report_sections[i][1])), fullurl)
         #print issue.xpath ('./DetectionSelection/*')
         issues_list += [UnsortableOrderedDict([
             ['Severity', severity],
@@ -95,7 +102,7 @@ def webinspect_import(xml):
             #['Response', base64.b64encode (zlib.compress (response.encode('utf-8')))],
             ['StatusCode', status_code],
             ['StatusDescription', status_description],
-            ['Classifications', map(lambda x: UnsortableOrderedDict([['Name', x[3]], ['URL', x[2]]]), classifications)],
+            ['Classifications', map(lambda x: UnsortableOrderedDict([['Name', x[3]], ['URL', '<ihtml><a href="'+x[2]+'">'+x[2]+'</a></ihtml>']]), classifications)],
             ['ReportSections', UnsortableOrderedDict(map(lambda x: [x[0].replace(' ', ''), x[1]], report_sections))],
         ])]
     findings = []

@@ -1,8 +1,12 @@
-# TODO
+# Todo:
 
 ```
 - VolumeChart
-- Findings#
-- ~FullURL~ (WebInspect)
+```
+
+# Ideas Under Consideration:
+
+```
 - payload (WebInspect, Burp)
+- request / response (WebInspect, Burp)
 ```

@@ -37,7 +37,7 @@ def fine_tune(content, section_name):
     return content
 
 def burp_import(xml):
-    # Burp Suite Pro (1.6beta2 used)
+    # Burp Suite Pro (1.6beta2 / 1.6.01 used)
     issues_list = []
     issues = xml.xpath('/issues/issue')
     for issue in issues:
@@ -52,6 +52,11 @@ def burp_import(xml):
             port = 443
         else:
             port = 80
+        # remove port if not needed
+        if scheme.lower() == 'http' and port == 80:
+            port = ''
+        if scheme.lower() == 'https' and port == 443:
+            port = ''
         del scheme_split, full_host_parts
         request_element = issue.xpath('./requestresponse/request')
         if request_element:

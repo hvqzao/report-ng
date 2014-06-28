@@ -30,7 +30,7 @@ from scan import Scan
 class GUI(object):
     title = 'Wasar'
     long_title = 'Web Application Security Assessment Reporting'
-    version = '0.2.8'
+    version = '0.3.0'
     c = 'Copyright (C) 2014 Marcin Woloszyn (@hvqzao)'
     url = 'https://github.com/hvqzao/wasar'
     license = 'Distributed under GNU General Public License, Version 2, June 1991'
@@ -38,9 +38,11 @@ class GUI(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    date = 'Sat Jun 28 10:04:28 2014'
+    date = 'Sat Jun 28 16:52:45 2014'
     changelog = '''
-    0.3.0 - Sat Jun 28 10:04:28 2014
+    0.3.0 - Sat Jun 28 16:52:45 2014
+    - HP WebInspect scan ~FullURL~ is now properly handled
+    - changed way HP WebInspect scan Classification URLs are presented
     - content formatting fixes
     
     0.2.9 - Sat Jun 28 00:21:41 2014
@@ -261,9 +263,9 @@ class GUI(object):
 
     ## Scans
 
-    HP WebInspect 10.1.177.0 and Burp Suite Pro 1.6beta2 were used during
-    tests. To prepare source scan data within HP WebInspect, Export Scan
-    Details (Full) with XML Export Format. For Burp use Report Selected
+    HP WebInspect 10.1.177.0 and Burp Suite Pro 1.6beta2 / 1.6.01 were used
+    during tests. To prepare source scan data within HP WebInspect, Export
+    Scan Details (Full) with XML Export Format. For Burp use Report Selected
     Issues, select XML and pick Base64-encode requests and responses.
 
     ## License

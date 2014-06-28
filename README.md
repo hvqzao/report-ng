@@ -197,9 +197,9 @@ All inline tags could be used. Additionally available are:
 
 ## Scans
 
-HP WebInspect 10.1.177.0 and Burp Suite Pro 1.6.01 were used during
-tests. To prepare source scan data within HP WebInspect, Export Scan
-Details (Full) with XML Export Format. For Burp use Report Selected
+HP WebInspect 10.1.177.0 and Burp Suite Pro 1.6beta2 / 1.6.01 were used
+during tests. To prepare source scan data within HP WebInspect, Export
+Scan Details (Full) with XML Export Format. For Burp use Report Selected
 Issues, select XML and pick Base64-encode requests and responses.
 
 ## License
