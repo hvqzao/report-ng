@@ -25,12 +25,13 @@ import re
 
 
 def fine_tune(content, section_name):
-    content = re.sub('<br\/>(<br\/>)+', '<br/>', content)
+    if filter(lambda x: x == content[:len(x)], ['<html>', '<ihtml>']):
+        content = re.sub('<br\/>(<br\/>)+', '<br/>', content)
+        content = re.sub('(\s|\t|\n)+', ' ', content)
+        content = re.sub('\s?<br\/>\s?', '<br/>', content)
+        content = re.sub('^<html><br\/>', '<html>', content)
+        content = re.sub('^<html/>', '', content)
     content = content.strip()
-    content = re.sub('(\s|\t|\n)+', ' ', content)
-    content = re.sub('\s?<br\/>\s?', '<br/>', content)
-    content = re.sub('^<html><br\/>', '<html>', content)
-    content = re.sub('^<html/>', '', content)
     #print content
     #print
     return content

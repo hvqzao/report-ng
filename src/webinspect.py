@@ -25,11 +25,16 @@ import re
 
 
 def fine_tune(content):
-    content = re.sub('<br\/>(<br\/>)+', '<br/>', content)
+    if filter(lambda x: x == content[:len(x)], ['<html>', '<ihtml>']):
+        content = re.sub('<br\/>(<br\/>)+', '<br/>', content)
+        content = re.sub('(\s|\t|\n)+', ' ', content)
+        content = re.sub('\s?<br\/>\s?', '<br/>', content)
+        content = re.sub('^<html><br\/>', '<html>', content)
+        content = re.sub('<\/ol><br\/>', '</ol>', content)
+        #content = re.sub('><br\/>', '>', content)
+        #content = re.sub('<br\/><', '<', content)
+        content = re.sub('<\/li><br\/><li>', '</li><li>', content)
     content = content.strip()
-    content = re.sub('(\s|\t|\n)+', ' ', content)
-    content = re.sub('\s?<br\/>\s?', '<br/>', content)
-    content = re.sub('^<html><br\/>', '<html>', content)
     #print content
     #print
     return content

@@ -104,6 +104,7 @@ class HtmlParser(object):
         if tag == 'ul':
             self._numbered = False
         if tag == 'ol':
+            self._o.ol_reset()
             self._numbered = True
         if tag == 'a' and 'href' in attrib:
             self._href = attrib['href']

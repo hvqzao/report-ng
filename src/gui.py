@@ -38,8 +38,11 @@ class GUI(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    date = 'Sat Jun 28 00:21:41 2014'
+    date = 'Sat Jun 28 10:04:28 2014'
     changelog = '''
+    0.3.0 - Sat Jun 28 10:04:28 2014
+    - content formatting fixes
+    
     0.2.9 - Sat Jun 28 00:21:41 2014
     - added conditional root blocks in content
     - counter capability added to findings summary
