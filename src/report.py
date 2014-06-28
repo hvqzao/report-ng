@@ -600,45 +600,43 @@ class Report(object):
         template_parent = template.getparent()
         template_parent.remove(template)
         del template_parent, template
-        # Findings.Chart
-        chart_struct = filter(lambda x: x[0] == ['Findings', 'Chart'], self._struct)
-        if chart_struct:
-            #if not self._docx:
-            #...
-            #else:
-            #   #>>> a = docx.Document(docx='d3.docx')
-            #   #>>> p=a._package
-            #   chart_rid = reduce(lambda x,y: x+y, map(lambda x: etree.ETXPath ('.//{%s}chart' % self.ns.c) (x), chart_struct[0][2]))[0].attrib['{%s}id' % self.ns.r]
-            #   chart_part = filter (lambda x: chart_rid in x and x[chart_rid].reltype == 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart', map (lambda x: x.rels, self._docx._package.parts))[0][chart_rid].target_part.package#._element #.package.main_document._element
-            #   print chart_part
-            #   #chart = etree.ETXPath ('.//{%s}chart' % self.ns.c) (chart_part)[0]
-            #   #chart_num = etree.ETXPath('//{%s}val/{%s}numRef/{%s}f' % ((self.ns.c,)*3)) (chart)[0]
-            #   #print chart_num
-            #chart_rid = etree.ETXPath ('.//{%s}chart' % self.ns.c) (chart_struct[0][2][0])[0].attrib['{%s}id' % self.ns.r]
-            chart_rid = \
-                reduce(lambda x, y: x + y,
-                       map(lambda x: etree.ETXPath('.//{%s}chart' % self.ns.c)(x), chart_struct[0][2]))[
-                    0].attrib['{%s}id' % self.ns.r]
-            chart_rel_target = filter(lambda x: x['Id'] == chart_rid and x[
-                'Type'] == 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart',
-                                      map(lambda x: x.attrib,
-                                          etree.ETXPath('//{%s}Relationship' % self.ns.a)(self._xml)))[0]['Target']
-            chart_part = filter(lambda x: x.attrib['{%s}name' % self.ns.pkg] == '/word/%s' % chart_rel_target,
-                                etree.ETXPath('/{%s}package/{%s}part' % ((self.ns.pkg,) * 2))(self._xml))[0]
-            chart = etree.ETXPath('.//{%s}chart' % self.ns.c)(chart_part)[0]
-            chart_num = etree.ETXPath('//{%s}val/{%s}numRef/{%s}f' % ((self.ns.c,) * 3))(chart)[0]
-            chart_values = etree.ETXPath('.//{%s}v' % self.ns.c)(chart_num.getparent().getparent())
-            #findings_count = self._meta['Meta']['Findings'].values()
-            findings_map = map(lambda x: x['Severity'], self._meta['Findings'])
-            findings_count = map(lambda x: len(filter(lambda y: x == y, findings_map)), self.severity.keys())
-            #print findings_count
-            for i in range(len(chart_values)):
-                if findings_count[i]:
-                    chart_values[i].text = str(findings_count[i])
-                else:
-                    chart_values[i].text = '0'
-            chart_parent = chart_struct[0][1].getparent()
-            chart_parent.replace(chart_struct[0][1], chart_struct[0][2][0])
+
+    def _xml_apply_chart(self, chart_struct, values):
+        #if not self._docx:
+        #...
+        #else:
+        #   #>>> a = docx.Document(docx='d3.docx')
+        #   #>>> p=a._package
+        #   chart_rid = reduce(lambda x,y: x+y, map(lambda x: etree.ETXPath ('.//{%s}chart' % self.ns.c) (x), chart_struct[0][2]))[0].attrib['{%s}id' % self.ns.r]
+        #   chart_part = filter (lambda x: chart_rid in x and x[chart_rid].reltype == 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart', map (lambda x: x.rels, self._docx._package.parts))[0][chart_rid].target_part.package#._element #.package.main_document._element
+        #   print chart_part
+        #   #chart = etree.ETXPath ('.//{%s}chart' % self.ns.c) (chart_part)[0]
+        #   #chart_num = etree.ETXPath('//{%s}val/{%s}numRef/{%s}f' % ((self.ns.c,)*3)) (chart)[0]
+        #   #print chart_num
+        #chart_rid = etree.ETXPath ('.//{%s}chart' % self.ns.c) (chart_struct[0][2][0])[0].attrib['{%s}id' % self.ns.r]
+        chart_rid = \
+            reduce(lambda x, y: x + y,
+                   map(lambda x: etree.ETXPath('.//{%s}chart' % self.ns.c)(x), chart_struct[0][2]))[
+                0].attrib['{%s}id' % self.ns.r]
+        #print chart_rid
+        chart_rel_target = filter(lambda x: x['Id'] == chart_rid and x[
+            'Type'] == 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart',
+                                  map(lambda x: x.attrib,
+                                      etree.ETXPath('//{%s}Relationship' % self.ns.a)(self._xml)))[0]['Target']
+        #print chart_rel_target
+        chart_part = filter(lambda x: x.attrib['{%s}name' % self.ns.pkg] == '/word/%s' % chart_rel_target,
+                            etree.ETXPath('/{%s}package/{%s}part' % ((self.ns.pkg,) * 2))(self._xml))[0]
+        chart = etree.ETXPath('.//{%s}chart' % self.ns.c)(chart_part)[0]
+        #print etree.ETXPath('.//{%s}t' % 'http://schemas.openxmlformats.org/drawingml/2006/main')(chart)[0].text
+        chart_num = etree.ETXPath('.//{%s}val/{%s}numRef/{%s}f' % ((self.ns.c,) * 3))(chart)[0]
+        chart_values = etree.ETXPath('.//{%s}v' % self.ns.c)(chart_num.getparent().getparent())
+        for i in range(len(chart_values)):
+            if values[i]:
+                chart_values[i].text = str(values[i])
+            else:
+                chart_values[i].text = '0'
+        chart_parent = chart_struct[0][1].getparent()
+        chart_parent.replace(chart_struct[0][1], chart_struct[0][2][0])
 
     def xml_apply_meta(self):
         # change dir (for the purpose of images handling relatively to template path)
@@ -675,8 +673,22 @@ class Report(object):
             else:
                 self._xml_sdt_remove(i_struct[0][1])
             del i_struct
-        # Finding
+        # Findings
         self._xml_apply_findings()
+        # Findings.Chart
+        chart_struct = filter(lambda x: x[0] == ['Findings', 'Chart'], self._struct)
+        if chart_struct:
+            findings_by_severity_map = map(lambda x: x['Severity'], self._meta['Findings'])
+            findings_by_severity = map(lambda x: len(filter(lambda y: x == y, findings_by_severity_map)), self.severity.keys())
+            self._xml_apply_chart(chart_struct, findings_by_severity)
+        del chart_struct
+        # Findings.VolumeChart
+        chart_struct = filter(lambda x: x[0] == ['Findings', 'VolumeChart'], self._struct)
+        if chart_struct:
+            findings_by_volume_map = map(lambda x: [x['Severity'], len(x['Occurrences'])], self._meta['Findings'])
+            findings_by_volume = map(lambda z: reduce(lambda x,y: x+y, map(lambda x: x[1], filter(lambda x: x[0] == z, findings_by_volume_map))+[0]), self.severity.keys())
+            self._xml_apply_chart(chart_struct, findings_by_volume)
+        del chart_struct
         # restore path
         os.chdir(pwd)
 

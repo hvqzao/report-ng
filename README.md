@@ -83,6 +83,7 @@ Optional fields:
 ```
 - Finding.* - other fields
 - Findings.Chart - chart with all findings will be filled automatically
+- Findings.VolumeChart - auto chart listing finding occurrences count
 - Findings.Critical - placeholder for critical findings
 - Findings.High
 - Findings.Medium

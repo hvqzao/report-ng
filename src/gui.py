@@ -30,7 +30,6 @@ from scan import Scan
 class GUI(object):
     title = 'Wasar'
     long_title = 'Web Application Security Assessment Reporting'
-    version = '0.3.0'
     c = 'Copyright (C) 2014 Marcin Woloszyn (@hvqzao)'
     url = 'https://github.com/hvqzao/wasar'
     license = 'Distributed under GNU General Public License, Version 2, June 1991'
@@ -38,8 +37,12 @@ class GUI(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    date = 'Sat Jun 28 16:52:45 2014'
+    version = '0.3.1'
+    date = 'Sat Jun 28 19:39:45 2014'
     changelog = '''
+    0.3.1 - Sat Jun 28 19:39:45 2014
+    - Findings.VolumeChart tag added
+
     0.3.0 - Sat Jun 28 16:52:45 2014
     - HP WebInspect scan ~FullURL~ is now properly handled
     - changed way HP WebInspect scan Classification URLs are presented
@@ -162,6 +165,7 @@ class GUI(object):
     Optional fields:
     - Finding.* - other fields
     - Findings.Chart - chart with all findings will be filled automatically
+    - Findings.VolumeChart - auto chart listing finding occurrences count
     - Findings.Critical - placeholder for critical findings
     - Findings.High
     - Findings.Medium

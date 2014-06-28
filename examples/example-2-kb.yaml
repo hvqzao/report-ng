@@ -1,7 +1,7 @@
 ﻿KB:
 - Name: Cross-Site Scripting
   Severity: Critical
-  TestersComment: <html>Few <b><redwhite>wise</redwhite></b> words here.</html>
+  TestersComment: <html>Few <b><redwhite>wise</redwhite></b> <yellow>words</yellow> here.</html>
 - Name: ASP.NET Application Level-Trace Log
   Severity: High
   TestersComment: Less wise words here.
