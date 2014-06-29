@@ -747,6 +747,7 @@ if __name__ == '__main__':
     #print report.scan.dump_yaml()
     report.xml_apply_meta()
     #print report.meta_dump_yaml()
+    #report.save_report_xml('../examples/tmp/output.xml')
     report.save_report_xml('../examples/tmp/output-2.xml')
     #print 'end.'
     '''

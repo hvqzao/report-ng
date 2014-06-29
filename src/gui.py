@@ -31,8 +31,10 @@ class GUI(object):
     title = 'Wasar'
     long_title = 'Web Application Security Assessment Reporting'
     c = 'Copyright (C) 2014 Marcin Woloszyn (@hvqzao)'
-    url = 'https://github.com/hvqzao/wasar'
-    license = 'Distributed under GNU General Public License, Version 2, June 1991'
+    #url = 'https://github.com/hvqzao/wasar'
+    url = ''
+    #license = 'Distributed under GNU General Public License, Version 2, June 1991'
+    license = ''
     about = '''
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
@@ -272,11 +274,11 @@ class GUI(object):
     during tests. To prepare source scan data within HP WebInspect, Export
     Scan Details (Full) with XML Export Format. For Burp use Report Selected
     Issues, select XML and pick Base64-encode requests and responses.
-
-    ## License
-    
-    GNU General Public License, Version 2, June 1991
     '''
+    #
+    ### License
+    #
+    #GNU General Public License, Version 2, June 1991
 
     def MainWindow(self):
         self.__MainWindow(application=self)

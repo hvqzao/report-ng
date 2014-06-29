@@ -30,7 +30,7 @@ def fine_tune(content, section_name):
         content = re.sub('(\s|\t|\n)+', ' ', content)
         content = re.sub('\s?<br\/>\s?', '<br/>', content)
         content = re.sub('^<html><br\/>', '<html>', content)
-        content = re.sub('^<html/>', '', content)
+    content = re.sub('^<html\/>', '', content)
     content = content.strip()
     #print content
     #print

@@ -101,6 +101,7 @@ def webinspect_import(xml):
             ['Method', method],
             ['Location', location],
             ['Post', post],
+            #['Request', request],
             #['Request', base64.b64encode (zlib.compress (request.encode('utf-8')))],
             #['Response', base64.b64encode (zlib.compress (response.encode('utf-8')))],
             ['StatusCode', status_code],
