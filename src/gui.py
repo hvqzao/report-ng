@@ -24,7 +24,7 @@ from resources.icon import icon
 from report import Report
 from scan import Scan
 
-import datetime ; print datetime.datetime.ctime(datetime.datetime.now())
+#import datetime ; print datetime.datetime.ctime(datetime.datetime.now())
 
 
 class GUI(object):
@@ -40,10 +40,11 @@ class GUI(object):
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
     version = '0.3.2'
-    date = 'Wed Jul  2 20:01:10 2014'
+    date = 'Wed Jul  2 20:18:31 2014'
     changelog = '''
-    0.3.2 - Wed Jul  2 20:01:10 2014
-    - Merge Scan into Content
+    0.3.2 - Wed Jul  2 20:18:31 2014
+    - Added: Tools / Merge Scan into Content
+    - Added: File / Save Content As
     
     0.3.1 - Sat Jun 28 20:23:14 2014
     - Findings.VolumeChart tag added
@@ -301,6 +302,7 @@ class GUI(object):
         #menu_file_generate_k
         #menu_file_generate_r
         #menu_file_save_t
+        #menu_file_save_c
         #menu_file_save_s
         #menu_file_save_k
         #menu_file_save_r
@@ -383,6 +385,9 @@ class GUI(object):
             self.menu_file_save_t = menu_file.Append(index.next(), '&Save Template As...')
             self.menu_file_save_t.Enable(False)
             self.Bind(wx.EVT_MENU, self.Save_Template_As, id=index.current)
+            self.menu_file_save_c = menu_file.Append(index.next(), 'Sav&e Content As...')
+            self.menu_file_save_c.Enable(False)
+            self.Bind(wx.EVT_MENU, self.Save_Content_As, id=index.current)
             #self.menu_file_save_k = menu_file.Append(index.next(), 'S&ave Knowledge Base As...')
             #self.menu_file_save_k.Enable(False)
             #self.Bind(wx.EVT_MENU, self.Save_Knowledge_Base_As, id=index.current)
@@ -698,6 +703,7 @@ class GUI(object):
             self.__show_content()
             self.ctrl_st_c.Enable(True)
             self.menu_file_save_r.Enable(True)
+            self.menu_file_save_c.Enable(True)
             if self.scan:
                 self.menu_tools_merge_scan_into_content.Enable(True)
 
@@ -756,6 +762,21 @@ class GUI(object):
                 h.write(self.report.template_dump_json())
             else:
                 h.write(self.report.template_dump_yaml())
+            h.close()
+
+        def Save_Content_As(self, e):
+            openFileDialog = wx.FileDialog(self, 'Save Content As', '', '',
+                                           'Content files (*.yaml; *.json)|*.yaml;*.json|All files (*.*)|*.*',
+                                           wx.FD_SAVE | wx.wx.FD_OVERWRITE_PROMPT)
+            if openFileDialog.ShowModal() == wx.ID_CANCEL:
+                return
+            json_ext = '.json'
+            filename = openFileDialog.GetPath()
+            h = open(filename, 'w')
+            if filename[-len(json_ext):] == json_ext:
+                h.write(self.report.content_dump_json())
+            else:
+                h.write(self.report.content_dump_yaml())
             h.close()
 
         def Save_Scan_As(self, e):
