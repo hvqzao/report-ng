@@ -757,20 +757,23 @@ if __name__ == '__main__':
     pass
 
     '''
+    '''
     report = Report()
     #report.template_load_xml('../examples/example-2-webinspect-report-template.xml', clean=True)
-    report.template_load_xml('../examples/example-2-scan-report-template.xml', clean=True)
+    #report.template_load_xml('../examples/example-2-scan-report-template.xml', clean=True)
     #print report.template_dump_yaml()
-    report.content_load_yaml ('../examples/example-2-content.yaml')
-    report.kb_load_yaml('../examples/example-2-kb.yaml')
-    scan = Scan('../examples/tmp/b-webinspect.xml')
+    #report.content_load_yaml ('../examples/example-2-content.yaml')
+    #report.kb_load_yaml('../examples/example-2-kb.yaml')
+    #scan = Scan('../examples/tmp/b-webinspect.xml')
+    scan= Scan('../examples/tmp/b-burp.xml')
+    print scan.dump_yaml()
     #report.scan = scan
     #print report.content_dump_yaml()
     #print report.scan.dump_yaml()
     #print report._content
     #print scan._scan['Findings']
-    report.merge_scan(scan)
-    print report._content
+    #report.merge_scan(scan)
+    #print report._content
     #report.scan = Scan('../examples/tmp/b-webinspect.yaml')
     #report.scan = Scan('../examples/tmp/b-burp.xml')
     #report.scan = Scan('../examples/tmp/b-burp.yaml')
@@ -784,6 +787,7 @@ if __name__ == '__main__':
     #report.save_report_xml('../examples/tmp/output.xml')
     #report.save_report_xml('../examples/tmp/output-2.xml')
     #print 'end.'
+    '''
     '''
     
     '''

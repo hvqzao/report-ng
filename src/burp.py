@@ -83,6 +83,11 @@ def burp_import(xml):
             status_code, status_description = (None, None)
         del status_parts
         location = ' '.join(request.split('\n')[0].split(' ')[1:-1])
+        vulnparam = issue.xpath('./location')[0].text[len(issue.xpath('./path')[0].text):]
+        if vulnparam:
+            vulnparam = vulnparam[2:-1-10]
+            if ' ' in vulnparam:
+                vulnparam = ''
         severity = issue.xpath('./severity')[0].text
         if severity == 'Information':
             severity = 'Informational'
@@ -119,6 +124,7 @@ def burp_import(xml):
             ['Method', method],
             ['Location', location],
             ['Post', post],
+            ['VulnParam', vulnparam],
             #['Request', base64.b64encode (zlib.compress (request.encode('utf-8')))],
             #['Response', base64.b64encode (zlib.compress (response.encode('utf-8')))],
             ['StatusCode', status_code],
@@ -141,7 +147,7 @@ def burp_import(xml):
                 if j not in issue:
                     issue[j] = []
                 v = UnsortableOrderedDict()
-                for k in ['Scheme', 'Host', 'Port', 'Method', 'Location', 'Post', 'StatusCode', 'StatusDescription']:
+                for k in ['Scheme', 'Host', 'Port', 'Method', 'Location', 'Post', 'VulnParam', 'StatusCode', 'StatusDescription']:
                     v[k] = i[k]
                 #for k in ['Request','Response']:
                 #    v[k] = i[k]                        

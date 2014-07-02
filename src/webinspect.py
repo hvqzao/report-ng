@@ -75,6 +75,9 @@ def webinspect_import(xml):
             post = request.split('\n')[-1]
         else:
             post = ''
+        vulnparam = session.xpath('./AttackParamDescriptor')[0].text
+        if vulnparam == None:
+            vulnparam = ''
         severity_id = int(issue.xpath('./Severity')[0].text)
         severity = ['Informational', 'Low', 'Medium', 'High', 'Critical'][severity_id]
         name = issue.xpath('./Name')[0].text
@@ -101,6 +104,7 @@ def webinspect_import(xml):
             ['Method', method],
             ['Location', location],
             ['Post', post],
+            ['VulnParam', vulnparam],
             #['Request', request],
             #['Request', base64.b64encode (zlib.compress (request.encode('utf-8')))],
             #['Response', base64.b64encode (zlib.compress (response.encode('utf-8')))],
@@ -123,7 +127,7 @@ def webinspect_import(xml):
                 if j not in issue:
                     issue[j] = []
                 v = UnsortableOrderedDict()
-                for k in ['Scheme', 'Host', 'Port', 'Method', 'Location', 'Post', 'StatusCode', 'StatusDescription']:
+                for k in ['Scheme', 'Host', 'Port', 'Method', 'Location', 'Post', 'VulnParam', 'StatusCode', 'StatusDescription']:
                     v[k] = i[k]
                 #for k in ['Request','Response']:
                 #    v[k] = i[k]                        

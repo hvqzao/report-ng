@@ -40,11 +40,12 @@ class GUI(object):
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
     version = '0.3.2'
-    date = 'Wed Jul  2 20:18:31 2014'
+    date = 'Wed Jul  2 21:55:48 2014'
     changelog = '''
-    0.3.2 - Wed Jul  2 20:18:31 2014
+    0.3.2 - Wed Jul  2 21:55:48 2014
     - Added: Tools / Merge Scan into Content
     - Added: File / Save Content As
+    - Added: VulnParam in occurrences of Burp/WebInspect scans
     
     0.3.1 - Sat Jun 28 20:23:14 2014
     - Findings.VolumeChart tag added
