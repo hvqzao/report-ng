@@ -24,7 +24,7 @@ from resources.icon import icon
 from report import Report
 from scan import Scan
 
-#import datetime ; print datetime.datetime.ctime(datetime.datetime.now())
+import datetime ; print datetime.datetime.ctime(datetime.datetime.now())
 
 
 class GUI(object):
@@ -39,9 +39,12 @@ class GUI(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.3.1'
-    date = 'Sat Jun 28 20:23:14 2014'
+    version = '0.3.2'
+    date = 'Wed Jul  2 20:01:10 2014'
     changelog = '''
+    0.3.2 - Wed Jul  2 20:01:10 2014
+    - Merge Scan into Content
+    
     0.3.1 - Sat Jun 28 20:23:14 2014
     - Findings.VolumeChart tag added
     - Pseudohtml tags change: r/red = red text, rw/redwhite = red highlight
@@ -302,6 +305,7 @@ class GUI(object):
         #menu_file_save_k
         #menu_file_save_r
         #menu_tools_template_structure_preview
+        #menu_tools_merge_scan_into_content
         #ctrl_st_t
         #ctrl_tc_t
         #ctrl_st_c
@@ -407,6 +411,9 @@ class GUI(object):
             self.menu_tools_template_structure_preview = menu_tools.Append(index.next(), 'Te&mplate structure preview')
             self.menu_tools_template_structure_preview.Enable(False)
             self.Bind(wx.EVT_MENU, self.Template_Structure_Preview, id=index.current)
+            self.menu_tools_merge_scan_into_content = menu_tools.Append(index.next(), 'Mer&ge Scan into Content')
+            self.menu_tools_merge_scan_into_content.Enable(False)
+            self.Bind(wx.EVT_MENU, self.Merge_Scan_Into_Content, id=index.current)
             menu.Append(menu_tools, '&Tools')
             menu_help = wx.Menu()
             menu_help.Append(index.next(), '&Usage')
@@ -675,6 +682,12 @@ class GUI(object):
                 return
             self._open_content(openFileDialog.GetPath())
 
+        def __show_content(self):
+            if self.menu_view_y.IsChecked():
+                self.ctrl_tc_c.SetValue(self.report.content_dump_yaml())
+            else:
+                self.ctrl_tc_c.SetValue(self.report.content_dump_json())
+
         def _open_content(self, filename):
             self.ctrl_st_c.Enable(False)
             json_ext = '.json'
@@ -682,12 +695,11 @@ class GUI(object):
                 self.report.content_load_json(filename)
             else:
                 self.report.content_load_yaml(filename)
-            if self.menu_view_y.IsChecked():
-                self.ctrl_tc_c.SetValue(self.report.content_dump_yaml())
-            else:
-                self.ctrl_tc_c.SetValue(self.report.content_dump_json())
+            self.__show_content()
             self.ctrl_st_c.Enable(True)
             self.menu_file_save_r.Enable(True)
+            if self.scan:
+                self.menu_tools_merge_scan_into_content.Enable(True)
 
         def Open_Scan(self, e):
             openFileDialog = wx.FileDialog(self, 'Open Scan', '', '',
@@ -709,6 +721,19 @@ class GUI(object):
             self.ctrl_st_s.Enable(True)
             self.menu_file_save_s.Enable(True)
             self.menu_file_save_r.Enable(True)
+            if self.ctrl_st_c.IsEnabled():
+                self.menu_tools_merge_scan_into_content.Enable(True)
+
+        def Merge_Scan_Into_Content(self, e):
+            self.report.merge_scan(self.scan)
+            self.menu_file_save_s.Enable(False)
+            del self.scan
+            self.scan = None
+            self.ctrl_tc_s.SetValue('')
+            self.ctrl_st_s.Enable(False)
+            self.menu_file_save_s.Enable(False)
+            self.__show_content()
+            self.menu_tools_merge_scan_into_content.Enable(False)
 
         #def Open_Knowledge_Base (self, e):
         #    pass

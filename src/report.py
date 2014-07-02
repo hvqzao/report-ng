@@ -724,11 +724,38 @@ class Report(object):
             self._meta['Findings'] += self.scan.findings()
             self._meta['Findings'].sort(key=lambda x: x['Severity'], reverse=True)
 
+    def merge_scan(self, scan):
+        if 'Findings' not in self._content:
+            # create empty self._content['Findings'] list
+            self._content['Findings'] = []
+        # if self._content len == 0
+        if len(self._content['Findings']) == 0:
+            # just copy scan['Findings']
+            self._content['Findings'] = scan._scan['Findings'][:]
+        else:
+            # for each finding in scan['Findings']
+            for finding in scan._scan['Findings']:
+                # if name and severity matches:
+                finding_match = filter(lambda x: x['Name'] == finding['Name'] and x['Severity'] == finding['Severity'], self._content['Findings'])
+                if finding_match:
+                    # add occurrences (if not duplicated)
+                    for occurrence in finding['Occurrences']:
+                        occurrence_match = filter(lambda x: x == occurrence, finding_match[0]['Occurrences'])
+                        if not occurrence_match:
+                            finding_match[0]['Occurrences'] += [occurrence]
+                else:
+                    # otherwise copy whole finding
+                    self._content['Findings'] += [finding]
+                del finding_match
+        # filter out self._content['Findings'] where severity == ''
+        self._content['Findings'] = filter(lambda x: x['Severity'] != '' , self._content['Findings'])
+        if len(self._content['Findings']) == 0:
+            del self._content['Findings']
+
 
 if __name__ == '__main__':
     pass
 
-    '''
     '''
     report = Report()
     #report.template_load_xml('../examples/example-2-webinspect-report-template.xml', clean=True)
@@ -736,7 +763,14 @@ if __name__ == '__main__':
     #print report.template_dump_yaml()
     report.content_load_yaml ('../examples/example-2-content.yaml')
     report.kb_load_yaml('../examples/example-2-kb.yaml')
-    report.scan = Scan('../examples/tmp/b-webinspect.xml')
+    scan = Scan('../examples/tmp/b-webinspect.xml')
+    #report.scan = scan
+    #print report.content_dump_yaml()
+    #print report.scan.dump_yaml()
+    #print report._content
+    #print scan._scan['Findings']
+    report.merge_scan(scan)
+    print report._content
     #report.scan = Scan('../examples/tmp/b-webinspect.yaml')
     #report.scan = Scan('../examples/tmp/b-burp.xml')
     #report.scan = Scan('../examples/tmp/b-burp.yaml')
@@ -745,12 +779,11 @@ if __name__ == '__main__':
     #report.scan = Scan('../examples/tmp/c-webinspect.yaml')
     #print map(lambda x: x['Name'], report.scan._scan['Findings'])
     #print report.scan.dump_yaml()
-    report.xml_apply_meta()
+    #report.xml_apply_meta()
     #print report.meta_dump_yaml()
     #report.save_report_xml('../examples/tmp/output.xml')
-    report.save_report_xml('../examples/tmp/output-2.xml')
+    #report.save_report_xml('../examples/tmp/output-2.xml')
     #print 'end.'
-    '''
     '''
     
     '''
@@ -810,4 +843,19 @@ if __name__ == '__main__':
     #report.content_load_json('d3.json')
     report.xml_apply_meta()
     report.save_report_xml('done.xml')
+    '''
+
+    '''
+    # test: merge_scan
+    report = Report()
+    report.content_load_yaml('../examples/example-2-content.yaml')
+    scan = Scan('../examples/tmp/test-case-example-2-merge-1.yaml')
+    report.merge_scan(scan)
+    scan = Scan('../examples/tmp/test-case-example-2-merge-2.yaml')
+    report.merge_scan(scan)
+    scan = Scan('../examples/tmp/test-case-example-2-merge-3.yaml')
+    report.merge_scan(scan)
+    scan = Scan('../examples/tmp/test-case-example-2-merge-4.yaml')
+    report.merge_scan(scan)
+    print report.content_dump_yaml()
     '''
