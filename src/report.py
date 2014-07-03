@@ -386,6 +386,20 @@ class Report(object):
         else:
             return False
 
+    @staticmethod
+    def surround(text, search, tag, inline=True):
+        start = text.find(search+'=')
+        if start == -1:
+            return text
+        else:
+            walk = text[start+len(search)+1:]
+            end = walk.find('&')
+            if end == -1:
+                return '<'+['','i'][inline]+'html>'+text[:start]+'<'+tag+'>'+text[start:]+'</'+tag+'>'+'</'+['','i'][inline]+'html>'
+            else:
+                return '<'+['','i'][inline]+'html>'+text[:start]+'<'+tag+'>'+text[start:start+len(search)+1+end]+'</'+tag+'>'+text[start+len(search)+1+end:]+'</'+['','i'][inline]+'html>'
+            return text
+
     def _xml_apply_data(self, struct, value, sdt, children):
         #print '*',struct#, value
         if not children:
@@ -396,8 +410,8 @@ class Report(object):
             for row in value:
                 block = etree.fromstring(etree.tostring(children[0]))
                 aliases = self._xml_block_aliases(block)
-                #print '-',row
                 for col in row:
+                    #print 'x',col
                     alias_match_q = filter(lambda x: x['struct'] == struct + [str(col)+'?'], aliases)
                     if alias_match_q:
                         if row[col]:
@@ -410,16 +424,20 @@ class Report(object):
                         continue
                     alias = alias_match[0]
                     tag = etree.ETXPath('.//{%s}t' % self.ns.w)(alias['children'][0])
-                    if self._is_html(row[col]):
+                    val = row[col]
+                    if struct == ['Finding', 'Occurrences'] and row['VulnParam']:
+                        if col == 'Location' and row['Method'] == 'GET' or col == 'Post' and row['Method'] == 'POST':
+                            val = self.surround(val,row['VulnParam'],'red')
+                    if self._is_html(val):
                         self._openxml.set_sdt_cursor(cursor=tag[0])
-                        self._openxml.parse(row[col], self._html_parser)
+                        self._openxml.parse(val, self._html_parser)
                         self._openxml.remove_sdt_cursor()
-                    elif self._is_ihtml(row[col]):
+                    elif self._is_ihtml(val):
                         self._openxml.set_sdt_cursor(cursor=tag[0])
-                        self._openxml.parse(row[col], self._ihtml_parser)
+                        self._openxml.parse(val, self._ihtml_parser)
                         self._openxml.remove_sdt_cursor()
                     else:
-                        tag[0].text = unicode(row[col])
+                        tag[0].text = unicode(val)
                     parent = alias['sdt'].getparent()
                     parent.replace(alias['sdt'], alias['children'][0])
                     del alias_match, alias
@@ -760,14 +778,14 @@ if __name__ == '__main__':
     '''
     report = Report()
     #report.template_load_xml('../examples/example-2-webinspect-report-template.xml', clean=True)
-    #report.template_load_xml('../examples/example-2-scan-report-template.xml', clean=True)
+    report.template_load_xml('../examples/example-2-scan-report-template.xml', clean=True)
     #print report.template_dump_yaml()
     #report.content_load_yaml ('../examples/example-2-content.yaml')
     #report.kb_load_yaml('../examples/example-2-kb.yaml')
-    #scan = Scan('../examples/tmp/b-webinspect.xml')
-    scan= Scan('../examples/tmp/b-burp.xml')
-    print scan.dump_yaml()
-    #report.scan = scan
+    scan = Scan('../examples/tmp/b-webinspect.xml')
+    #scan= Scan('../examples/tmp/b-burp.xml')
+    #print scan.dump_yaml()
+    report.scan = scan
     #print report.content_dump_yaml()
     #print report.scan.dump_yaml()
     #print report._content
@@ -782,10 +800,11 @@ if __name__ == '__main__':
     #report.scan = Scan('../examples/tmp/c-webinspect.yaml')
     #print map(lambda x: x['Name'], report.scan._scan['Findings'])
     #print report.scan.dump_yaml()
-    #report.xml_apply_meta()
+    report.xml_apply_meta()
     #print report.meta_dump_yaml()
     #report.save_report_xml('../examples/tmp/output.xml')
     #report.save_report_xml('../examples/tmp/output-2.xml')
+    #report.save_report_xml('../examples/tmp/output-3.xml')
     #print 'end.'
     '''
     '''

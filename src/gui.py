@@ -39,9 +39,13 @@ class GUI(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.3.2'
-    date = 'Wed Jul  2 21:55:48 2014'
+    version = '0.3.3'
+    date = 'Thu Jul  3 22:08:40 2014'
     changelog = '''
+    0.3.3 - Thu Jul  3 22:08:40 2014
+    - FIX: WebInspect scan import minor issue
+    - Added: VulnParam highlighting in Finding.Occurrences.Location and Post
+    
     0.3.2 - Wed Jul  2 21:55:48 2014
     - Added: Tools / Merge Scan into Content
     - Added: File / Save Content As
