@@ -37,7 +37,7 @@ def fine_tune(content, fullurl):
         #content = re.sub('><br\/>', '>', content)
         #content = re.sub('<br\/><', '<', content)
         content = re.sub('<\/li><br\/><li>', '</li><li>', content)
-    content = re.sub('~FullURL~', fullurl, content)
+    content = re.sub('(?i)~FullURL~', fullurl, content)
     content = content.strip()
     #print content
     #print
