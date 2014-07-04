@@ -31,9 +31,10 @@ class Version(object):
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
     version = '0.3.4'
-    date = 'Fri Jul  4 22:04:06 2014'
+    date = 'Fri Jul  4 23:10:12 2014'
     changelog = '''
-    0.3.4 - Fri Jul  4 22:04:06 2014
+    0.3.4 - Fri Jul  4 23:10:12 2014
+    - FIX: Content refresh added after Scan merge to keep state consistency
     - FIX: Left templating elements are now cleaned up
     - FIX: Lack of value in yaml is now threated as empty string
     - Added: VulnParam highlighting now have a checkbox in View Menu

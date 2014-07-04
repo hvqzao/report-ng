@@ -5,13 +5,13 @@
 - Evidence Response Header
 - Evidence Highlight (e.g. Cookie)
 - Conditionals in report content (below root)
-- bug: post scan_merge operation missing (~reload) -> no findings in report generated
 - verify vulnparam behavior for more burp scans (cookies?)
 ```
 
 # Recent activity:
 
 ```
++ bug: post scan_merge operation missing (~reload) -> no findings in report generated
 + replace sdt with child for unset yaml
 + yaml tag with no value at all (key: $) is None -> should be removed
 + add: pyinstaller --clean --assume y

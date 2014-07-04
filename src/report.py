@@ -274,6 +274,9 @@ class Report(object):
                                            object_pairs_hook=UnsortableOrderedDict))
         return self
 
+    def content_refresh(self):
+        self._content_parse(self._content)
+
     def content_load_yaml(self, filename):
         self._content_filename = filename
         self._content_yaml = True

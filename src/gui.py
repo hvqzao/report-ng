@@ -492,6 +492,7 @@ class GUI(Version):
             self.menu_file_save_s.Enable(False)
             self.__show_content()
             self.menu_tools_merge_scan_into_content.Enable(False)
+            self.report.content_refresh()
 
         #def Open_Knowledge_Base (self, e):
         #    pass
