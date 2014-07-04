@@ -39,9 +39,14 @@ class GUI(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.3.3'
-    date = 'Thu Jul  3 22:08:40 2014'
+    version = '0.3.4'
+    date = 'Fri Jul  4 22:04:06 2014'
     changelog = '''
+    0.3.4 - Fri Jul  4 22:04:06 2014
+    - FIX: Left templating elements are now cleaned up
+    - FIX: Lack of value in yaml is now threated as empty string
+    - Added: VulnParam highlighting now have a checkbox in View Menu
+    
     0.3.3 - Thu Jul  3 22:08:40 2014
     - FIX: WebInspect scan import minor issue
     - Added: VulnParam highlighting in Finding.Occurrences.Location and Post
@@ -311,6 +316,10 @@ class GUI(object):
         #menu_file_save_s
         #menu_file_save_k
         #menu_file_save_r
+        #menu_view_c
+        #menu_view_y
+        #menu_view_j
+        #menu_view_v
         #menu_tools_template_structure_preview
         #menu_tools_merge_scan_into_content
         #ctrl_st_t
@@ -417,6 +426,10 @@ class GUI(object):
             self.Bind(wx.EVT_MENU, self.Use_json, id=index.current)
             self.menu_view_y.Check(True)
             menu.Append(menu_view, '&View')
+            menu_view.AppendSeparator()
+            self.menu_view_v = menu_view.Append(index.next(), '&VulnParam highlighting', kind=wx.ITEM_CHECK)
+            self.Bind(wx.EVT_MENU, self.VulnParam_highlighting, id=index.current)
+            self.menu_view_v.Check(True)
             menu_tools = wx.Menu()
             self.menu_tools_template_structure_preview = menu_tools.Append(index.next(), 'Te&mplate structure preview')
             self.menu_tools_template_structure_preview.Enable(False)
@@ -851,6 +864,9 @@ class GUI(object):
         def Use_json(self, e):
             self._Use_json()
 
+        def VulnParam_highlighting(self, e):
+            pass
+
         def Open_Knowledge_Base(self, e):
             openFileDialog = wx.FileDialog(self, 'Open Knowledge Base', '', '',
                                            'Knowledge Base files (*.yaml; *.json)|*.yaml;*.json|All files (*.*)|*.*',
@@ -945,7 +961,7 @@ class GUI(object):
                         report.kb_load_json(kb_file)
                 if scan_file:
                     report.scan = Scan(scan_file)                
-                report.xml_apply_meta()
+                report.xml_apply_meta(vulnparam_highlighting=self.report.self.menu_view_v.IsChecked())
                 report.save_report_xml(report_file)
             else:
                 print 'Usage: '

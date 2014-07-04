@@ -1,16 +1,23 @@
 # Todo:
 
 ```
-+ Merge Scan into Content
-+ Occurrence VulnParam (Webinspect)
-+ Occurrence VulnParam (Burp)
-+ Occurrence Get/Post VulnParam Highlighting
-- Menu: Auto/Smart-Highlight off switch
 - Evidence Request Header
 - Evidence Response Header
 - Evidence Highlight (e.g. Cookie)
 - Conditionals in report content (below root)
-- add: pyinstaller --clean --assume y
 - bug: post scan_merge operation missing (~reload) -> no findings in report generated
 - verify vulnparam behavior for more burp scans (cookies?)
+```
+
+# Recent activity:
+
+```
++ replace sdt with child for unset yaml
++ yaml tag with no value at all (key: $) is None -> should be removed
++ add: pyinstaller --clean --assume y
++ Menu: Auto/Smart-Highlight off switch
++ Occurrence Get/Post VulnParam Highlighting
++ Occurrence VulnParam (Burp)
++ Occurrence VulnParam (Webinspect)
++ Merge Scan into Content
 ```

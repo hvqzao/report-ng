@@ -62,6 +62,7 @@ class Report(object):
     _html_parser = None
     _ihtml_parser = None
     scan = None
+    #__vulnparam_highlighting = True
 
     def __init__(self):
         self._meta_init()
@@ -425,9 +426,10 @@ class Report(object):
                     alias = alias_match[0]
                     tag = etree.ETXPath('.//{%s}t' % self.ns.w)(alias['children'][0])
                     val = row[col]
-                    if struct == ['Finding', 'Occurrences'] and row['VulnParam']:
-                        if col == 'Location' and row['Method'] == 'GET' or col == 'Post' and row['Method'] == 'POST':
-                            val = self.surround(val,row['VulnParam'],'red')
+                    if self.__vulnparam_highlighting:
+                        if struct == ['Finding', 'Occurrences'] and 'Method' in row and 'VulnParam' in row and row['VulnParam']:
+                            if col == 'Location' and row['Method'] == 'GET' or col == 'Post' and row['Method'] == 'POST':
+                                val = self.surround(val,row['VulnParam'],'red')
                     if self._is_html(val):
                         self._openxml.set_sdt_cursor(cursor=tag[0])
                         self._openxml.parse(val, self._html_parser)
@@ -656,7 +658,8 @@ class Report(object):
         chart_parent = chart_struct[0][1].getparent()
         chart_parent.replace(chart_struct[0][1], chart_struct[0][2][0])
 
-    def xml_apply_meta(self):
+    def xml_apply_meta(self, vulnparam_highlighting=True):
+        self.__vulnparam_highlighting = vulnparam_highlighting
         # change dir (for the purpose of images handling relatively to template path)
         pwd = os.getcwd()
         os.chdir(os.path.dirname(self._template_filename))
@@ -681,6 +684,8 @@ class Report(object):
                 #print i[0], bool(val)
                 if i[0][0] in root.keys() and bool(val):
                     root[i[0][0]] += [i[0]]
+                if val == None:
+                    val = ''
                 self._xml_apply_data(i[0], val, i[1], i[2])
         # if conditional root element does not have any members with values, remove them
         #print root
@@ -707,6 +712,12 @@ class Report(object):
             findings_by_volume = map(lambda z: reduce(lambda x,y: x+y, map(lambda x: x[1], filter(lambda x: x[0] == z, findings_by_volume_map))+[0]), self.severity.keys())
             self._xml_apply_chart(chart_struct, findings_by_volume)
         del chart_struct
+        # sdt cleanup
+        for alias in etree.ETXPath('//{%s}alias' % self.ns.w)(self._xml):
+            value = alias.attrib['{%s}val' % self.ns.w].split('.')
+            sdt = alias.getparent().getparent()
+            children = etree.ETXPath('./{%s}sdtContent' % self.ns.w)(sdt)[0].getchildren()
+            self._xml_sdt_replace(sdt, children)
         # restore path
         os.chdir(pwd)
 
@@ -778,9 +789,12 @@ if __name__ == '__main__':
     '''
     report = Report()
     #report.template_load_xml('../examples/example-2-webinspect-report-template.xml', clean=True)
-    report.template_load_xml('../examples/example-2-scan-report-template.xml', clean=True)
+    #report.template_load_xml('../examples/example-2-scan-report-template.xml', clean=True)
+    report.template_load_xml('../examples/tmp/test-v0.6b.xml', clean=True)
     #print report.template_dump_yaml()
     #report.content_load_yaml ('../examples/example-2-content.yaml')
+    report.content_load_yaml ('../examples/tmp/test-v0.3-content.yaml')
+    #report.content_load_yaml ('../examples/tmp/test-v0.5b-content.yaml')
     #report.kb_load_yaml('../examples/example-2-kb.yaml')
     scan = Scan('../examples/tmp/b-webinspect.xml')
     #scan= Scan('../examples/tmp/b-burp.xml')
@@ -800,11 +814,12 @@ if __name__ == '__main__':
     #report.scan = Scan('../examples/tmp/c-webinspect.yaml')
     #print map(lambda x: x['Name'], report.scan._scan['Findings'])
     #print report.scan.dump_yaml()
+    #report.xml_apply_meta(vulnparam_highlighting=False)
     report.xml_apply_meta()
     #print report.meta_dump_yaml()
     #report.save_report_xml('../examples/tmp/output.xml')
     #report.save_report_xml('../examples/tmp/output-2.xml')
-    #report.save_report_xml('../examples/tmp/output-3.xml')
+    report.save_report_xml('../examples/tmp/test-output.xml')
     #print 'end.'
     '''
     '''
