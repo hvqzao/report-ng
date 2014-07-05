@@ -4,7 +4,8 @@
 - Evidence Request Header
 - Evidence Response Header
 - Evidence Highlight (e.g. Cookie)
-- Conditionals in report content (below root)
++ Conditionals in report content for empty values (below root)
+- Conditionals in report content for missing keys (below root)
 - verify vulnparam behavior for more burp scans (cookies?)
 ```
 

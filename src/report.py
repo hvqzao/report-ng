@@ -690,6 +690,17 @@ class Report(object):
                 if val == None:
                     val = ''
                 self._xml_apply_data(i[0], val, i[1], i[2])
+                # handle conditional sub elements 
+                i_search = i[0][:]
+                i_search[-1] = i_search[-1]+'?'
+                i_search_match = filter(lambda x: i_search == x[0], self._struct)
+                if i_search_match:
+                    #print i_search, i_search_match
+                    if val:
+                        self._xml_sdt_replace(i_search_match[0][1], i_search_match[0][2])
+                    else:
+                        self._xml_sdt_remove(i_search_match[0][1])
+                del i_search_match
         # if conditional root element does not have any members with values, remove them
         #print root
         for i in root.keys():
@@ -793,16 +804,16 @@ if __name__ == '__main__':
     report = Report()
     #report.template_load_xml('../examples/example-2-webinspect-report-template.xml', clean=True)
     #report.template_load_xml('../examples/example-2-scan-report-template.xml', clean=True)
-    report.template_load_xml('../examples/tmp/test-v0.6b.xml', clean=True)
+    report.template_load_xml('../examples/tmp/test-v0.7b.xml', clean=True)
     #print report.template_dump_yaml()
     #report.content_load_yaml ('../examples/example-2-content.yaml')
     report.content_load_yaml ('../examples/tmp/test-v0.3-content.yaml')
     #report.content_load_yaml ('../examples/tmp/test-v0.5b-content.yaml')
     #report.kb_load_yaml('../examples/example-2-kb.yaml')
-    scan = Scan('../examples/tmp/b-webinspect.xml')
+    #scan = Scan('../examples/tmp/b-webinspect.xml')
     #scan= Scan('../examples/tmp/b-burp.xml')
     #print scan.dump_yaml()
-    report.scan = scan
+    #report.scan = scan
     #print report.content_dump_yaml()
     #print report.scan.dump_yaml()
     #print report._content
