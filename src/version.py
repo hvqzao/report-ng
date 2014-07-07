@@ -30,9 +30,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.3.4'
-    date = 'Fri Jul  4 23:10:12 2014'
+    version = '0.3.5'
+    date = 'Mon Jul  7 18:16:09 2014'
     changelog = '''
+    0.3.5 - Mon Jul  7 18:16:09 2014
+    - Added: Conditional tags handling in content below root
+    
     0.3.4 - Fri Jul  4 23:10:12 2014
     - FIX: Content refresh added after Scan merge to keep state consistency
     - FIX: Left templating elements are now cleaned up

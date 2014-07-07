@@ -726,6 +726,13 @@ class Report(object):
             findings_by_volume = map(lambda z: reduce(lambda x,y: x+y, map(lambda x: x[1], filter(lambda x: x[0] == z, findings_by_volume_map))+[0]), self.severity.keys())
             self._xml_apply_chart(chart_struct, findings_by_volume)
         del chart_struct
+        # handle conditionals for missing tags definition in content
+        for i in filter(lambda x: len(x[0]) > 1 and x[0][0] not in ['Finding', 'Findings'] and x[0][-1][-1] == '?', self._struct):
+            i_match_search = i[0][:]
+            i_match_search[-1] = i_match_search[-1][:-1]
+            i_match = filter(lambda x: x[0] == i_match_search, self._struct)
+            self._xml_sdt_remove(i[1])
+            del i_match
         # sdt cleanup
         for alias in etree.ETXPath('//{%s}alias' % self.ns.w)(self._xml):
             value = alias.attrib['{%s}val' % self.ns.w].split('.')

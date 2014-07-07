@@ -4,14 +4,17 @@
 - Evidence Request Header
 - Evidence Response Header
 - Evidence Highlight (e.g. Cookie)
-+ Conditionals in report content for empty values (below root)
-- Conditionals in report content for missing keys (below root)
 - verify vulnparam behavior for more burp scans (cookies?)
+- import csv knowledge base
+- status line & background debug window
+- random password / passphrase generator (rpg)
 ```
 
 # Recent activity:
 
 ```
++ Conditionals in report content for empty values (below root)
++ Conditionals in report content for missing keys (below root)
 + bug: post scan_merge operation missing (~reload) -> no findings in report generated
 + replace sdt with child for unset yaml
 + yaml tag with no value at all (key: $) is None -> should be removed
