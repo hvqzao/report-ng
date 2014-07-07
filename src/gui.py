@@ -40,6 +40,7 @@ class GUI(Version):
         #scan
         #template
         #icon
+        #statusbar
         #menu_file_open_c
         #menu_file_open_k
         #menu_file_generate_c
@@ -53,6 +54,7 @@ class GUI(Version):
         #menu_view_c
         #menu_view_y
         #menu_view_j
+        #menu_view_s
         #menu_view_v
         #menu_tools_template_structure_preview
         #menu_tools_merge_scan_into_content
@@ -68,6 +70,7 @@ class GUI(Version):
         #ctrl_tc_r
         #color_tc_bg_e
         #color_tc_bg_d
+        #_statusbar_h
 
         def __init__(self, application=None, parent=None, *args,
                      **kwargs):  #style=wx.DEFAULT_FRAME_STYLE^wx.RESIZE_BORDER
@@ -160,6 +163,10 @@ class GUI(Version):
             self.Bind(wx.EVT_MENU, self.Use_json, id=index.current)
             self.menu_view_y.Check(True)
             menu.Append(menu_view, '&View')
+            #menu_view.AppendSeparator()
+            #self.menu_view_s = menu_view.Append(index.next(), '&Status Preview', kind=wx.ITEM_CHECK)
+            #self.Bind(wx.EVT_MENU, self.Status_Preview, id=index.current)
+            #self.menu_view_s.Check(False)
             menu_view.AppendSeparator()
             self.menu_view_v = menu_view.Append(index.next(), '&VulnParam highlighting', kind=wx.ITEM_CHECK)
             self.Bind(wx.EVT_MENU, self.VulnParam_highlighting, id=index.current)
@@ -338,7 +345,12 @@ class GUI(Version):
             #vbox.Add (hbox1, 0, wx.ALL|wx.EXPAND, 0)
             panel.SetSizer(vbox)
             vbox.Fit(self)
-            self.SetMinSize(self.GetSize())
+            #self.SetMinSize(self.GetSize())
+            self.statusbar = self.CreateStatusBar()
+            self._statusbar_h = self.statusbar.GetSize()[1]
+            #self.statusbar.Hide()
+            self.status('Started')
+            self.SetMinSize((self.GetSize()[0],self.GetSize()[1]+self._statusbar_h,))
             #panel = wx.Panel (self)
             #vbox = wx.BoxSizer (wx.VERTICAL)
             #hbox1 = wx.BoxSizer (wx.HORIZONTAL)
@@ -483,6 +495,7 @@ class GUI(Version):
                 self.menu_tools_merge_scan_into_content.Enable(True)
 
         def Merge_Scan_Into_Content(self, e):
+            self.status('Merging Scan into Content...')
             self.report.merge_scan(self.scan)
             self.menu_file_save_s.Enable(False)
             del self.scan
@@ -493,6 +506,7 @@ class GUI(Version):
             self.__show_content()
             self.menu_tools_merge_scan_into_content.Enable(False)
             self.report.content_refresh()
+            self.status('Done')
 
         #def Open_Knowledge_Base (self, e):
         #    pass
@@ -560,9 +574,11 @@ class GUI(Version):
                 wx.MessageBox('For safety reasons, template overwriting with generated report is not allowed!', 'Error',
                               wx.OK | wx.ICON_ERROR)
                 return
+            self.status('Generating and saving the report...')
             self.report.scan = self.scan
             self.report.xml_apply_meta()
             self.report.save_report_xml(filename)
+            self.status('Done')
 
         def Clean_template(self, e):
             if self.ctrl_st_t.IsEnabled():
@@ -598,6 +614,17 @@ class GUI(Version):
 
         def Use_json(self, e):
             self._Use_json()
+
+        #def Status_Preview(self, e):
+        #    if self.menu_view_s.IsChecked():
+        #        self.statusbar.Show()
+        #        self.SetSize((-1,self.GetSize()[1]+self._statusbar_h,))
+        #    else:
+        #        self.statusbar.Hide()
+        #        self.SetSize((-1,self.GetSize()[1]-self._statusbar_h,))
+
+        def status(self,text):
+            self.SetStatusText(text)
 
         def VulnParam_highlighting(self, e):
             pass

@@ -6,13 +6,15 @@
 - Evidence Highlight (e.g. Cookie)
 - verify vulnparam behavior for more burp scans (cookies?)
 - import csv knowledge base
-- status line & background debug window
+- status messages
+- status-related background debug window
 - random password / passphrase generator (rpg)
 ```
 
 # Recent activity:
 
 ```
++ status bar
 + Conditionals in report content for empty values (below root)
 + Conditionals in report content for missing keys (below root)
 + bug: post scan_merge operation missing (~reload) -> no findings in report generated
