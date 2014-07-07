@@ -32,11 +32,12 @@ class Version(object):
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
     version = '0.3.5'
-    date = 'Mon Jul  7 19:17:42 2014'
+    date = 'Mon Jul  7 19:48:26 2014'
     changelog = '''
-    0.3.5 - Mon Jul  7 19:17:42 2014
+    0.3.5 - Mon Jul  7 19:48:26 2014
     - Added: Conditional tags handling in content below root
     - Added: Statusbar
+    - Random Password Generator introduced
     
     0.3.4 - Fri Jul  4 23:10:12 2014
     - FIX: Content refresh added after Scan merge to keep state consistency

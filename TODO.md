@@ -8,12 +8,12 @@
 - import csv knowledge base
 - status messages
 - status-related background debug window
-- random password / passphrase generator (rpg)
 ```
 
 # Recent activity:
 
 ```
++ random password / passphrase generator (rpg)
 + status bar
 + Conditionals in report content for empty values (below root)
 + Conditionals in report content for missing keys (below root)

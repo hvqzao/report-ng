@@ -24,6 +24,7 @@ from resources.icon import icon
 from report import Report
 from scan import Scan
 from version import Version
+import rpg
 
 
 class GUI(Version):
@@ -58,6 +59,7 @@ class GUI(Version):
         #menu_view_v
         #menu_tools_template_structure_preview
         #menu_tools_merge_scan_into_content
+        #menu_tools_generate_few_passwords
         #ctrl_st_t
         #ctrl_tc_t
         #ctrl_st_c
@@ -178,6 +180,8 @@ class GUI(Version):
             self.menu_tools_merge_scan_into_content = menu_tools.Append(index.next(), 'Mer&ge Scan into Content')
             self.menu_tools_merge_scan_into_content.Enable(False)
             self.Bind(wx.EVT_MENU, self.Merge_Scan_Into_Content, id=index.current)
+            self.menu_tools_generate_few_passwords = menu_tools.Append(index.next(), 'Generate &few passwords')
+            self.Bind(wx.EVT_MENU, self.Generate_few_passwords, id=index.current)
             menu.Append(menu_tools, '&Tools')
             menu_help = wx.Menu()
             menu_help.Append(index.next(), '&Usage')
@@ -390,7 +394,7 @@ class GUI(Version):
             wx.AboutBox(dialog)
 
         def Template_Structure_Preview(self, e):
-            self.application.TextWindow(self, title=self.Usage.__name__, content=self.report.template_dump_struct())
+            self.application.TextWindow(self, title='Template Structure Preview', content=self.report.template_dump_struct())
 
         def Usage(self, e):
             self.application.TextWindow(self, title=self.Usage.__name__, content='\n'.join(
@@ -507,6 +511,9 @@ class GUI(Version):
             self.menu_tools_merge_scan_into_content.Enable(False)
             self.report.content_refresh()
             self.status('Done')
+
+        def Generate_few_passwords(self, e):
+            self.application.TextWindow(self, title='Random Password Generator', content='\n'.join(rpg.Few(17)), size=(220, 270,))
 
         #def Open_Knowledge_Base (self, e):
         #    pass
