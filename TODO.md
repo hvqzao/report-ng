@@ -5,7 +5,6 @@
 - Evidence Response Header
 - Evidence Highlight (e.g. Cookie)
 - verify vulnparam behavior for more burp scans (cookies?)
-- import csv knowledge base
 - status messages
 - status-related background debug window
 ```
@@ -13,6 +12,7 @@
 # Recent activity:
 
 ```
++ import csv knowledge base
 + random password / passphrase generator (rpg)
 + status bar
 + Conditionals in report content for empty values (below root)

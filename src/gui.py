@@ -638,7 +638,7 @@ class GUI(Version):
 
         def Open_Knowledge_Base(self, e):
             openFileDialog = wx.FileDialog(self, 'Open Knowledge Base', '', '',
-                                           'Knowledge Base files (*.yaml; *.json)|*.yaml;*.json|All files (*.*)|*.*',
+                                           'Knowledge Base files (*.yaml; *.json; *.csv)|*.yaml;*.json;*.csv|All files (*.*)|*.*',
                                            wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
             if openFileDialog.ShowModal() == wx.ID_CANCEL:
                 return
@@ -646,8 +646,11 @@ class GUI(Version):
 
         def _open_kb(self, filename):
             self.ctrl_st_k.Enable(False)
+            csv_ext = '.csv'
             json_ext = '.json'
-            if filename[-len(json_ext):] == json_ext:
+            if filename[-len(csv_ext):].lower() == csv_ext:
+                self.report.kb_load_csv(filename)
+            elif filename[-len(json_ext):] == json_ext:
                 self.report.kb_load_json(filename)
             else:
                 self.report.kb_load_yaml(filename)

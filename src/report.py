@@ -763,6 +763,30 @@ class Report(object):
                               object_pairs_hook=UnsortableOrderedDict)
         self._kb_meta_update()
 
+    def kb_load_csv(self, filename):
+        import csv
+        data = []
+        with open(filename, 'rb') as csvfile:
+            for row in csv.reader(csvfile, delimiter=';', quotechar='"'):
+                data += [row]
+        columns = data[0]
+        rows = data[1:]
+        results = []
+        for row in rows:
+            item = UnsortableOrderedDict()
+            for col in range(len(columns)):
+                colname = columns[col]
+                if colname == 'Vulnerability Name':
+                    colname = 'Name'
+                if colname in ['Item Type', 'Path']:
+                    continue
+                item[colname] = row[col]
+            results += [item]
+        self._kb_filename = filename
+        self._kb_yaml = None
+        self._kb = UnsortableOrderedDict([('KB',results,)])
+        self._kb_meta_update()
+
     def kb_dump_json(self):
         return self._dump_json(self._kb)
 
@@ -806,7 +830,14 @@ class Report(object):
 if __name__ == '__main__':
     pass
 
-    '''
+    report = Report()
+    #report.kb_load_yaml('../examples/example-2-kb.yaml')
+    #print report._kb
+    report.kb_load_csv('../../test-KB.csv')
+    #print report._kb['KB'][0]
+    #print report.meta_dump_yaml()
+    print report.kb_dump_yaml()
+
     '''
     report = Report()
     #report.template_load_xml('../examples/example-2-webinspect-report-template.xml', clean=True)
@@ -842,7 +873,6 @@ if __name__ == '__main__':
     #report.save_report_xml('../examples/tmp/output-2.xml')
     report.save_report_xml('../examples/tmp/test-output.xml')
     #print 'end.'
-    '''
     '''
     
     '''
