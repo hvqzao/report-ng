@@ -223,9 +223,19 @@ class GUI(Version):
                 if self.ctrl_st_t.IsEnabled():
                     self.application.TextWindow(self, title='Template Preview', content=self.ctrl_tc_t.GetValue())
                 e.Skip()
-
+                
             self.ctrl_tc_t.Bind(wx.EVT_SET_FOCUS, ctrl_tc_t_OnFocus)
             self.ctrl_tc_t.Bind(wx.EVT_LEFT_DCLICK, ctrl_tc_t_OnDoubleclick)
+
+            def ctrl_tc_t_OnMouseOver(e):
+                self.status('You might use drag & drop', hint=True)
+                e.Skip()
+            def ctrl_tc_t_OnMouseLeave(e):
+                self.status('')
+                e.Skip()
+
+            self.ctrl_tc_t.Bind(wx.EVT_ENTER_WINDOW, ctrl_tc_t_OnMouseOver)
+            self.ctrl_tc_t.Bind(wx.EVT_LEAVE_WINDOW, ctrl_tc_t_OnMouseLeave)
 
             def ctrl_tc_t_OnDropFiles(filenames):
                 if len(filenames) != 1:
@@ -258,6 +268,16 @@ class GUI(Version):
             self.ctrl_tc_c.Bind(wx.EVT_SET_FOCUS, ctrl_tc_c_OnFocus)
             self.ctrl_tc_c.Bind(wx.EVT_LEFT_DCLICK, ctrl_tc_c_OnDoubleclick)
 
+            def ctrl_tc_c_OnMouseOver(e):
+                self.status('You might use drag & drop', hint=True)
+                e.Skip()
+            def ctrl_tc_c_OnMouseLeave(e):
+                self.status('')
+                e.Skip()
+
+            self.ctrl_tc_c.Bind(wx.EVT_ENTER_WINDOW, ctrl_tc_c_OnMouseOver)
+            self.ctrl_tc_c.Bind(wx.EVT_LEAVE_WINDOW, ctrl_tc_c_OnMouseLeave)
+
             def ctrl_tc_c_OnDropFiles(filenames):
                 if len(filenames) != 1:
                     wx.MessageBox('Single file is expected!', 'Error', wx.OK | wx.ICON_ERROR)
@@ -284,6 +304,16 @@ class GUI(Version):
 
             self.ctrl_tc_s.Bind(wx.EVT_SET_FOCUS, ctrl_tc_s_OnFocus)
             self.ctrl_tc_s.Bind(wx.EVT_LEFT_DCLICK, ctrl_tc_s_OnDoubleclick)
+
+            def ctrl_tc_s_OnMouseOver(e):
+                self.status('You might use drag & drop', hint=True)
+                e.Skip()
+            def ctrl_tc_s_OnMouseLeave(e):
+                self.status('')
+                e.Skip()
+
+            self.ctrl_tc_s.Bind(wx.EVT_ENTER_WINDOW, ctrl_tc_s_OnMouseOver)
+            self.ctrl_tc_s.Bind(wx.EVT_LEAVE_WINDOW, ctrl_tc_s_OnMouseLeave)
 
             def ctrl_tc_s_OnDropFiles(filenames):
                 if len(filenames) != 1:
@@ -313,6 +343,16 @@ class GUI(Version):
 
             self.ctrl_tc_k.Bind(wx.EVT_SET_FOCUS, ctrl_tc_k_OnFocus)
             self.ctrl_tc_k.Bind(wx.EVT_LEFT_DCLICK, ctrl_tc_k_OnDoubleclick)
+
+            def ctrl_tc_k_OnMouseOver(e):
+                self.status('You might use drag & drop', hint=True)
+                e.Skip()
+            def ctrl_tc_k_OnMouseLeave(e):
+                self.status('')
+                e.Skip()
+
+            self.ctrl_tc_k.Bind(wx.EVT_ENTER_WINDOW, ctrl_tc_k_OnMouseOver)
+            self.ctrl_tc_k.Bind(wx.EVT_LEAVE_WINDOW, ctrl_tc_k_OnMouseLeave)
 
             def ctrl_tc_k_OnDropFiles(filenames):
                 if len(filenames) != 1:
@@ -630,8 +670,8 @@ class GUI(Version):
         #        self.statusbar.Hide()
         #        self.SetSize((-1,self.GetSize()[1]-self._statusbar_h,))
 
-        def status(self,text):
-            self.SetStatusText(text)
+        def status(self, text, hint=False):
+            self.SetStatusText(['','Hint: '][hint]+text)
 
         def VulnParam_highlighting(self, e):
             pass
