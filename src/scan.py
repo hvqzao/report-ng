@@ -66,8 +66,6 @@ class Scan(object):
 
 if __name__ == '__main__':
     pass
-    '''
-    scan = Scan('d8-webinspect-scan.xml')
-    scan = Scan('d8-burp-scan.xml')
+
+    scan = Scan('../examples/tmp/b-webinspect.xml')
     print scan.dump_yaml()
-    '''

@@ -22,6 +22,7 @@ import base64
 from lxml import etree
 from lxml.html import soupparser
 import re
+import reqresp
 
 
 def fine_tune(content, section_name):
@@ -60,7 +61,7 @@ def burp_import(xml):
         del scheme_split, full_host_parts
         request_element = issue.xpath('./requestresponse/request')
         if request_element:
-            request = base64.b64decode(request_element[0].text)
+            request = base64.b64decode(request_element[0].text).replace('\r','')
             method = request_element[0].attrib['method']
             if method == 'POST':
                 post = request.split('\n')[-1]
@@ -72,11 +73,11 @@ def burp_import(xml):
             post = ''
         response_element = issue.xpath('./requestresponse/response')
         if response_element:
-            response = base64.b64decode(response_element[0].text)
+            response = base64.b64decode(response_element[0].text).replace('\r','')
         else:
             response = ''
             method = None
-        status_parts = response.replace('\r', '').split('\n')[0].split(' ')
+        status_parts = response.split('\n')[0].split(' ')
         if response_element:
             status_code, status_description = (int(status_parts[1]), ' '.join(status_parts[2:]))
         else:
@@ -125,6 +126,7 @@ def burp_import(xml):
             ['Location', location],
             ['Post', post],
             ['VulnParam', vulnparam],
+            ['Example', UnsortableOrderedDict([('VulnParam',vulnparam,),('Request',reqresp.request_tune(request),),('Response',reqresp.response_tune(response),)])],
             #['Request', base64.b64encode (zlib.compress (request.encode('utf-8')))],
             #['Response', base64.b64encode (zlib.compress (response.encode('utf-8')))],
             ['StatusCode', status_code],
@@ -137,7 +139,7 @@ def burp_import(xml):
     for vuln_id in sorted(set(map(lambda x: int(x['vuln_id']), issues_list))):
         issue = UnsortableOrderedDict()
         for i in filter(lambda x: int(x['vuln_id']) == vuln_id, issues_list):
-            for j in ['Severity', 'severity_id', 'Name', 'ReportSections']:  #, 'Classifications'
+            for j in ['Severity', 'severity_id', 'Name', 'ReportSections', 'Example']:  #, 'Classifications'
                 if j not in issue:
                     issue[j] = i[j]
                     #else:
@@ -157,3 +159,13 @@ def burp_import(xml):
     for i in findings:
         del i['severity_id']
     return UnsortableOrderedDict([['Findings', findings], ])
+
+if __name__ == '__main__':
+    pass
+
+    import yaml
+    from lxml import etree
+    xml = etree.parse('../examples/tmp/b-burp.xml')
+    scan = burp_import(xml)
+    sample = scan['Findings'][-2]
+    print yaml.dump(sample, default_flow_style=False, allow_unicode=True).decode('utf-8')

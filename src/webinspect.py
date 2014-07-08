@@ -22,6 +22,7 @@ from util import UnsortableOrderedDict
 from lxml import etree
 from lxml.html import soupparser
 import re
+import reqresp
 
 
 def fine_tune(content, fullurl):
@@ -59,7 +60,7 @@ def webinspect_import(xml):
             port = ''
         #print scheme, host, port
         request = session.xpath('./RawRequest')[0].text
-        #response = session.xpath('./RawResponse')[0].text
+        response = session.xpath('./RawResponse')[0].text
         method = session.xpath('./Request/Method')[0].text
         response_element = session.xpath('./Response')
         if response_element:
@@ -105,6 +106,7 @@ def webinspect_import(xml):
             ['Location', location],
             ['Post', post],
             ['VulnParam', vulnparam],
+            ['Example', UnsortableOrderedDict([('VulnParam',vulnparam,),('Request',reqresp.request_tune(request),),('Response',reqresp.response_tune(response),)])],
             #['Request', request],
             #['Request', base64.b64encode (zlib.compress (request.encode('utf-8')))],
             #['Response', base64.b64encode (zlib.compress (response.encode('utf-8')))],
@@ -117,7 +119,7 @@ def webinspect_import(xml):
     for vuln_id in sorted(set(map(lambda x: int(x['vuln_id']), issues_list))):
         issue = UnsortableOrderedDict()
         for i in filter(lambda x: int(x['vuln_id']) == vuln_id, issues_list):
-            for j in ['Severity', 'severity_id', 'Name', 'ReportSections', 'Classifications']:
+            for j in ['Severity', 'severity_id', 'Name', 'ReportSections', 'Classifications', 'Example']:
                 if j not in issue:
                     issue[j] = i[j]
                     #else:
@@ -137,3 +139,13 @@ def webinspect_import(xml):
     for i in findings:
         del i['severity_id']
     return UnsortableOrderedDict([['Findings', findings], ])
+
+if __name__ == '__main__':
+    pass
+
+    import yaml
+    from lxml import etree
+    xml = etree.parse('../examples/tmp/b-webinspect.xml')
+    scan = webinspect_import(xml)
+    sample = scan['Findings'][-2]
+    print yaml.dump(sample, default_flow_style=False, allow_unicode=True).decode('utf-8')

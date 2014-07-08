@@ -1,17 +1,19 @@
 # Todo:
 
 ```
-- Evidence Request Header
-- Evidence Response Header
 - Evidence Highlight (e.g. Cookie)
 - verify vulnparam behavior for more burp scans (cookies?)
 - status messages
 - status-related background debug window
+- xml node getparent = None
 ```
 
 # Recent activity:
 
 ```
++ Evidence Request Header
++ Evidence Response Header
++ Special case fix: sdt_remove/replace getparent = None handling
 + import csv knowledge base
 + random password / passphrase generator (rpg)
 + status bar
