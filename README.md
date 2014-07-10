@@ -168,6 +168,14 @@ all other are optional. If content will not provide appropiate value for
 given section, it will be taken from knowlege base, if such section will be
 available there.
 
+Knowledge Base might be also imported from Excel CSV file. "Vulnerability
+Name" column will be threated as Finding Name. Severity column is mandatory.
+Optional Aliases column is newline separated list of finding names. If
+finding name listed in aliases column will be present in the report and it
+will be missing dedicated Knowledge Base entry - such will work as a fallback.
+For fallback finding names listed in aliases column finding severity is being
+ignored.
+
 ## Inline pseudo-html allowed tags
 
 Following tags are available:

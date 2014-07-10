@@ -509,6 +509,7 @@ class Report(object):
                 #print summary_placeholder
                 #print summary_placeholder_parent
             for finding in severity_findings:
+                #print '[*]',finding['Name']
                 kb = None
                 if self._kb:
                     kb_match = filter(lambda x: x['Name'] == finding['Name'] and x['Severity'] == finding['Severity'],
@@ -516,6 +517,13 @@ class Report(object):
                     if kb_match:
                         kb = kb_match[0]
                     del kb_match
+                    if kb == None:
+                        # find matching alias, if such exist
+                        #kb_match_aliases = filter(lambda x: 'Aliases' in x and finding['Name'] in x['Aliases'].split('\n') and x['Severity'] == finding['Severity'], self._meta['KB'])
+                        kb_match_aliases = filter(lambda x: 'Aliases' in x and finding['Name'] in x['Aliases'].split('\n'), self._meta['KB'])
+                        if kb_match_aliases:
+                            kb = kb_match_aliases[0]
+                        del kb_match_aliases                  
                 # Build Finding xml block
                 block = etree.Element('Finding')
                 for i in finding_struct[0][2]:
@@ -767,9 +775,12 @@ class Report(object):
 
     def kb_load_csv(self, filename):
         import csv
+        def transcode(file, decode='cp1250', encode='utf-8'):
+            for line in file:
+                yield line.decode(decode).encode(encode)
         data = []
         with open(filename, 'rb') as csvfile:
-            for row in csv.reader(csvfile, delimiter=';', quotechar='"'):
+            for row in csv.reader(transcode(csvfile), delimiter=';', quotechar='"'):
                 data += [row]
         columns = data[0]
         rows = data[1:]
@@ -780,9 +791,12 @@ class Report(object):
                 colname = columns[col]
                 if colname == 'Vulnerability Name':
                     colname = 'Name'
-                if colname in ['Item Type', 'Path']:
+                if colname == 'Vulnerability Aliases':
+                    colname = 'Aliases'
+                if colname in ['Modified By', 'Item Type', 'Path']:
                     continue
-                item[colname] = row[col]
+                colname = unicode(colname.decode('utf-8')).replace(' ','').replace('\'','')
+                item[colname] = unicode(row[col].decode('utf-8'))
             results += [item]
         self._kb_filename = filename
         self._kb_yaml = None
@@ -836,7 +850,8 @@ if __name__ == '__main__':
     report = Report()
     #report.kb_load_yaml('../examples/example-2-kb.yaml')
     #print report._kb
-    report.kb_load_csv('../../test-KB.csv')
+    #report.kb_load_csv('../../test-KB.csv')
+    report.kb_load_csv('../../Knowledge Base.csv')
     #print report._kb['KB'][0]
     #print report.meta_dump_yaml()
     print report.kb_dump_yaml()
@@ -853,6 +868,7 @@ if __name__ == '__main__':
     #report.content_load_yaml ('../examples/tmp/test-v0.3-content.yaml')
     report.content_load_yaml ('../examples/tmp/test-v0.8b-content.yaml')
     #report.kb_load_yaml('../examples/example-2-kb.yaml')
+    report.kb_load_csv('../../Knowledge Base.csv')
     #scan = Scan('../examples/tmp/b-webinspect.xml')
     #scan= Scan('../examples/tmp/b-burp.xml')
     #print scan.dump_yaml()

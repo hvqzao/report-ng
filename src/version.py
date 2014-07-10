@@ -31,9 +31,15 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.3.6'
-    date = 'Tue Jul  8 19:41:20 2014'
+    version = '0.3.8'
+    date = 'Thu Jul 10 17:57:17 2014'
     changelog = '''
+    0.3.8 - Thu Jul 10 17:57:17 2014
+    - Added: Aliases support for Knowledge Base
+    
+    0.3.7 - Wed Jul  9 20:07:28 2014
+    - FIX: CSV formatting issues
+
     0.3.6 - Tue Jul  8 19:41:20 2014
     - Added: Example request and response are now included in each finding
     - FIX: Rendering cleanup issue has been fixed
@@ -261,6 +267,14 @@ class Version(object):
     all other are optional. If content will not provide appropiate value for
     given section, it will be taken from knowlege base, if such section will be
     available there.
+
+    Knowledge Base might be also imported from Excel CSV file. "Vulnerability
+    Name" column will be threated as Finding Name. Severity column is mandatory.
+    Optional Aliases column is newline separated list of finding names. If
+    finding name listed in aliases column will be present in the report and it
+    will be missing dedicated Knowledge Base entry - such will work as a fallback.
+    For fallback finding names listed in aliases column finding severity is being
+    ignored.
 
     ## Inline pseudo-html allowed tags
 
