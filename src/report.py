@@ -124,7 +124,7 @@ class Report(object):
         return False
 
     def _xml_val(self, children):
-        return ' '.join(map(lambda x: x.text, etree.ETXPath('.//{%s}t' % self.ns.w)(children[0])))
+        return ''.join(map(lambda x: x.text, etree.ETXPath('.//{%s}t' % self.ns.w)(children[0])))
 
     def _template_parse(self, clean=False):
         summary_fields = []
@@ -338,7 +338,10 @@ class Report(object):
         preamble = '<ihtml>'
         return unicode(value).strip().lower()[:len(preamble)] == preamble
 
-    def _xml_sdt_single(self, value, sdt, children):
+    def _xml_sdt_single(self, value, sdt, children, struct=None):
+        #print value
+        #if struct:
+        #    print struct
         p_r = filter(lambda x: x.tag in ['{%s}p' % self.ns.w, '{%s}r' % self.ns.w], children)
         tc = filter(lambda x: x.tag in ['{%s}tc' % self.ns.w], children)
         p_r_tc = p_r + tc
@@ -377,10 +380,15 @@ class Report(object):
                 build = []
                 for v in values:
                     block = etree.fromstring(etree.tostring(p_r_tc[0]))
-                    tag = etree.ETXPath('.//{%s}t' % self.ns.w)(block)
-                    tag[0].text = unicode(v)
+                    tags = etree.ETXPath('.//{%s}t' % self.ns.w)(block)
+                    if len(tags) > 0:
+                        tags[0].text = unicode(v)
+                        for tag in tags[1:]:
+                            tag_parent = tag.getparent()
+                            tag_parent.remove(tag)
+                            del tag_parent                        
                     build += [block]
-                    del tag, block
+                    del tags, block
                 parent = sdt.getparent()
                 for i in build:
                     parent.insert(parent.index(sdt), i)
@@ -408,7 +416,7 @@ class Report(object):
         #print '*',struct#, value
         if not children:
             return
-        if not self._xml_sdt_single(value, sdt, children) and children[0].tag in ['{%s}tr' % self.ns.w]:
+        if not self._xml_sdt_single(value, sdt, children, struct=struct) and children[0].tag in ['{%s}tr' % self.ns.w]:
             #print '+',struct
             build = []
             for row in value:
@@ -427,24 +435,34 @@ class Report(object):
                     if not alias_match:
                         continue
                     alias = alias_match[0]
-                    tag = etree.ETXPath('.//{%s}t' % self.ns.w)(alias['children'][0])
-                    val = row[col]
-                    if self.__vulnparam_highlighting:
-                        if struct == ['Finding', 'Occurrences'] and 'Method' in row and 'VulnParam' in row and row['VulnParam']:
-                            if col == 'Location' and row['Method'] == 'GET' or col == 'Post' and row['Method'] == 'POST':
-                                val = self.surround(val,row['VulnParam'],'red')
-                    if self._is_html(val):
-                        self._openxml.set_sdt_cursor(cursor=tag[0])
-                        self._openxml.parse(val, self._html_parser)
-                        self._openxml.remove_sdt_cursor()
-                    elif self._is_ihtml(val):
-                        self._openxml.set_sdt_cursor(cursor=tag[0])
-                        self._openxml.parse(val, self._ihtml_parser)
-                        self._openxml.remove_sdt_cursor()
-                    else:
-                        tag[0].text = unicode(val)
-                    parent = alias['sdt'].getparent()
-                    parent.replace(alias['sdt'], alias['children'][0])
+                    tags = etree.ETXPath('.//{%s}t' % self.ns.w)(alias['children'][0])
+                    if len(tags) > 0:
+                        val = row[col]
+                        if self.__vulnparam_highlighting:
+                            if struct == ['Finding', 'Occurrences'] and 'Method' in row and 'VulnParam' in row and row['VulnParam']:
+                                if col == 'Location' and row['Method'] == 'GET' or col == 'Post' and row['Method'] == 'POST':
+                                    val = self.surround(val,row['VulnParam'],'red')
+                        if self._is_html(val):
+                            self._openxml.set_sdt_cursor(cursor=tags[0])
+                            self._openxml.parse(val, self._html_parser)
+                            self._openxml.remove_sdt_cursor()
+                        elif self._is_ihtml(val):
+                            self._openxml.set_sdt_cursor(cursor=tags[0])
+                            self._openxml.parse(val, self._ihtml_parser)
+                            self._openxml.remove_sdt_cursor()
+                        elif isinstance(val, list):
+                            pass # TODO
+                            #print struct+[str(col)], val
+                            self._xml_apply_data(struct+[str(col)], val, alias['sdt'], alias['children'])
+                        else:
+                            tags[0].text = unicode(val)
+                        for tag in tags[1:]:
+                            tag_parent = tag.getparent()
+                            tag_parent.remove(tag)
+                            del tag_parent                        
+                        parent = alias['sdt'].getparent()
+                        if parent != None:
+                            parent.replace(alias['sdt'], alias['children'][0])
                     del alias_match, alias
                 build += [block]
                 del aliases, block
@@ -499,8 +517,10 @@ class Report(object):
         for severity in self.severity.keys():
             severity_tag = self._severity_tag(severity)
             severity_findings = filter(lambda x: x['Severity'] in severity, findings)
-            findings_placeholder = filter(lambda x: x[0] == ['Findings', severity_tag], self._struct)[0][1]
-            findings_placeholder_parent = findings_placeholder.getparent()
+            findings_placeholder_row = filter(lambda x: x[0] == ['Findings', severity_tag], self._struct)
+            if len(findings_placeholder_row):
+                findings_placeholder = findings_placeholder_row[0][1]
+                findings_placeholder_parent = findings_placeholder.getparent()
             summary_struct = filter(lambda x: x[0] == ['Summary', severity_tag], self._struct)
             #print summary_struct
             if summary_struct:
@@ -587,8 +607,9 @@ class Report(object):
                         del kb_val, finding_val, ultimate_val
                     del alias_abs
                 # Insert Finding
-                for i in block.getchildren():
-                    findings_placeholder_parent.insert(findings_placeholder_parent.index(findings_placeholder), i)
+                if len(findings_placeholder_row) > 0:
+                    for i in block.getchildren():
+                        findings_placeholder_parent.insert(findings_placeholder_parent.index(findings_placeholder), i)
                 del block, aliases, aliases_abs
                 # Summary row
                 if summary_struct:
@@ -623,8 +644,13 @@ class Report(object):
                 del kb
             if summary_struct:
                 summary_placeholder_parent.remove(summary_placeholder)
-            findings_placeholder_parent.remove(findings_placeholder)
-            del findings_placeholder, findings_placeholder_parent
+            if len(severity_findings) > 0:
+                findings_placeholder_parent.remove(findings_placeholder)
+            else:
+                self._xml_sdt_replace(findings_placeholder, findings_placeholder_row[0][2])
+            if findings_placeholder_row:
+                del findings_placeholder, findings_placeholder_parent
+            del findings_placeholder_row
             if summary_struct:
                 del summary_placeholder, summary_placeholder_parent
             del severity_findings, summary_struct
@@ -862,13 +888,15 @@ if __name__ == '__main__':
     report = Report()
     #report.template_load_xml('../examples/example-2-webinspect-report-template.xml', clean=True)
     #report.template_load_xml('../examples/example-2-scan-report-template.xml', clean=True)
-    report.template_load_xml('../examples/tmp/test-v0.8b.xml', clean=True)
+    #report.template_load_xml('../examples/tmp/test-v0.8b.xml', clean=True)
+    report.template_load_xml('../examples/tmp/PT-template-v0.6-v0.2.xml', clean=False)
     #print report.template_dump_yaml()
     #report.content_load_yaml ('../examples/example-2-content.yaml')
     #report.content_load_yaml ('../examples/tmp/test-v0.3-content.yaml')
-    report.content_load_yaml ('../examples/tmp/test-v0.8b-content.yaml')
+    #report.content_load_yaml ('../examples/tmp/test-v0.8b-content.yaml')
+    report.content_load_yaml ('../examples/tmp/PT-template-v0.6-v0.2-content.yaml')
     #report.kb_load_yaml('../examples/example-2-kb.yaml')
-    report.kb_load_csv('../../Knowledge Base.csv')
+    #report.kb_load_csv('../../Knowledge Base.csv')
     #scan = Scan('../examples/tmp/b-webinspect.xml')
     #scan= Scan('../examples/tmp/b-burp.xml')
     #print scan.dump_yaml()
@@ -881,7 +909,7 @@ if __name__ == '__main__':
     #print report._content
     #report.scan = Scan('../examples/tmp/b-webinspect.xml')
     #report.scan = Scan('../examples/tmp/b-webinspect.yaml')
-    report.scan = Scan('../examples/tmp/b-burp.xml')
+    #report.scan = Scan('../examples/tmp/b-burp.xml')
     #report.scan = Scan('../examples/tmp/b-burp.yaml')
     #report.scan = Scan('../examples/tmp/a-webinspect-http.xml')
     #report.scan = Scan('../examples/tmp/z-webinspect.xml')

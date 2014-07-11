@@ -1,16 +1,24 @@
 # Todo:
 
 ```
+- Finding.Severity as optional
+```
+
+# For consideration:
+
+```
 - Evidence Highlight (e.g. Cookie)
 - verify vulnparam behavior for more burp scans (cookies?)
 - status messages
 - status-related background debug window
-- xml node getparent = None
+- verify all xml node getparent ?= None
 ```
 
 # Recent activity:
 
 ```
++ Fix nasty bug in multiple runs formatting
++ Finding placeholders - if no findings - use as a fallback
 + Evidence Request Header
 + Evidence Response Header
 + Special case fix: sdt_remove/replace getparent = None handling

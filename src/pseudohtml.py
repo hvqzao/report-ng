@@ -47,7 +47,7 @@ class InlineHtmlParser(object):
             if 'face' in attrib:
                 self._o.set_style(font=attrib['face'])
             if 'size' in attrib:
-                self._o.set_style(size=int(float(attrib['size'] * 2)))
+                self._o.set_style(size=int(float(attrib['size']) * 2))
         if tag in ['b', 'i', 'r', 'red', 'y', 'yellow', 'rw', 'redwhite', 'ihtml', 'a', 'font']:
             handled = True
 
@@ -118,7 +118,7 @@ class HtmlParser(object):
             if 'face' in attrib:
                 self._o.set_style(font=attrib['face'])
             if 'size' in attrib:
-                self._o.set_style(size=int(float(attrib['size'] * 2)))
+                self._o.set_style(size=int(float(attrib['size']) * 2))
         if tag == 'img':
             args = dict(name=attrib['src'])
             if 'alt' in attrib:

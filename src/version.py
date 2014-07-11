@@ -31,9 +31,16 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.3.8'
-    date = 'Thu Jul 10 17:57:17 2014'
+    version = '0.3.9'
+    date = 'Fri Jul 11 20:08:34 2014'
     changelog = '''
+    0.3.9 - Fri Jul 11 20:08:34 2014
+    - FIX: Plain text now correctly replaces tag content with multiple runs
+    - FIX: Pseudohtml font size should now be correctly handled
+    - FIX: clean=False multiple runs now join with no redundant blanks
+    - Added: Finding placeholder now acts as a fallback when no findings of
+      given severity are present
+    
     0.3.8 - Thu Jul 10 17:57:17 2014
     - Added: Aliases support for Knowledge Base
     
@@ -286,8 +293,8 @@ class Version(object):
     - <rw>...</rw> (or <redwhite>...</redwhite>) - red highlight with white text
     - <a href="...">...</a> - link (remember to use scheme in url, e.g.
       http://)
-    - <font [face="..."] [size="..."]>...</font> - font, size should be
-      2x bigger (e.g. 22 instead 11px), no units just a numeric value
+    - <font [face="..."] [size="..."]>...</font> - font, no units just a numeric
+      value
 
     ## Regular pseudo-html allowed tags
 

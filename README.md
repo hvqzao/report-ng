@@ -187,8 +187,8 @@ Following tags are available:
 - <rw>...</rw> (or <redwhite>...</redwhite>) - red highlight with white text
 - <a href="...">...</a> - link (remember to use scheme in url, e.g.
   http://)
-- <font [face="..."] [size="..."]>...</font> - font, size should be
-  2x bigger (e.g. 22 instead 11px), no units just a numeric value
+- <font [face="..."] [size="..."]>...</font> - font, no units just a numeric
+  value
 ```
 
 ## Regular pseudo-html allowed tags
