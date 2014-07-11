@@ -454,6 +454,8 @@ class Report(object):
                             pass # TODO
                             #print struct+[str(col)], val
                             self._xml_apply_data(struct+[str(col)], val, alias['sdt'], alias['children'])
+                        elif val == None:
+                            tags[0].text = ''
                         else:
                             tags[0].text = unicode(val)
                         for tag in tags[1:]:
