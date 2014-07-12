@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.3.9'
-    date = 'Fri Jul 11 20:08:34 2014'
+    version = '0.4.0'
+    date = 'Sat Jul 12 11:11:46 2014'
     changelog = '''
+    0.4.0 - Sat Jul 12 11:11:46 2014
+    - Added: CVS imported KB now supports nesting (e.g. Summary.Description)
+    
     0.3.9 - Fri Jul 11 20:08:34 2014
     - FIX: Plain text now correctly replaces tag content with multiple runs
     - FIX: Pseudohtml font size should now be correctly handled

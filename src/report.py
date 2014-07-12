@@ -816,6 +816,7 @@ class Report(object):
         for row in rows:
             item = UnsortableOrderedDict()
             for col in range(len(columns)):
+                value = unicode(row[col].decode('utf-8'))
                 colname = columns[col]
                 if colname == 'Vulnerability Name':
                     colname = 'Name'
@@ -824,7 +825,16 @@ class Report(object):
                 if colname in ['Modified By', 'Item Type', 'Path']:
                     continue
                 colname = unicode(colname.decode('utf-8')).replace(' ','').replace('\'','')
-                item[colname] = unicode(row[col].decode('utf-8'))
+                colname_tree = colname.split('.')
+                if len(colname_tree) > 1:
+                    node = item
+                    for colname_node in colname_tree[:-1]:
+                        if colname_node not in item or not isinstance(item, UnsortableOrderedDict):
+                            item[colname_node] = UnsortableOrderedDict()
+                        node = item[colname_node]
+                    node[colname_tree[-1]] = value
+                else:
+                    item[colname] = value
             results += [item]
         self._kb_filename = filename
         self._kb_yaml = None
@@ -879,7 +889,7 @@ if __name__ == '__main__':
     #report.kb_load_yaml('../examples/example-2-kb.yaml')
     #print report._kb
     #report.kb_load_csv('../../test-KB.csv')
-    report.kb_load_csv('../../Knowledge Base.csv')
+    report.kb_load_csv('../../KB.csv')
     #print report._kb['KB'][0]
     #print report.meta_dump_yaml()
     print report.kb_dump_yaml()
@@ -899,6 +909,7 @@ if __name__ == '__main__':
     report.content_load_yaml ('../examples/tmp/PT-template-v0.6-v0.2-content.yaml')
     #report.kb_load_yaml('../examples/example-2-kb.yaml')
     #report.kb_load_csv('../../Knowledge Base.csv')
+    report.kb_load_csv('../../KB.csv')
     #scan = Scan('../examples/tmp/b-webinspect.xml')
     #scan= Scan('../examples/tmp/b-burp.xml')
     #print scan.dump_yaml()
