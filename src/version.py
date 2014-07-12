@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.4.0'
-    date = 'Sat Jul 12 11:11:46 2014'
+    version = '0.4.1'
+    date = 'Sat Jul 12 15:09:43 2014'
     changelog = '''
+    0.4.1 - Sat Jul 12 15:09:43 2014
+    - FIX: KB entries are now correctly set for nested undefined findings content
+
     0.4.0 - Sat Jul 12 11:11:46 2014
     - Added: CVS imported KB now supports nesting (e.g. Summary.Description)
     

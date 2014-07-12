@@ -542,10 +542,14 @@ class Report(object):
                     if kb == None:
                         # find matching alias, if such exist
                         #kb_match_aliases = filter(lambda x: 'Aliases' in x and finding['Name'] in x['Aliases'].split('\n') and x['Severity'] == finding['Severity'], self._meta['KB'])
-                        kb_match_aliases = filter(lambda x: 'Aliases' in x and finding['Name'] in x['Aliases'].split('\n'), self._meta['KB'])
+                        kb_match_aliases = filter(lambda x: 'Aliases' in x and unicode(finding['Name']).replace(u'\u200b','') in x['Aliases'].split('\n'), self._meta['KB'])
+                        #for i in map(lambda x: x['Aliases'].split('\n'), self._meta['KB']):
+                        #    print [finding['Name']], unicode(finding['Name']).replace(u'\u200b','') in i, i
+                        #print finding['Name'], kb_match_aliases != []
                         if kb_match_aliases:
                             kb = kb_match_aliases[0]
-                        del kb_match_aliases                  
+                        del kb_match_aliases
+                #print '?',kb != None
                 # Build Finding xml block
                 block = etree.Element('Finding')
                 for i in finding_struct[0][2]:
@@ -554,7 +558,7 @@ class Report(object):
                 aliases_abs = map(lambda x: '.'.join(x['struct']), aliases)
                 for i in aliases:
                     alias_abs = '.'.join(i['struct'])
-                    #print alias_abs
+                    #print ' ',alias_abs
                     if alias_abs[-1] == '?':
                         # is this finding.[severity]? -> if yes, replace content, otherwise delete me
                         if i['struct'][-1] in  map(lambda x: self._severity_tag(x)+'?', self.severity.keys()):
@@ -575,15 +579,17 @@ class Report(object):
                         #    #del alias_search
                     else:
                         # TODO recent fixes
-                        #print i['struct']
-                        if self._p(finding, i['struct'][1:]) == None:
-                            continue
-                        if not isinstance(self._p(finding, i['struct'][1:]), list) and i['struct'][1:][-1] in self._p(finding, i['struct'][1:]):
+                        #print 's',i['struct']
+                        #if self._p(finding, i['struct'][1:]) == None:
+                        #    print 'x',None
+                        #    continue
+                        if self._p(finding, i['struct'][1:]) != None and not isinstance(self._p(finding, i['struct'][1:]), list) and i['struct'][1:][-1] in self._p(finding, i['struct'][1:]):
                             #if self._p (finding, i['struct'][1:]).has_key(i['struct'][1:][-1]):
                             finding_val = self._v(finding, i['struct'][1:])
                         else:
                             finding_val = ''
                         kb_val = None
+                        #print ' ', i['struct'], kb != None
                         if kb:
                             if i['struct'] not in [['Finding', 'Name'], ['Finding', 'Severity']]:
                                 kb_p = self._p(kb, i['struct'][1:])
@@ -592,6 +598,7 @@ class Report(object):
                                 del kb_p
                         #self._xml_sdt_single (self._kb_val (finding_val, kb_val), i['sdt'], i['children'])
                         ultimate_val = self._kb_val(finding_val, kb_val)
+                        #print '=',ultimate_val
                         self._xml_apply_data(i['struct'], ultimate_val, i['sdt'], i['children'])
                         #print finding['Name'], i['struct']
                         alias_search = i['struct'][:]
@@ -825,6 +832,8 @@ class Report(object):
                 if colname in ['Modified By', 'Item Type', 'Path']:
                     continue
                 colname = unicode(colname.decode('utf-8')).replace(' ','').replace('\'','')
+                if colname == 'Aliases':
+                    value = '\n'.join(map(lambda x: [x,x[1:]][x[0] == '?'].strip() ,filter(lambda x: x not in [u'', u'\xa0'] and len(x) > 0, value.split('\n'))))
                 colname_tree = colname.split('.')
                 if len(colname_tree) > 1:
                     node = item
@@ -895,21 +904,28 @@ if __name__ == '__main__':
     print report.kb_dump_yaml()
     '''
 
-    '''
+    # sample DS
+    report = Report()
+    report.template_load_xml('../examples/tmp/DS-template v1.0.xml', clean=True)
+    report.content_load_yaml ('../examples/tmp/DS-template v1.0-content.yaml') 
+    report.kb_load_csv('../../KB.csv')
+    report.scan = Scan('../examples/tmp/b-webinspect.xml')
+    report.xml_apply_meta()
+    report.save_report_xml('../examples/tmp/output-2.xml')
+    
     '''
     report = Report()
     #report.template_load_xml('../examples/example-2-webinspect-report-template.xml', clean=True)
     #report.template_load_xml('../examples/example-2-scan-report-template.xml', clean=True)
-    #report.template_load_xml('../examples/tmp/test-v0.8b.xml', clean=True)
     report.template_load_xml('../examples/tmp/PT-template-v0.6-v0.2.xml', clean=False)
     #print report.template_dump_yaml()
     #report.content_load_yaml ('../examples/example-2-content.yaml')
     #report.content_load_yaml ('../examples/tmp/test-v0.3-content.yaml')
-    #report.content_load_yaml ('../examples/tmp/test-v0.8b-content.yaml')
     report.content_load_yaml ('../examples/tmp/PT-template-v0.6-v0.2-content.yaml')
     #report.kb_load_yaml('../examples/example-2-kb.yaml')
     #report.kb_load_csv('../../Knowledge Base.csv')
     report.kb_load_csv('../../KB.csv')
+    #print report.kb_dump_yaml()
     #scan = Scan('../examples/tmp/b-webinspect.xml')
     #scan= Scan('../examples/tmp/b-burp.xml')
     #print scan.dump_yaml()
@@ -936,7 +952,6 @@ if __name__ == '__main__':
     #report.save_report_xml('../examples/tmp/output-2.xml')
     report.save_report_xml('../examples/tmp/test-output.xml')
     #print 'end.'
-    '''
     '''
     
     '''
