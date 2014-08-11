@@ -62,6 +62,7 @@ class Report(object):
     _html_parser = None
     _ihtml_parser = None
     scan = None
+    template_cleanup_required = None
     #__vulnparam_highlighting = True
 
     def __init__(self):
@@ -225,6 +226,7 @@ class Report(object):
         self._ihtml_parser = etree.XMLParser(target=InlineHtmlParser(self._openxml), resolve_entities=False)
         self._template_parse(clean=clean)
         self._content_parse(self._skel)  # TODO added - test if ok
+        self.template_cleanup_required = False
         return self
 
     def template_load_xml(self, filename, clean=False):
@@ -708,6 +710,7 @@ class Report(object):
         chart_parent.replace(chart_struct[0][1], chart_struct[0][2][0])
 
     def xml_apply_meta(self, vulnparam_highlighting=True):
+        self.template_cleanup_required = True
         self.__vulnparam_highlighting = vulnparam_highlighting
         # change dir (for the purpose of images handling relatively to template path)
         pwd = os.getcwd()

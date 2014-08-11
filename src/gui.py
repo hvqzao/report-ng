@@ -622,17 +622,21 @@ class GUI(Version):
             else:
                 self._Use_json()
 
-        def _clean_template(self):
-            if self.ctrl_st_t.IsEnabled():
-                self.report.template_reload(clean=self.menu_view_c.IsChecked())
-                if self.ctrl_st_c.IsEnabled():
-                    self.report.content_reload()
-                if self.ctrl_st_k.IsEnabled():
-                    self.report.kb_reload()
-                self._refresh()
+        def _clean_template(self, force=False):
+            if force==True or self.report.template_cleanup_required == True:
+                if self.ctrl_st_t.IsEnabled():
+                    self.report.template_reload(clean=self.menu_view_c.IsChecked())
+                    if self.ctrl_st_c.IsEnabled():
+                        self.report.content_reload()
+                    if self.ctrl_st_k.IsEnabled():
+                        self.report.kb_reload()
+                    self._refresh()
+            #    print 'cleanup performed.'
+            #else:
+            #    print 'cleanup omitted.'
 
         def Clean_template(self, e):
-            self._clean_template()
+            self._clean_template(force=True)
 
         #def Save_Knowledge_Base_As (self, e):
         #    pass
@@ -649,9 +653,10 @@ class GUI(Version):
                 return
             self.status('Generating and saving the report...')
             self.report.scan = self.scan
+            self._clean_template()
             self.report.xml_apply_meta()
             self.report.save_report_xml(filename)
-            self._clean_template()
+            #self._clean_template()
             self.status('Done')
 
         def _Use_yaml(self):
