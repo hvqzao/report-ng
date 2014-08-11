@@ -56,7 +56,7 @@ class Report(object):
     _content = None
     _meta = None
     _kb_filename = None
-    _kb_yaml = None
+    _kb_type = None
     _kb = None
     _openxml = None
     _html_parser = None
@@ -217,7 +217,7 @@ class Report(object):
         #pp.pprint(map(lambda x: [x[0], map(lambda y: y.tag[y.tag.index('}') + 1:], x[2])], self._struct))
         return pp.pformat(map(lambda x: [x[0], map(lambda y: y.tag[y.tag.index('}') + 1:], x[2])], self._struct))
 
-    def _template_reload(self, clean=False):
+    def template_reload(self, clean=False):
         self._cleanup()
         self._xml = etree.parse(self._template_filename)
         self._openxml = Openxml(self._xml)
@@ -229,7 +229,7 @@ class Report(object):
 
     def template_load_xml(self, filename, clean=False):
         self._template_filename = filename
-        return self._template_reload(clean=clean)
+        return self.template_reload(clean=clean)
 
     #def template_load_docx(self, filename, clean=False):
     #   self._docx = docx.Document(docx=filename)
@@ -267,7 +267,7 @@ class Report(object):
             self._kb_meta_update()
         return self
 
-    def _content_reload(self):
+    def content_reload(self):
         if self._content_yaml:
             self._content_parse(yaml_load(open(self._content_filename).read(), yaml.SafeLoader, UnsortableOrderedDict))
         else:
@@ -281,12 +281,12 @@ class Report(object):
     def content_load_yaml(self, filename):
         self._content_filename = filename
         self._content_yaml = True
-        return self._content_reload()
+        return self.content_reload()
 
     def content_load_json(self, filename):
         self._content_filename = filename
         self._content_yaml = False
-        return self._content_reload()
+        return self.content_reload()
 
     def content_dump_json(self):
         return self._dump_json(self._content)
@@ -796,20 +796,7 @@ class Report(object):
         else:
             raise Exception('Knowledge base file must be have KB or Findings section!')
 
-    def kb_load_yaml(self, filename):
-        self._kb_filename = filename
-        self._kb_yaml = True
-        self._kb = yaml_load(open(self._kb_filename).read(), yaml.SafeLoader, UnsortableOrderedDict)
-        self._kb_meta_update()
-
-    def kb_load_json(self, filename):
-        self._kb_filename = filename
-        self._kb_yaml = False
-        self._kb = json.loads(open(self._kb_filename).read().decode('utf-8-sig'),
-                              object_pairs_hook=UnsortableOrderedDict)
-        self._kb_meta_update()
-
-    def kb_load_csv(self, filename):
+    def _kb_load_csv(self, filename):
         import csv
         def transcode(file, decode='cp1250', encode='utf-8'):
             for line in file:
@@ -846,10 +833,32 @@ class Report(object):
                 else:
                     item[colname] = value
             results += [item]
-        self._kb_filename = filename
-        self._kb_yaml = None
-        self._kb = UnsortableOrderedDict([('KB',results,)])
+        return UnsortableOrderedDict([('KB',results,)])
+        
+    def kb_reload(self):
+        if self._kb_type == 'yaml':
+            self._kb = yaml_load(open(self._kb_filename).read(), yaml.SafeLoader, UnsortableOrderedDict)
+        elif self._kb_type == 'json':
+            self._kb = json.loads(open(self._kb_filename).read().decode('utf-8-sig'),
+                                  object_pairs_hook=UnsortableOrderedDict)
+        else:
+            self._kb = self._kb_load_csv(filename)
         self._kb_meta_update()
+
+    def kb_load_yaml(self, filename):
+        self._kb_filename = filename
+        self._kb_type = 'yaml'
+        self.kb_reload()
+        
+    def kb_load_json(self, filename):
+        self._kb_filename = filename
+        self._kb_type = 'json'
+        self.kb_reload()
+        
+    def kb_load_csv(self, filename):
+        self._kb_filename = filename
+        self._kb_type = 'csv'
+        self.kb_reload()
 
     def kb_dump_json(self):
         return self._dump_json(self._kb)
@@ -960,12 +969,16 @@ if __name__ == '__main__':
     '''
     report = Report()
     report.template_load_xml ('../examples/example-1-content-report-template.xml')
-    #report._template_reload(clean=True)
+    #report.template_reload(clean=True)
     #print report.template_dump_struct()
     #print report.template_dump_yaml()
     report.content_load_yaml ('../examples/example-1-content.yaml')
     report.xml_apply_meta()
     report.save_report_xml('../examples/tmp/output.xml')
+    #report.template_reload(clean=True)
+    #report.content_load_yaml ('../examples/example-1-content.yaml')
+    #report.xml_apply_meta()
+    #report.save_report_xml('../examples/tmp/output.xml')
     '''
     
     '''
@@ -994,7 +1007,7 @@ if __name__ == '__main__':
     report.template_load_xml('d9-webinspect-10-template.xml')
     #print report.template_dump_struct()
     #report.template_load_docx('d3.docx')
-    #report._template_reload(clean=True)
+    #report.template_reload(clean=True)
     #print report.template_dump_json()
     #print report.template_dump_yaml()
     #print '---'

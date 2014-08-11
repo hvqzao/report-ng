@@ -616,6 +616,24 @@ class GUI(Version):
                 h.write(self.scan.dump_yaml())
             h.close()
 
+        def _refresh(self):
+            if self.menu_view_y.IsChecked():
+                self._Use_yaml()
+            else:
+                self._Use_json()
+
+        def _clean_template(self):
+            if self.ctrl_st_t.IsEnabled():
+                self.report.template_reload(clean=self.menu_view_c.IsChecked())
+                if self.ctrl_st_c.IsEnabled():
+                    self.report.content_reload()
+                if self.ctrl_st_k.IsEnabled():
+                    self.report.kb_reload()
+                self._refresh()
+
+        def Clean_template(self, e):
+            self._clean_template()
+
         #def Save_Knowledge_Base_As (self, e):
         #    pass
         def Save_Report_As(self, e):
@@ -633,20 +651,8 @@ class GUI(Version):
             self.report.scan = self.scan
             self.report.xml_apply_meta()
             self.report.save_report_xml(filename)
+            self._clean_template()
             self.status('Done')
-
-        def Clean_template(self, e):
-            if self.ctrl_st_t.IsEnabled():
-                self.report._template_reload(clean=self.menu_view_c.IsChecked())
-                if self.ctrl_st_c.IsEnabled():
-                    self.report._content_reload()
-                self._refresh()
-
-        def _refresh(self):
-            if self.menu_view_y.IsChecked():
-                self._Use_yaml()
-            else:
-                self._Use_json()
 
         def _Use_yaml(self):
             if self.ctrl_st_t.IsEnabled():
