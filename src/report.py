@@ -845,7 +845,7 @@ class Report(object):
             self._kb = json.loads(open(self._kb_filename).read().decode('utf-8-sig'),
                                   object_pairs_hook=UnsortableOrderedDict)
         else:
-            self._kb = self._kb_load_csv(filename)
+            self._kb = self._kb_load_csv(self._kb_filename)
         self._kb_meta_update()
 
     def kb_load_yaml(self, filename):
