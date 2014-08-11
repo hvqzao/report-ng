@@ -413,9 +413,17 @@ class GUI(Version):
             ##vbox.Add (hbox1, 0, wx.CENTER, 5)
             #panel.SetSizer (vbox)
             #vbox.Fit (self)
-            self.Center()
+            #self.Center()
+            self.alignVMiddleRight()
             self.Show()
             #print 'loaded'
+
+        def alignVMiddleRight(self):
+            dw, dh = wx.DisplaySize()
+            w, h = self.GetSize()
+            x = dw - w - 40*2
+            y = dh/2 - h/2
+            self.SetPosition((x, y))
 
         def Exit(self, e):
             self.Close()

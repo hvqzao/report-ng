@@ -32,10 +32,11 @@ class Version(object):
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
     version = '0.4.2'
-    date = 'Mon Aug 11 17:09:56 2014'
+    date = 'Mon Aug 11 17:24:56 2014'
     changelog = '''
-    0.4.2 - Mon Aug 11 17:09:56 2014
+    0.4.2 - Mon Aug 11 17:24:56 2014
     - FIX: Switching off clean for templates missing Finding.Severity now works fine
+    - Application now starts aligned to the right which is more convenient for drag & drop
     
     0.4.1 - Sat Jul 12 15:09:43 2014
     - FIX: KB entries are now correctly set for nested undefined findings content
