@@ -182,11 +182,12 @@ class Report(object):
                             continue
         self._skel['Findings'] = [UnsortableOrderedDict()]
         for i in ['Name', 'Severity']:
-            if not clean:
-                self._skel['Findings'][0][i] = self._xml_val(
-                    filter(lambda x: x[0] == ['Finding', i], self._struct)[0][2])
+            i_struct = filter(lambda x: x[0] == ['Finding', i], self._struct)
+            if not clean and len(i_struct):
+                self._skel['Findings'][0][i] = self._xml_val(i_struct[0][2])
             else:
                 self._skel['Findings'][0][i] = ''
+            del i_struct
             if i in self._skel['Finding']:
                 del self._skel['Finding'][i]
         if summary_fields:
@@ -904,6 +905,7 @@ if __name__ == '__main__':
     print report.kb_dump_yaml()
     '''
 
+    '''
     # sample DS
     report = Report()
     report.template_load_xml('../examples/tmp/DS-template v1.0.xml', clean=True)
@@ -912,6 +914,7 @@ if __name__ == '__main__':
     report.scan = Scan('../examples/tmp/b-webinspect.xml')
     report.xml_apply_meta()
     report.save_report_xml('../examples/tmp/output-2.xml')
+    '''
     
     '''
     report = Report()

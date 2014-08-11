@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.4.1'
-    date = 'Sat Jul 12 15:09:43 2014'
+    version = '0.4.2'
+    date = 'Mon Aug 11 17:09:56 2014'
     changelog = '''
+    0.4.2 - Mon Aug 11 17:09:56 2014
+    - FIX: Switching off clean for templates missing Finding.Severity now works fine
+    
     0.4.1 - Sat Jul 12 15:09:43 2014
     - FIX: KB entries are now correctly set for nested undefined findings content
 
