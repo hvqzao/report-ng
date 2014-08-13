@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.4.2'
-    date = 'Mon Aug 11 18:44:01 2014'
+    version = '0.4.3'
+    date = 'Wed Aug 13 17:14:41 2014'
     changelog = '''
+    0.4.3 - Wed Aug 13 17:14:41 2014
+    - yaml/json saved files are now UTF-8 encoded by default
+    
     0.4.2 - Mon Aug 11 18:44:01 2014
     - FIX: Switching off clean for templates missing Finding.Severity now works fine
     - Application now starts aligned to the right which is more convenient for drag & drop

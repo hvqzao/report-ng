@@ -581,10 +581,11 @@ class GUI(Version):
             filename = openFileDialog.GetPath()
             h = open(filename, 'w')
             if filename[-len(json_ext):] == json_ext:
-                h.write(self.report.template_dump_json())
+                h.write(self.report.template_dump_json().encode('utf-8'))
             else:
-                h.write(self.report.template_dump_yaml())
+                h.write(self.report.template_dump_yaml().encode('utf-8'))
             h.close()
+            self.status('Template content saved')
 
         def Save_Content_As(self, e):
             openFileDialog = wx.FileDialog(self, 'Save Content As', '', '',
@@ -596,10 +597,11 @@ class GUI(Version):
             filename = openFileDialog.GetPath()
             h = open(filename, 'w')
             if filename[-len(json_ext):] == json_ext:
-                h.write(self.report.content_dump_json())
+                h.write(self.report.content_dump_json().encode('utf-8'))
             else:
-                h.write(self.report.content_dump_yaml())
+                h.write(self.report.content_dump_yaml().encode('utf-8'))
             h.close()
+            self.status('Content saved')
 
         def Save_Scan_As(self, e):
             openFileDialog = wx.FileDialog(self, 'Save Scan As', '', '',
@@ -611,10 +613,11 @@ class GUI(Version):
             filename = openFileDialog.GetPath()
             h = open(filename, 'w')
             if filename[-len(json_ext):] == json_ext:
-                h.write(self.scan.dump_json())
+                h.write(self.scan.dump_json().encode('utf-8'))
             else:
-                h.write(self.scan.dump_yaml())
+                h.write(self.scan.dump_yaml().encode('utf-8'))
             h.close()
+            self.status('Scan saved')
 
         def _refresh(self):
             if self.menu_view_y.IsChecked():
@@ -657,7 +660,7 @@ class GUI(Version):
             self.report.xml_apply_meta()
             self.report.save_report_xml(filename)
             #self._clean_template()
-            self.status('Done')
+            self.status('Report saved')
 
         def _Use_yaml(self):
             if self.ctrl_st_t.IsEnabled():

@@ -2,6 +2,9 @@
 
 ```
 - Finding.Severity as optional
+- BUG: if Report.Key? is used more than once, only the first one is handled
+- BUG: (probably) utf-8 encoded content loaded as scan and merged + report causes
+  non ascii conversion issue
 ```
 
 # For consideration:
