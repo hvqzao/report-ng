@@ -36,6 +36,7 @@ class Version(object):
     changelog = '''
     0.4.3 - Wed Aug 13 17:14:41 2014
     - yaml/json saved files are now UTF-8 encoded by default
+    - minor fix in KB CSV import
     
     0.4.2 - Mon Aug 11 18:44:01 2014
     - FIX: Switching off clean for templates missing Finding.Severity now works fine

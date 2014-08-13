@@ -822,9 +822,12 @@ class Report(object):
                     colname = 'Aliases'
                 if colname in ['Modified By', 'Item Type', 'Path']:
                     continue
+                #if colname == 'Name':
+                #    print '[+]', value
                 colname = unicode(colname.decode('utf-8')).replace(' ','').replace('\'','')
                 if colname == 'Aliases':
-                    value = '\n'.join(map(lambda x: [x,x[1:]][x[0] == '?'].strip() ,filter(lambda x: x not in [u'', u'\xa0'] and len(x) > 0, value.split('\n'))))
+                    value = '\n'.join(filter(lambda x: len(x) > 0, map(lambda x: ''.join(filter(lambda y: y not in [u'\xa0', u'\x3f'], list(x))), value.split('\n'))))
+                    #print '   ',value.split('\n')
                 colname_tree = colname.split('.')
                 if len(colname_tree) > 1:
                     node = item
@@ -916,6 +919,13 @@ if __name__ == '__main__':
     #print report.meta_dump_yaml()
     print report.kb_dump_yaml()
     '''
+
+    report = Report()
+    report.template_load_xml('../../template v1.0.xml', clean=True)
+    report.content_load_yaml ('../../merged.yaml') 
+    report.kb_load_csv('../../KB.csv')
+    report.xml_apply_meta()
+    #report.save_report_xml('../../!.xml')
 
     '''
     # sample DS
