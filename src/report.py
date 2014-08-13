@@ -743,12 +743,12 @@ class Report(object):
                 i_search = i[0][:]
                 i_search[-1] = i_search[-1]+'?'
                 i_search_match = filter(lambda x: i_search == x[0], self._struct)
-                if i_search_match:
+                for match in i_search_match:
                     #print i_search, i_search_match
                     if val:
-                        self._xml_sdt_replace(i_search_match[0][1], i_search_match[0][2])
+                        self._xml_sdt_replace(match[1], match[2])
                     else:
-                        self._xml_sdt_remove(i_search_match[0][1])
+                        self._xml_sdt_remove(match[1])
                 del i_search_match
         # if conditional root element does not have any members with values, remove them
         #print root
@@ -921,11 +921,11 @@ if __name__ == '__main__':
     '''
 
     report = Report()
-    report.template_load_xml('../../template v1.0.xml', clean=True)
-    report.content_load_yaml ('../../merged.yaml') 
-    report.kb_load_csv('../../KB.csv')
+    report.template_load_xml('../../sandbox.xml', clean=True)
+    report.content_load_yaml ('../../sandbox.yaml') 
+    #report.kb_load_csv('../../KB.csv')
     report.xml_apply_meta()
-    #report.save_report_xml('../../!.xml')
+    report.save_report_xml('../../!.xml')
 
     '''
     # sample DS

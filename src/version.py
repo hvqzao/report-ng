@@ -32,9 +32,10 @@ class Version(object):
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
     version = '0.4.3'
-    date = 'Wed Aug 13 17:14:41 2014'
+    date = 'Wed Aug 13 18:28:25 2014'
     changelog = '''
-    0.4.3 - Wed Aug 13 17:14:41 2014
+    0.4.3 - Wed Aug 13 18:28:25 2014
+    - FIX: Each conditional tag should now be handled, not only the first one
     - yaml/json saved files are now UTF-8 encoded by default
     - minor fix in KB CSV import
     
