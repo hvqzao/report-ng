@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.4.3'
-    date = 'Wed Aug 13 18:28:25 2014'
+    version = '0.4.4'
+    date = 'Wed Aug 20 18:09:55 2014'
     changelog = '''
+    0.4.4 - Wed Aug 20 18:09:55 2014
+    - FIX: VulnParam highlighting has been fixed and should now be more accurate
+    
     0.4.3 - Wed Aug 13 18:28:25 2014
     - FIX: Each conditional tag should now be handled, not only the first one
     - yaml/json saved files are now UTF-8 encoded by default

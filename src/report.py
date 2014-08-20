@@ -25,6 +25,7 @@ from lxml import etree
 import yaml, json
 import os
 import os.path
+from cgi import escape
 #import docx
 docx = None
 
@@ -403,12 +404,17 @@ class Report(object):
 
     @staticmethod
     def surround(text, search, tag, inline=True):
-        start = text.find(search+'=')
+        text = escape(text)
+        start = text.find('&amp;'+search+'=')
+        if start != -1:
+            start += 5
+        else:
+            start = text.find(search+'=')
         if start == -1:
             return text
         else:
             walk = text[start+len(search)+1:]
-            end = walk.find('&')
+            end = walk.find('&amp;')
             if end == -1:
                 return '<'+['','i'][inline]+'html>'+text[:start]+'<'+tag+'>'+text[start:]+'</'+tag+'>'+'</'+['','i'][inline]+'html>'
             else:
@@ -921,11 +927,10 @@ if __name__ == '__main__':
     '''
 
     report = Report()
-    report.template_load_xml('../../sandbox.xml', clean=True)
-    report.content_load_yaml ('../../sandbox.yaml') 
-    #report.kb_load_csv('../../KB.csv')
+    report.template_load_xml('../../bug-01/template.xml', clean=True)
+    report.scan = Scan('../../bug-01/burp scan bug.yaml')
     report.xml_apply_meta()
-    report.save_report_xml('../../!.xml')
+    #report.save_report_xml('../../bug-01/!.xml')
 
     '''
     # sample DS
