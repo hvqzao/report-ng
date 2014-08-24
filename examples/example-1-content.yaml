@@ -1,5 +1,8 @@
-﻿Report:
-  Name: Name1 łąść ŁĄŚĆ
+﻿# comment 1
+Report:
+  # comment 2
+  Name: Name1 łąść ŁĄŚĆ # file encoding is UTF-8
+  # comment 3
   Type: "Type1"
   Environment: Environment1
   Owner: 'Owner1'
