@@ -31,9 +31,14 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.4.4'
-    date = 'Wed Aug 20 18:41:37 2014'
+    version = '0.4.5'
+    date = 'Sun Aug 24 21:17:17 2014'
     changelog = '''
+    0.4.5 - Sun Aug 24 21:17:17 2014
+    - Switching view between json/yaml works now for KB as well
+    - More verbose status bar when loading files
+    - Minor template adjustment to be more in-line with current features
+    
     0.4.4 - Wed Aug 20 18:41:37 2014
     - FIX: VulnParam highlighting has been fixed and should now be more accurate
     - if Finding.[Severity] placeholder contains only blank characters, it will be removed

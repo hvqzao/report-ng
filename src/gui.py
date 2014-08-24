@@ -466,6 +466,7 @@ class GUI(Version):
             self._open_template(openFileDialog.GetPath())
 
         def _open_template(self, filename):
+            self.status('Loading template...')
             self.ctrl_st_t.Enable(False)
             self.ctrl_tc_t.SetValue('')
             self.ctrl_st_c.Enable(False)
@@ -494,6 +495,7 @@ class GUI(Version):
             self.menu_tools_template_structure_preview.Enable(True)
             if self.scan:
                 self.menu_file_save_r.Enable(True)
+            self.status('Template loaded')
 
         def Open_Content(self, e):
             openFileDialog = wx.FileDialog(self, 'Open Content', '', '',
@@ -510,6 +512,7 @@ class GUI(Version):
                 self.ctrl_tc_c.SetValue(self.report.content_dump_json())
 
         def _open_content(self, filename):
+            self.status('Loading content...')
             self.ctrl_st_c.Enable(False)
             json_ext = '.json'
             if filename[-len(json_ext):] == json_ext:
@@ -522,6 +525,7 @@ class GUI(Version):
             self.menu_file_save_c.Enable(True)
             if self.scan:
                 self.menu_tools_merge_scan_into_content.Enable(True)
+            self.status('Content loaded')
 
         def Open_Scan(self, e):
             openFileDialog = wx.FileDialog(self, 'Open Scan', '', '',
@@ -532,6 +536,7 @@ class GUI(Version):
             self._open_scan(openFileDialog.GetPath())
 
         def _open_scan(self, filename):
+            self.status('Loading scan...')
             self.menu_file_save_s.Enable(False)
             if self.scan is not None:
                 del self.scan
@@ -545,6 +550,7 @@ class GUI(Version):
             self.menu_file_save_r.Enable(True)
             if self.ctrl_st_c.IsEnabled():
                 self.menu_tools_merge_scan_into_content.Enable(True)
+            self.status('Scan loaded')
 
         def Merge_Scan_Into_Content(self, e):
             self.status('Merging Scan into Content...')
@@ -558,7 +564,7 @@ class GUI(Version):
             self.__show_content()
             self.menu_tools_merge_scan_into_content.Enable(False)
             self.report.content_refresh()
-            self.status('Done')
+            self.status('Merged')
 
         def Generate_few_passwords(self, e):
             self.application.TextWindow(self, title='Random Password Generator', content='\n'.join(rpg.Few(17)), size=(220, 270,))
@@ -579,6 +585,7 @@ class GUI(Version):
                 return
             json_ext = '.json'
             filename = openFileDialog.GetPath()
+            self.status('Saving Template content...')
             h = open(filename, 'w')
             if filename[-len(json_ext):] == json_ext:
                 h.write(self.report.template_dump_json().encode('utf-8'))
@@ -595,6 +602,7 @@ class GUI(Version):
                 return
             json_ext = '.json'
             filename = openFileDialog.GetPath()
+            self.status('Saving Content...')
             h = open(filename, 'w')
             if filename[-len(json_ext):] == json_ext:
                 h.write(self.report.content_dump_json().encode('utf-8'))
@@ -669,6 +677,8 @@ class GUI(Version):
                 self.ctrl_tc_c.SetValue(self.report.content_dump_yaml())
             if self.ctrl_st_s.IsEnabled():
                 self.ctrl_tc_s.SetValue(self.scan.dump_yaml())
+            if self.ctrl_st_k.IsEnabled():
+                self.ctrl_tc_k.SetValue(self.report.kb_dump_yaml())
 
         def Use_yaml(self, e):
             self._Use_yaml()
@@ -680,6 +690,8 @@ class GUI(Version):
                 self.ctrl_tc_c.SetValue(self.report.content_dump_json())
             if self.ctrl_st_s.IsEnabled():
                 self.ctrl_tc_s.SetValue(self.scan.dump_json())
+            if self.ctrl_st_k.IsEnabled():
+                self.ctrl_tc_k.SetValue(self.report.kb_dump_json())
 
         def Use_json(self, e):
             self._Use_json()
