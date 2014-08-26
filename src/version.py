@@ -21,7 +21,7 @@ if __name__ == '__main__':
 
 class Version(object):
     title = 'Wasar'
-    long_title = 'Web Application Security Assessment Reporting'
+    long_title = 'Web Application Security Assessment Reporting tool'
     c = 'Copyright (C) 2014 Marcin Woloszyn (@hvqzao)'
     #url = 'https://github.com/hvqzao/wasar'
     url = ''
@@ -32,15 +32,17 @@ class Version(object):
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
     version = '0.4.6'
-    date = 'Tue Aug 26 20:05:04 2014'
+    date = 'Tue Aug 26 22:32:28 2014'
     changelog = '''
-    0.4.6 - Tue Aug 26 20:05:04 2014
+    0.4.6 - Tue Aug 26 22:32:28 2014
     - KB import from csv generated from Sharepoint filters few unwanted characters
+    - cx_Freeze builder added to remediate pyinstaller's 10 second start lag on many systems
     
     0.4.5 - Sun Aug 24 21:17:17 2014
     - Switching view between json/yaml works now for KB as well
     - More verbose status bar when loading files
     - Minor template adjustment to be more in-line with current features
+    - wxpython 2.8 upgraded to 3.0 for future use features
     
     0.4.4 - Wed Aug 20 18:41:37 2014
     - FIX: VulnParam highlighting has been fixed and should now be more accurate
