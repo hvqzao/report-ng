@@ -834,9 +834,10 @@ class Report(object):
                 #if colname == 'Name':
                 #    print '[+]', value
                 colname = unicode(colname.decode('utf-8')).replace(' ','').replace('\'','')
+                value = filter(lambda x: x not in [u'\xa0', u'\x3f'], value)
                 if colname == 'Aliases':
-                    value = '\n'.join(filter(lambda x: len(x) > 0, map(lambda x: ''.join(filter(lambda y: y not in [u'\xa0', u'\x3f'], list(x))), value.split('\n'))))
-                    #print '   ',value.split('\n')
+                    #value = '\n'.join(filter(lambda x: len(x) > 0, map(lambda x: ''.join(filter(lambda y: y not in [u'\xa0', u'\x3f'], list(x))), value.split('\n'))))
+                    value = '\n'.join(filter(lambda x: len(x.strip()) > 0, value.split('\n')))
                 colname_tree = colname.split('.')
                 if len(colname_tree) > 1:
                     node = item
@@ -930,10 +931,17 @@ if __name__ == '__main__':
     '''
 
     report = Report()
-    report.template_load_xml('../../bug-01/template.xml', clean=True)
-    report.scan = Scan('../../bug-01/burp scan bug.yaml')
-    report.xml_apply_meta()
-    report.save_report_xml('../../bug-01/!.xml')
+    report.kb_load_csv('../../KB-1.csv')
+    #print report.kb_dump_yaml()
+    #print filter(lambda x: 'Hidden' in x['Name'], report._kb['KB'])
+    for i in map(lambda x:x['Aliases'], report._kb['KB']):
+        print i.split('\n')
+        print
+
+    #report.template_load_xml('../../bug-01/template.xml', clean=True)
+    #report.scan = Scan('../../bug-01/burp scan bug.yaml')
+    #report.xml_apply_meta()
+    #report.save_report_xml('../../bug-01/!.xml')
 
     '''
     # sample DS

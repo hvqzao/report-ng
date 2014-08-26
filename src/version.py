@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.4.5'
-    date = 'Sun Aug 24 21:17:17 2014'
+    version = '0.4.6'
+    date = 'Tue Aug 26 20:05:04 2014'
     changelog = '''
+    0.4.6 - Tue Aug 26 20:05:04 2014
+    - KB import from csv generated from Sharepoint filters few unwanted characters
+    
     0.4.5 - Sun Aug 24 21:17:17 2014
     - Switching view between json/yaml works now for KB as well
     - More verbose status bar when loading files
