@@ -17,6 +17,8 @@
 
 
 import wx
+import wx.html2
+import cgi
 import base64
 import cStringIO
 
@@ -452,9 +454,27 @@ class GUI(Version):
         def Template_Structure_Preview(self, e):
             self.application.TextWindow(self, title='Template Structure Preview', content=self.report.template_dump_struct())
 
+        def HtmlUsageView(self, content):
+            page = ''
+            for i in content.split('\n\n'):
+                if i[:2] == '# ':
+                    page += '<h1>'+cgi.escape(i[2:])+'</h1>'
+                elif i[:3] == '## ':
+                    page += '<h2>'+cgi.escape(i[3:])+'</h2>'
+                else:
+                    page += '<pre>'+cgi.escape(i)+'</pre>'
+            return ('<html><head><style>'
+            'body {margin:0;padding:0}'
+            'h1 {font-size:20px}'
+            'h2 {font-size:16px}'
+            'pre {font-size:13px; font-family:sans-serif}'
+            '</style></head><body>'+page+'<p/></body></html>')
+
         def Usage(self, e):
-            self.application.TextWindow(self, title=self.Usage.__name__, content='\n'.join(
-                map(lambda x: x[4:], self.application.usage.split('\n')[1:][:-1])))
+            #self.application.TextWindow(self, title=self.Usage.__name__, content='\n'.join(
+            #    map(lambda x: x[4:], self.application.usage.split('\n')[1:][:-1])))
+            self.application.HtmlWindow(self, title=self.Usage.__name__, content=self.HtmlUsageView('\n'.join(
+                map(lambda x: x[4:], self.application.usage.split('\n')[1:][:-1]))))
 
         def Changelog(self, e):
             self.application.TextWindow(self, title=self.Changelog.__name__, content='\n'.join(
@@ -754,8 +774,8 @@ class GUI(Version):
             #self.menu_file_save_k.Enable (True)
             self.menu_file_save_r.Enable(True)
 
-    class TextWindow(wx.Frame):
-
+    class ChildWindow(wx.Frame):
+        
         def __init__(self, parent, content='', size=(500, 600,), *args, **kwargs):
             self.parent = parent
             if parent is not None:
@@ -769,6 +789,17 @@ class GUI(Version):
                     self.SetWindowStyle(self.GetWindowStyle() | wx.STAY_ON_TOP)
                 self.SetIcon(parent.icon)
             self.Bind(wx.EVT_CLOSE, lambda x: self.Destroy())
+
+        def Destroy(self):
+            del self.parent.children[self.parent.children.index(self)]
+            #print 'destroying ChildWindow'
+            super(wx.Frame, self).Destroy()
+
+    class TextWindow(ChildWindow):
+
+        def __init__(self, parent, content='', *args, **kwargs):
+            GUI.ChildWindow.__init__(self, parent, content=content, *args, **kwargs)
+
             tc = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY)
 
             def tc_OnFocus(e):
@@ -777,13 +808,21 @@ class GUI(Version):
 
             tc.Bind(wx.EVT_SET_FOCUS, tc_OnFocus)
             tc.SetValue(content)
+
             self.Center()
             self.Show()
 
-        def Destroy(self):
-            del self.parent.children[self.parent.children.index(self)]
-            #print 'destroying TextWindow'
-            super(wx.Frame, self).Destroy()
+    class HtmlWindow(ChildWindow):
+
+        def __init__(self, parent, content='', *args, **kwargs):
+            GUI.ChildWindow.__init__(self, parent, content=content, *args, **kwargs)
+
+            self.browser = wx.html2.WebView.New(self)
+            #self.browser.LoadURL('http://...')
+            self.browser.SetPage(content,'')
+
+            self.Center()
+            self.Show()
 
     def CLI(self):
         self.__CLI(application=self)

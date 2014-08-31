@@ -32,10 +32,11 @@ class Version(object):
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
     version = '0.4.7'
-    date = 'Sun Aug 31 10:21:28 2014'
+    date = 'Sun Aug 31 13:46:42 2014'
     changelog = '''
-    0.4.7 - Sun Aug 31 10:21:28 2014
+    0.4.7 - Sun Aug 31 13:46:42 2014
     - Always on top menu switch added (Enabled by default)
+    - Usage help is now rendered as html
     
     0.4.6 - Tue Aug 26 22:32:28 2014
     - KB import from csv generated from Sharepoint filters few unwanted characters
