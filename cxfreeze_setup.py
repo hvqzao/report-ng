@@ -16,7 +16,7 @@ version = Version()
 
 setup(name='wasar',
       version = version.version,
-      description = version.long_title,
+      description = 'wasar-'+version.version, #version.long_title,
       author = version.c,      
       options = dict(build_exe = buildOptions),
       executables = executables)

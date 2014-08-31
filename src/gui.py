@@ -57,6 +57,7 @@ class GUI(Version):
         #menu_view_j
         #menu_view_s
         #menu_view_v
+        #menu_view_t
         #menu_tools_template_structure_preview
         #menu_tools_merge_scan_into_content
         #menu_tools_generate_few_passwords
@@ -73,10 +74,12 @@ class GUI(Version):
         #color_tc_bg_e
         #color_tc_bg_d
         #_statusbar_h
+        #children
 
         def __init__(self, application=None, parent=None, *args,
                      **kwargs):  #style=wx.DEFAULT_FRAME_STYLE^wx.RESIZE_BORDER
 
+            self.children = []
             #self.report = None
             self.report = Report()
             self.application = application
@@ -173,6 +176,10 @@ class GUI(Version):
             self.menu_view_v = menu_view.Append(index.next(), '&VulnParam highlighting', kind=wx.ITEM_CHECK)
             self.Bind(wx.EVT_MENU, self.VulnParam_highlighting, id=index.current)
             self.menu_view_v.Check(True)
+            menu_view.AppendSeparator()
+            self.menu_view_t = menu_view.Append(index.next(), 'Always on &top', kind=wx.ITEM_CHECK)
+            self.Bind(wx.EVT_MENU, self.Always_on_top, id=index.current)
+            self.menu_view_t.Check(True)
             menu_tools = wx.Menu()
             self.menu_tools_template_structure_preview = menu_tools.Append(index.next(), 'Te&mplate structure preview')
             self.menu_tools_template_structure_preview.Enable(False)
@@ -414,6 +421,7 @@ class GUI(Version):
             #panel.SetSizer (vbox)
             #vbox.Fit (self)
             #self.Center()
+            self.Always_on_top(None)
             self.alignVMiddleRight()
             self.Show()
             #print 'loaded'
@@ -710,6 +718,16 @@ class GUI(Version):
         def VulnParam_highlighting(self, e):
             pass
 
+        def Always_on_top(self, e):
+            if self.menu_view_t.IsChecked():
+                self.SetWindowStyle(self.GetWindowStyle() | wx.STAY_ON_TOP)
+                for i in self.children:
+                    i.SetWindowStyle(i.GetWindowStyle() | wx.STAY_ON_TOP)
+            else:
+                self.SetWindowStyle(self.GetWindowStyle() & ~wx.STAY_ON_TOP)
+                for i in self.children:
+                    i.SetWindowStyle(i.GetWindowStyle() & ~wx.STAY_ON_TOP)
+
         def Open_Knowledge_Base(self, e):
             openFileDialog = wx.FileDialog(self, 'Open Knowledge Base', '', '',
                                            'Knowledge Base files (*.yaml; *.json; *.csv)|*.yaml;*.json;*.csv|All files (*.*)|*.*',
@@ -739,12 +757,16 @@ class GUI(Version):
     class TextWindow(wx.Frame):
 
         def __init__(self, parent, content='', size=(500, 600,), *args, **kwargs):
+            self.parent = parent
             if parent is not None:
                 for title in ['title']:
                     if title in kwargs:
                         kwargs[title] = parent.application.title + ' - ' + kwargs[title]
             wx.Frame.__init__(self, parent, size=size, *args, **kwargs)
             if parent is not None:
+                parent.children += [self]
+                if parent.menu_view_t.IsChecked():
+                    self.SetWindowStyle(self.GetWindowStyle() | wx.STAY_ON_TOP)
                 self.SetIcon(parent.icon)
             self.Bind(wx.EVT_CLOSE, lambda x: self.Destroy())
             tc = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY)
@@ -759,6 +781,7 @@ class GUI(Version):
             self.Show()
 
         def Destroy(self):
+            del self.parent.children[self.parent.children.index(self)]
             #print 'destroying TextWindow'
             super(wx.Frame, self).Destroy()
 
