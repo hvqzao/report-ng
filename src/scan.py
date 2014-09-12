@@ -55,7 +55,7 @@ class Scan(object):
             else:
                 raise Exception('Unknown scan format!')
 
-    def modify(self, truncate):
+    def modify(self, truncate=True):
         if not truncate:
             return self._scan
         scan = copy.deepcopy(self._scan)
@@ -68,10 +68,10 @@ class Scan(object):
         return scan
 
     def dump_json(self, truncate=True):
-        return json.dumps(self.modify(truncate), indent=2, ensure_ascii=False)  #.decode('utf-8')
+        return json.dumps(self.modify(truncate=truncate), indent=2, ensure_ascii=False)  #.decode('utf-8')
 
     def dump_yaml(self, truncate=True):
-        return yaml.dump(self.modify(truncate), default_flow_style=False, allow_unicode=True).decode('utf-8')
+        return yaml.dump(self.modify(truncate=truncate), default_flow_style=False, allow_unicode=True).decode('utf-8')
 
     def findings(self):
         return self._scan['Findings']

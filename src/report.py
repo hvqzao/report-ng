@@ -901,10 +901,11 @@ class Report(object):
         # if self._content len == 0
         if len(self._content['Findings']) == 0:
             # just copy scan['Findings']
-            self._content['Findings'] = scan._scan['Findings'][:]
+            #self._content['Findings'] = scan._scan['Findings'][:]
+            self._content['Findings'] = scan['Findings'][:]
         else:
             # for each finding in scan['Findings']
-            for finding in scan._scan['Findings']:
+            for finding in scan['Findings']:
                 # if name and severity matches:
                 finding_match = filter(lambda x: x['Name'] == finding['Name'] and x['Severity'] == finding['Severity'], self._content['Findings'])
                 if finding_match:

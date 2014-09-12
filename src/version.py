@@ -31,11 +31,14 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.4.8'
-    date = 'Fri Sep 12 22:04:57 2014'
+    version = '0.4.9'
+    date = 'Fri Sep 12 22:58:22 2014'
     changelog = '''
+    0.4.9 - Fri Sep 12 22:58:22 2014
+    - ViewState truncation now affects scan saving as well as merging into content
+
     0.4.8 - Fri Sep 12 22:04:57 2014
-    - ASP and javax.faces ViewState truncating menu switch added (enabled by default)
+    - ASP and javax.faces ViewState truncation menu switch added (enabled by default)
     - Truncation now also affects scan preview textarea (for performance reasons)
     - FIX: wxpython 3.0 redirect stdio to window defaults set to False, True is now enforced
     - FIX: vulnparam highlighting GUI switch will now work as expected

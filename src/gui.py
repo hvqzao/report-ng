@@ -527,6 +527,8 @@ class GUI(Version):
             self.menu_tools_template_structure_preview.Enable(True)
             if self.scan:
                 self.menu_file_save_r.Enable(True)
+            if self.ctrl_st_s.IsEnabled():
+                self.menu_tools_merge_scan_into_content.Enable(True)
             self.status('Template loaded')
 
         def Open_Content(self, e):
@@ -555,8 +557,8 @@ class GUI(Version):
             self.ctrl_st_c.Enable(True)
             self.menu_file_save_r.Enable(True)
             self.menu_file_save_c.Enable(True)
-            if self.scan:
-                self.menu_tools_merge_scan_into_content.Enable(True)
+            #if self.scan:
+            #    self.menu_tools_merge_scan_into_content.Enable(True)
             self.status('Content loaded')
 
         def Open_Scan(self, e):
@@ -580,13 +582,16 @@ class GUI(Version):
             self.ctrl_st_s.Enable(True)
             self.menu_file_save_s.Enable(True)
             self.menu_file_save_r.Enable(True)
-            if self.ctrl_st_c.IsEnabled():
+            #if self.ctrl_st_c.IsEnabled():
+            if self.ctrl_st_t.IsEnabled():
                 self.menu_tools_merge_scan_into_content.Enable(True)
             self.status('Scan loaded')
 
         def Merge_Scan_Into_Content(self, e):
             self.status('Merging Scan into Content...')
-            self.report.merge_scan(self.scan)
+            self.report.merge_scan(self.scan.modify(truncate=self.menu_view_i.IsChecked()))
+            self.ctrl_st_c.Enable(True)
+            self.menu_file_save_c.Enable(True)
             self.menu_file_save_s.Enable(False)
             del self.scan
             self.scan = None
@@ -653,9 +658,9 @@ class GUI(Version):
             filename = openFileDialog.GetPath()
             h = open(filename, 'w')
             if filename[-len(json_ext):] == json_ext:
-                h.write(self.scan.dump_json().encode('utf-8'))
+                h.write(self.scan.dump_json(truncate=self.menu_view_i.IsChecked()).encode('utf-8'))
             else:
-                h.write(self.scan.dump_yaml().encode('utf-8'))
+                h.write(self.scan.dump_yaml(truncate=self.menu_view_i.IsChecked()).encode('utf-8'))
             h.close()
             self.status('Scan saved')
 
