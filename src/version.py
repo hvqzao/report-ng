@@ -32,10 +32,11 @@ class Version(object):
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
     version = '0.4.9'
-    date = 'Fri Sep 12 22:58:22 2014'
+    date = 'Fri Sep 12 23:55:55 2014'
     changelog = '''
-    0.4.9 - Fri Sep 12 22:58:22 2014
+    0.4.9 - Fri Sep 12 23:55:55 2014
     - ViewState truncation now affects scan saving as well as merging into content
+    - FIX: Always on top should now work everytime application starts
 
     0.4.8 - Fri Sep 12 22:04:57 2014
     - ASP and javax.faces ViewState truncation menu switch added (enabled by default)

@@ -427,9 +427,9 @@ class GUI(Version):
             #panel.SetSizer (vbox)
             #vbox.Fit (self)
             #self.Center()
-            self.Always_on_top(None)
             self.alignVMiddleRight()
             self.Show()
+            self.Always_on_top(None)
             #print 'loaded'
 
         def alignVMiddleRight(self):
