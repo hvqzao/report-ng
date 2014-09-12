@@ -31,11 +31,14 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.4.7'
-    date = 'Sun Aug 31 13:46:42 2014'
+    version = '0.4.8'
+    date = 'Fri Sep 12 18:05:58 2014'
     changelog = '''
+    0.4.8 - Fri Sep 12 18:05:58 2014
+    - ASP and javax.faces ViewState truncating menu switch added (enabled by default)
+    
     0.4.7 - Sun Aug 31 13:46:42 2014
-    - Always on top menu switch added (Enabled by default)
+    - Always on top menu switch added (enabled by default)
     - Usage help is now rendered as html
     
     0.4.6 - Tue Aug 26 22:32:28 2014

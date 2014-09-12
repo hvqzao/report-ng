@@ -59,6 +59,7 @@ class GUI(Version):
         #menu_view_j
         #menu_view_s
         #menu_view_v
+        #menu_view_i
         #menu_view_t
         #menu_tools_template_structure_preview
         #menu_tools_merge_scan_into_content
@@ -178,6 +179,10 @@ class GUI(Version):
             self.menu_view_v = menu_view.Append(index.next(), '&VulnParam highlighting', kind=wx.ITEM_CHECK)
             self.Bind(wx.EVT_MENU, self.VulnParam_highlighting, id=index.current)
             self.menu_view_v.Check(True)
+            menu_view.AppendSeparator()
+            self.menu_view_i = menu_view.Append(index.next(), 'V&iewState truncate', kind=wx.ITEM_CHECK)
+            self.Bind(wx.EVT_MENU, self.Viewstate_truncate, id=index.current)
+            self.menu_view_i.Check(True)
             menu_view.AppendSeparator()
             self.menu_view_t = menu_view.Append(index.next(), 'Always on &top', kind=wx.ITEM_CHECK)
             self.Bind(wx.EVT_MENU, self.Always_on_top, id=index.current)
@@ -738,6 +743,9 @@ class GUI(Version):
         def VulnParam_highlighting(self, e):
             pass
 
+        def Viewstate_truncate(self, e):
+            pass
+
         def Always_on_top(self, e):
             if self.menu_view_t.IsChecked():
                 self.SetWindowStyle(self.GetWindowStyle() | wx.STAY_ON_TOP)
@@ -869,7 +877,7 @@ class GUI(Version):
                         report.kb_load_json(kb_file)
                 if scan_file:
                     report.scan = Scan(scan_file)                
-                report.xml_apply_meta(vulnparam_highlighting=self.report.self.menu_view_v.IsChecked())
+                report.xml_apply_meta(vulnparam_highlighting=self.report.self.menu_view_v.IsChecked(), truncate=self.report.self.menu_view_i.IsChecked())
                 report.save_report_xml(report_file)
             else:
                 print 'Usage: '

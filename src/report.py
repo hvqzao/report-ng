@@ -65,6 +65,8 @@ class Report(object):
     scan = None
     template_cleanup_required = None
     #__vulnparam_highlighting = True
+    __truncate_maxlen = 160
+    #__truncate = True
 
     def __init__(self):
         self._meta_init()
@@ -421,6 +423,23 @@ class Report(object):
                 return '<'+['','i'][inline]+'html>'+text[:start]+'<'+tag+'>'+text[start:start+len(search)+1+end]+'</'+tag+'>'+text[start+len(search)+1+end:]+'</'+['','i'][inline]+'html>'
             return text
 
+    @staticmethod
+    def http_param_truncate(subject, maxlen, replacement, text):
+        if subject+'=' not in text:
+            return text
+        out = []
+        for keyval in map(lambda x: x.split('='), text.split('&')):
+            if len(keyval) > 1 and keyval[0] == subject and len(keyval[1]) > maxlen:
+                bound = maxlen/2-len(replacement)
+                if bound < 1:
+                    bound = 5
+                keyval[1] = keyval[1][:bound]+replacement+keyval[1][-bound:]
+            out += ['='.join(keyval)]
+        text = '&'.join(out)
+        #print text
+        #import sys; sys.exit()
+        return text
+
     def _xml_apply_data(self, struct, value, sdt, children):
         #print '*',struct#, value
         if not children:
@@ -447,9 +466,14 @@ class Report(object):
                     tags = etree.ETXPath('.//{%s}t' % self.ns.w)(alias['children'][0])
                     if len(tags) > 0:
                         val = row[col]
-                        if self.__vulnparam_highlighting:
-                            if struct == ['Finding', 'Occurrences'] and 'Method' in row and 'VulnParam' in row and row['VulnParam']:
-                                if col == 'Location' and row['Method'] == 'GET' or col == 'Post' and row['Method'] == 'POST':
+                        #if struct == ['Finding', 'Occurrences'] and 'Method' in row and 'VulnParam' in row and row['VulnParam']:
+                        if struct == ['Finding', 'Occurrences'] and 'Method' in row:
+                            if col == 'Post' and row['Method'] == 'POST':
+                                if self.__truncate:
+                                    for SUBJECT in ['__VIEWSTATE', 'javax.faces.ViewState']:
+                                        val = self.http_param_truncate(SUBJECT, self.__truncate, '[...]', val)
+                            if col == 'Location' and row['Method'] == 'GET' or col == 'Post' and row['Method'] == 'POST':
+                                if self.__vulnparam_highlighting and 'VulnParam' in row and row['VulnParam']:
                                     val = self.surround(val,row['VulnParam'],'red')
                         if self._is_html(val):
                             self._openxml.set_sdt_cursor(cursor=tags[0])
@@ -718,9 +742,10 @@ class Report(object):
         chart_parent = chart_struct[0][1].getparent()
         chart_parent.replace(chart_struct[0][1], chart_struct[0][2][0])
 
-    def xml_apply_meta(self, vulnparam_highlighting=True):
+    def xml_apply_meta(self, vulnparam_highlighting=True, truncate=True):
         self.template_cleanup_required = True
         self.__vulnparam_highlighting = vulnparam_highlighting
+        self.__truncate = [None, self.__truncate_maxlen][bool(truncate)]
         # change dir (for the purpose of images handling relatively to template path)
         pwd = os.getcwd()
         os.chdir(os.path.dirname(self._template_filename))
@@ -930,6 +955,7 @@ if __name__ == '__main__':
     print report.kb_dump_yaml()
     '''
 
+    '''
     report = Report()
     report.kb_load_csv('../../KB-1.csv')
     #print report.kb_dump_yaml()
@@ -942,6 +968,12 @@ if __name__ == '__main__':
     #report.scan = Scan('../../bug-01/burp scan bug.yaml')
     #report.xml_apply_meta()
     #report.save_report_xml('../../bug-01/!.xml')
+    '''
+
+    report = Report()
+    report.template_load_xml('../examples/tmp/DS-template v1.0.xml', clean=True)
+    report.scan = Scan('../../c-webinspect.xml')
+    report.xml_apply_meta()
 
     '''
     # sample DS
