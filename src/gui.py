@@ -179,9 +179,8 @@ class GUI(Version):
             self.menu_view_v = menu_view.Append(index.next(), '&VulnParam highlighting', kind=wx.ITEM_CHECK)
             self.Bind(wx.EVT_MENU, self.VulnParam_highlighting, id=index.current)
             self.menu_view_v.Check(True)
-            menu_view.AppendSeparator()
-            self.menu_view_i = menu_view.Append(index.next(), 'V&iewState truncate', kind=wx.ITEM_CHECK)
-            self.Bind(wx.EVT_MENU, self.Viewstate_truncate, id=index.current)
+            self.menu_view_i = menu_view.Append(index.next(), 'V&iewState truncation', kind=wx.ITEM_CHECK)
+            self.Bind(wx.EVT_MENU, self.Viewstate_truncation, id=index.current)
             self.menu_view_i.Check(True)
             menu_view.AppendSeparator()
             self.menu_view_t = menu_view.Append(index.next(), 'Always on &top', kind=wx.ITEM_CHECK)
@@ -743,7 +742,7 @@ class GUI(Version):
         def VulnParam_highlighting(self, e):
             pass
 
-        def Viewstate_truncate(self, e):
+        def Viewstate_truncation(self, e):
             pass
 
         def Always_on_top(self, e):

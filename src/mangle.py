@@ -25,6 +25,22 @@ def response_tune(content):
         return content.strip()
     else:
         return (content[:blank+2]+'\n'.join(content[blank+2:].split('\n')[:4])+'\n[...]').strip()
+
+def http_param_truncate(subject, maxlen, replacement, text):
+    if subject+'=' not in text:
+        return text
+    out = []
+    for keyval in map(lambda x: x.split('='), text.split('&')):
+        if len(keyval) > 1 and keyval[0] == subject and len(keyval[1]) > maxlen:
+            bound = maxlen/2-len(replacement)
+            if bound < 1:
+                bound = 5
+            keyval[1] = keyval[1][:bound]+replacement+keyval[1][-bound:]
+        out += ['='.join(keyval)]
+    text = '&'.join(out)
+    #print text
+    #import sys; sys.exit()
+    return text
     
 if __name__ == '__main__':
     pass

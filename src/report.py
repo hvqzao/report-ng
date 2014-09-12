@@ -20,6 +20,7 @@ from util import yaml_load, UnsortableOrderedDict
 from openxml import Openxml
 from pseudohtml import InlineHtmlParser, HtmlParser
 from scan import Scan
+import mangle
 
 from lxml import etree
 import yaml, json
@@ -423,23 +424,6 @@ class Report(object):
                 return '<'+['','i'][inline]+'html>'+text[:start]+'<'+tag+'>'+text[start:start+len(search)+1+end]+'</'+tag+'>'+text[start+len(search)+1+end:]+'</'+['','i'][inline]+'html>'
             return text
 
-    @staticmethod
-    def http_param_truncate(subject, maxlen, replacement, text):
-        if subject+'=' not in text:
-            return text
-        out = []
-        for keyval in map(lambda x: x.split('='), text.split('&')):
-            if len(keyval) > 1 and keyval[0] == subject and len(keyval[1]) > maxlen:
-                bound = maxlen/2-len(replacement)
-                if bound < 1:
-                    bound = 5
-                keyval[1] = keyval[1][:bound]+replacement+keyval[1][-bound:]
-            out += ['='.join(keyval)]
-        text = '&'.join(out)
-        #print text
-        #import sys; sys.exit()
-        return text
-
     def _xml_apply_data(self, struct, value, sdt, children):
         #print '*',struct#, value
         if not children:
@@ -471,7 +455,7 @@ class Report(object):
                             if col == 'Post' and row['Method'] == 'POST':
                                 if self.__truncate:
                                     for SUBJECT in ['__VIEWSTATE', 'javax.faces.ViewState']:
-                                        val = self.http_param_truncate(SUBJECT, self.__truncate, '[...]', val)
+                                        val = mangle.http_param_truncate(SUBJECT, self.__truncate, '[...]', val)
                             if col == 'Location' and row['Method'] == 'GET' or col == 'Post' and row['Method'] == 'POST':
                                 if self.__vulnparam_highlighting and 'VulnParam' in row and row['VulnParam']:
                                     val = self.surround(val,row['VulnParam'],'red')

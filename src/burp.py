@@ -22,7 +22,7 @@ import base64
 from lxml import etree
 from lxml.html import soupparser
 import re
-import reqresp
+import mangle
 
 
 def fine_tune(content, section_name):
@@ -126,7 +126,7 @@ def burp_import(xml):
             ['Location', location],
             ['Post', post],
             ['VulnParam', vulnparam],
-            ['Example', UnsortableOrderedDict([('VulnParam',vulnparam,),('Request',reqresp.request_tune(request),),('Response',reqresp.response_tune(response),)])],
+            ['Example', UnsortableOrderedDict([('VulnParam',vulnparam,),('Request',mangle.request_tune(request),),('Response',mangle.response_tune(response),)])],
             #['Request', base64.b64encode (zlib.compress (request.encode('utf-8')))],
             #['Response', base64.b64encode (zlib.compress (response.encode('utf-8')))],
             ['StatusCode', status_code],
