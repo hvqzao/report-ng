@@ -32,10 +32,13 @@ class Version(object):
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
     version = '0.4.8'
-    date = 'Fri Sep 12 18:05:58 2014'
+    date = 'Fri Sep 12 22:04:57 2014'
     changelog = '''
-    0.4.8 - Fri Sep 12 18:05:58 2014
+    0.4.8 - Fri Sep 12 22:04:57 2014
     - ASP and javax.faces ViewState truncating menu switch added (enabled by default)
+    - Truncation now also affects scan preview textarea (for performance reasons)
+    - FIX: wxpython 3.0 redirect stdio to window defaults set to False, True is now enforced
+    - FIX: vulnparam highlighting GUI switch will now work as expected
     
     0.4.7 - Sun Aug 31 13:46:42 2014
     - Always on top menu switch added (enabled by default)

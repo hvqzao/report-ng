@@ -66,7 +66,6 @@ class Report(object):
     scan = None
     template_cleanup_required = None
     #__vulnparam_highlighting = True
-    __truncate_maxlen = 160
     #__truncate = True
 
     def __init__(self):
@@ -454,8 +453,7 @@ class Report(object):
                         if struct == ['Finding', 'Occurrences'] and 'Method' in row:
                             if col == 'Post' and row['Method'] == 'POST':
                                 if self.__truncate:
-                                    for SUBJECT in ['__VIEWSTATE', 'javax.faces.ViewState']:
-                                        val = mangle.http_param_truncate(SUBJECT, self.__truncate, '[...]', val)
+                                    val = mangle.http_param_truncate(val)
                             if col == 'Location' and row['Method'] == 'GET' or col == 'Post' and row['Method'] == 'POST':
                                 if self.__vulnparam_highlighting and 'VulnParam' in row and row['VulnParam']:
                                     val = self.surround(val,row['VulnParam'],'red')
@@ -726,10 +724,10 @@ class Report(object):
         chart_parent = chart_struct[0][1].getparent()
         chart_parent.replace(chart_struct[0][1], chart_struct[0][2][0])
 
-    def xml_apply_meta(self, vulnparam_highlighting=True, truncate=True):
+    def xml_apply_meta(self, vulnparam_highlighting=True, truncation=True):
         self.template_cleanup_required = True
         self.__vulnparam_highlighting = vulnparam_highlighting
-        self.__truncate = [None, self.__truncate_maxlen][bool(truncate)]
+        self.__truncate = truncation
         # change dir (for the purpose of images handling relatively to template path)
         pwd = os.getcwd()
         os.chdir(os.path.dirname(self._template_filename))

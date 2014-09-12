@@ -18,9 +18,10 @@
 
 import json, yaml
 from lxml import etree
+import copy
 
 from util import yaml_load, UnsortableOrderedDict
-
+import mangle
 
 class Scan(object):
     # _xml
@@ -54,11 +55,23 @@ class Scan(object):
             else:
                 raise Exception('Unknown scan format!')
 
-    def dump_json(self):
-        return json.dumps(self._scan, indent=2, ensure_ascii=False)  #.decode('utf-8')
+    def modify(self, truncate):
+        if not truncate:
+            return self._scan
+        scan = copy.deepcopy(self._scan)
+        if 'Findings' in scan:
+            for finding in scan['Findings']:
+                if 'Occurrences' in finding:
+                    for occurrence in finding['Occurrences']:
+                        if 'Post' in occurrence:
+                            occurrence['Post'] = mangle.http_param_truncate(occurrence['Post'])
+        return scan
 
-    def dump_yaml(self):
-        return yaml.dump(self._scan, default_flow_style=False, allow_unicode=True).decode('utf-8')
+    def dump_json(self, truncate=True):
+        return json.dumps(self.modify(truncate), indent=2, ensure_ascii=False)  #.decode('utf-8')
+
+    def dump_yaml(self, truncate=True):
+        return yaml.dump(self.modify(truncate), default_flow_style=False, allow_unicode=True).decode('utf-8')
 
     def findings(self):
         return self._scan['Findings']
@@ -67,5 +80,9 @@ class Scan(object):
 if __name__ == '__main__':
     pass
 
-    scan = Scan('../examples/tmp/b-webinspect.xml')
+    #scan = Scan('../examples/tmp/b-webinspect.xml')
+    #print scan.dump_yaml()
+    scan = Scan('../../c-webinspect.xml')
+    #print scan.modify(True)['Findings'][0]['Occurrences'][0]['Post']#.keys()
+    #print scan.modify(True)['Findings'][0]['Occurrences'][0].keys()
     print scan.dump_yaml()

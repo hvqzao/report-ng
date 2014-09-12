@@ -179,7 +179,7 @@ class GUI(Version):
             self.menu_view_v = menu_view.Append(index.next(), '&VulnParam highlighting', kind=wx.ITEM_CHECK)
             self.Bind(wx.EVT_MENU, self.VulnParam_highlighting, id=index.current)
             self.menu_view_v.Check(True)
-            self.menu_view_i = menu_view.Append(index.next(), 'V&iewState truncation', kind=wx.ITEM_CHECK)
+            self.menu_view_i = menu_view.Append(index.next(), 'V&iewState truncation', 'Warning! Application performance will noticeably decrease!', kind=wx.ITEM_CHECK)
             self.Bind(wx.EVT_MENU, self.Viewstate_truncation, id=index.current)
             self.menu_view_i.Check(True)
             menu_view.AppendSeparator()
@@ -574,9 +574,9 @@ class GUI(Version):
                 del self.scan
             self.scan = Scan(filename)
             if self.menu_view_y.IsChecked():
-                self.ctrl_tc_s.SetValue(self.scan.dump_yaml())
+                self.ctrl_tc_s.SetValue(self.scan.dump_yaml(truncate=self.menu_view_i.IsChecked()))
             else:
-                self.ctrl_tc_s.SetValue(self.scan.dump_json())
+                self.ctrl_tc_s.SetValue(self.scan.dump_json(truncate=self.menu_view_i.IsChecked()))
             self.ctrl_st_s.Enable(True)
             self.menu_file_save_s.Enable(True)
             self.menu_file_save_r.Enable(True)
@@ -660,10 +660,12 @@ class GUI(Version):
             self.status('Scan saved')
 
         def _refresh(self):
+            self.status('Reloading previews...')
             if self.menu_view_y.IsChecked():
                 self._Use_yaml()
             else:
                 self._Use_json()
+            self.status('Ready')
 
         def _clean_template(self, force=False):
             if force==True or self.report.template_cleanup_required == True:
@@ -697,7 +699,8 @@ class GUI(Version):
             self.status('Generating and saving the report...')
             self.report.scan = self.scan
             self._clean_template()
-            self.report.xml_apply_meta()
+            #self.report.xml_apply_meta()
+            self.report.xml_apply_meta(vulnparam_highlighting=self.menu_view_v.IsChecked(), truncation=self.menu_view_i.IsChecked())
             self.report.save_report_xml(filename)
             #self._clean_template()
             self.status('Report saved')
@@ -708,7 +711,7 @@ class GUI(Version):
             if self.ctrl_st_c.IsEnabled():
                 self.ctrl_tc_c.SetValue(self.report.content_dump_yaml())
             if self.ctrl_st_s.IsEnabled():
-                self.ctrl_tc_s.SetValue(self.scan.dump_yaml())
+                self.ctrl_tc_s.SetValue(self.scan.dump_yaml(truncate=self.menu_view_i.IsChecked()))
             if self.ctrl_st_k.IsEnabled():
                 self.ctrl_tc_k.SetValue(self.report.kb_dump_yaml())
 
@@ -721,7 +724,7 @@ class GUI(Version):
             if self.ctrl_st_c.IsEnabled():
                 self.ctrl_tc_c.SetValue(self.report.content_dump_json())
             if self.ctrl_st_s.IsEnabled():
-                self.ctrl_tc_s.SetValue(self.scan.dump_json())
+                self.ctrl_tc_s.SetValue(self.scan.dump_json(truncate=self.menu_view_i.IsChecked()))
             if self.ctrl_st_k.IsEnabled():
                 self.ctrl_tc_k.SetValue(self.report.kb_dump_json())
 
@@ -743,7 +746,7 @@ class GUI(Version):
             pass
 
         def Viewstate_truncation(self, e):
-            pass
+            self._refresh()
 
         def Always_on_top(self, e):
             if self.menu_view_t.IsChecked():
@@ -875,8 +878,8 @@ class GUI(Version):
                     else:
                         report.kb_load_json(kb_file)
                 if scan_file:
-                    report.scan = Scan(scan_file)                
-                report.xml_apply_meta(vulnparam_highlighting=self.report.self.menu_view_v.IsChecked(), truncate=self.report.self.menu_view_i.IsChecked())
+                    report.scan = Scan(scan_file)
+                report.xml_apply_meta(vulnparam_highlighting=self.menu_view_v.IsChecked(), truncation=self.menu_view_i.IsChecked())
                 report.save_report_xml(report_file)
             else:
                 print 'Usage: '
@@ -900,7 +903,8 @@ class GUI(Version):
 
     def __init__(self):
         #wx_app = wx.App (redirect=False) # DEVELOPMENT
-        wx_app = wx.App()
+        #wx_app = wx.App()
+        wx_app = wx.App(redirect=True) # redirect in wxpython 3.0 defaults to False
         #self.TextWindow(None, title='asdasd', content='bsdsdasd')
         import sys
         #sys.argv = [sys.argv[0], '--help']

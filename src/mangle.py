@@ -26,21 +26,25 @@ def response_tune(content):
     else:
         return (content[:blank+2]+'\n'.join(content[blank+2:].split('\n')[:4])+'\n[...]').strip()
 
-def http_param_truncate(subject, maxlen, replacement, text):
-    if subject+'=' not in text:
-        return text
-    out = []
-    for keyval in map(lambda x: x.split('='), text.split('&')):
-        if len(keyval) > 1 and keyval[0] == subject and len(keyval[1]) > maxlen:
-            bound = maxlen/2-len(replacement)
-            if bound < 1:
-                bound = 5
-            keyval[1] = keyval[1][:bound]+replacement+keyval[1][-bound:]
-        out += ['='.join(keyval)]
-    text = '&'.join(out)
-    #print text
+def http_param_truncate(param, search=['__VIEWSTATE', 'javax.faces.ViewState'], maxlen=160, replacement='[...]'):
+    if not isinstance(search,list):
+        search = [search]
+    if not filter(lambda x: x+'=' in param, search):
+        return param
+    for subject in search:
+        out = []
+        for keyval in map(lambda x: x.split('='), param.split('&')):
+            if len(keyval) > 1 and keyval[0] == subject and len(keyval[1]) > maxlen:
+                bound = maxlen/2-len(replacement)
+                if bound < 1:
+                    bound = 5
+                keyval[1] = keyval[1][:bound]+replacement+keyval[1][-bound:]
+            out += ['='.join(keyval)]
+        param = '&'.join(out)
+        del out
+    #print param
     #import sys; sys.exit()
-    return text
+    return param
     
 if __name__ == '__main__':
     pass
