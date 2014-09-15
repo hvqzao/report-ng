@@ -26,7 +26,7 @@ from resources.icon import icon
 from report import Report
 from scan import Scan
 from version import Version
-import rpg
+import pwgen
 
 
 class GUI(Version):
@@ -70,6 +70,7 @@ class GUI(Version):
         #ctrl_tc_c
         #ctrl_st_s
         #ctrl_tc_s
+        #ctrl_tc_s_b
         #ctrl_st_k
         #ctrl_tc_k
         #ctrl_st_r
@@ -99,25 +100,19 @@ class GUI(Version):
             self.SetIcon(self.icon)
 
             # Menu arrangement
-
             menu = wx.MenuBar()
-
             class Index(object):
                 def __init__(self, current):
                     self.__current = current - 1
-
                 @property
                 def current(self):
                     return self.__current
-
                 @current.setter
                 def current(self, x):
                     self.__current = x
-
                 def next(self):
                     self.__current += 1
                     return self.__current
-
             index = Index(100)
             menu_file = wx.Menu()
             menu_file.Append(index.next(), 'Open Report &Template...')
@@ -208,16 +203,13 @@ class GUI(Version):
             self.SetMenuBar(menu)
 
             # Frame layout arrangement
-
             class FileDropTarget(wx.FileDropTarget):
                 def __init__(self, target, handler):
                     wx.FileDropTarget.__init__(self)
                     self.target = target
                     self.handler = handler
-
                 def OnDropFiles(self, x, y, filenames):
                     self.handler(filenames)
-
             panel = wx.Panel(self)
             vbox = wx.BoxSizer(wx.VERTICAL)
             fgs = wx.FlexGridSizer(5, 2, 9, 25)
@@ -226,36 +218,29 @@ class GUI(Version):
             self.ctrl_st_t = wx.StaticText(panel, label='Template:')
             self.ctrl_st_t.Enable(False)
             self.ctrl_tc_t = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(200, 3 * 17,))
-
             def ctrl_tc_t_OnFocus(e):
                 self.ctrl_tc_t.ShowNativeCaret(False)
                 # for unknown reason this refuse to work in wxpython 3.0
                 e.Skip()
-
             def ctrl_tc_t_OnDoubleclick(e):
                 if self.ctrl_st_t.IsEnabled():
                     self.application.TextWindow(self, title='Template Preview', content=self.ctrl_tc_t.GetValue())
                 e.Skip()
-                
             self.ctrl_tc_t.Bind(wx.EVT_SET_FOCUS, ctrl_tc_t_OnFocus)
             self.ctrl_tc_t.Bind(wx.EVT_LEFT_DCLICK, ctrl_tc_t_OnDoubleclick)
-
             def ctrl_tc_t_OnMouseOver(e):
                 self.status('You might use drag & drop', hint=True)
                 e.Skip()
-            def ctrl_tc_t_OnMouseLeave(e):
-                self.status('')
-                e.Skip()
-
+            #def ctrl_tc_t_OnMouseLeave(e):
+            #    self.status('')
+            #    e.Skip()
             self.ctrl_tc_t.Bind(wx.EVT_ENTER_WINDOW, ctrl_tc_t_OnMouseOver)
-            self.ctrl_tc_t.Bind(wx.EVT_LEAVE_WINDOW, ctrl_tc_t_OnMouseLeave)
-
+            #self.ctrl_tc_t.Bind(wx.EVT_LEAVE_WINDOW, ctrl_tc_t_OnMouseLeave)
             def ctrl_tc_t_OnDropFiles(filenames):
                 if len(filenames) != 1:
                     wx.MessageBox('Single file is expected!', 'Error', wx.OK | wx.ICON_ERROR)
                     return
                 self._open_template(filenames[0])
-
             ctrl_tc_t_dt = FileDropTarget(self.ctrl_tc_t, ctrl_tc_t_OnDropFiles)
             self.ctrl_tc_t.SetDropTarget(ctrl_tc_t_dt)
             fgs.AddMany([(self.ctrl_st_t, 1, wx.EXPAND), (self.ctrl_tc_t, 1, wx.EXPAND)])
@@ -268,72 +253,81 @@ class GUI(Version):
             self.ctrl_tc_c.Enable(False)
             self.color_tc_bg_d = wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNFACE)
             self.ctrl_tc_c.SetBackgroundColour(self.color_tc_bg_d)
-
             def ctrl_tc_c_OnFocus(e):
                 self.ctrl_tc_c.ShowNativeCaret(False)
                 e.Skip()
-
             def ctrl_tc_c_OnDoubleclick(e):
                 if self.ctrl_st_c.IsEnabled():
                     self.application.TextWindow(self, title='Content Preview', content=self.ctrl_tc_c.GetValue())
                 e.Skip()
-
             self.ctrl_tc_c.Bind(wx.EVT_SET_FOCUS, ctrl_tc_c_OnFocus)
             self.ctrl_tc_c.Bind(wx.EVT_LEFT_DCLICK, ctrl_tc_c_OnDoubleclick)
-
             def ctrl_tc_c_OnMouseOver(e):
                 self.status('You might use drag & drop', hint=True)
                 e.Skip()
-            def ctrl_tc_c_OnMouseLeave(e):
-                self.status('')
-                e.Skip()
-
+            #def ctrl_tc_c_OnMouseLeave(e):
+            #    self.status('')
+            #    e.Skip()
             self.ctrl_tc_c.Bind(wx.EVT_ENTER_WINDOW, ctrl_tc_c_OnMouseOver)
-            self.ctrl_tc_c.Bind(wx.EVT_LEAVE_WINDOW, ctrl_tc_c_OnMouseLeave)
-
+            #self.ctrl_tc_c.Bind(wx.EVT_LEAVE_WINDOW, ctrl_tc_c_OnMouseLeave)
             def ctrl_tc_c_OnDropFiles(filenames):
                 if len(filenames) != 1:
                     wx.MessageBox('Single file is expected!', 'Error', wx.OK | wx.ICON_ERROR)
                     return
                 self._open_content(filenames[0])
-
             ctrl_tc_c_dt = FileDropTarget(self.ctrl_tc_c, ctrl_tc_c_OnDropFiles)
             self.ctrl_tc_c.SetDropTarget(ctrl_tc_c_dt)
             fgs.AddMany([(self.ctrl_st_c, 1, wx.EXPAND), (self.ctrl_tc_c, 1, wx.EXPAND)])
 
-            # Scan
+            # Scan + Edit button
             self.ctrl_st_s = wx.StaticText(panel, label='Scan:')
             self.ctrl_st_s.Enable(False)
             self.ctrl_tc_s = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(200, 3 * 17,))
-
             def ctrl_tc_s_OnFocus(e):
                 self.ctrl_tc_s.ShowNativeCaret(False)
                 e.Skip()
-
             def ctrl_tc_s_OnDoubleclick(e):
                 if self.ctrl_st_s.IsEnabled():
                     self.application.TextWindow(self, title='Scan Preview', content=self.ctrl_tc_s.GetValue())
                 e.Skip()
-
             self.ctrl_tc_s.Bind(wx.EVT_SET_FOCUS, ctrl_tc_s_OnFocus)
             self.ctrl_tc_s.Bind(wx.EVT_LEFT_DCLICK, ctrl_tc_s_OnDoubleclick)
-
+            def ctrl_tc_s_b_onClick(e):
+                #self.application.YamlEdWindow(self, title='Scan', content=self.scan.dump_yaml(truncate=self.menu_view_i.IsChecked()))
+                pass
+            def ctrl_tc_s_onResize(e):
+                size = self.ctrl_tc_s.GetSize()
+                self.ctrl_tc_s_b.SetPosition((size[0]-36-1, -1))
+            self.ctrl_tc_s_b = wx.Button(self.ctrl_tc_s, index.next(), 'E', size=(16, 16))
+            self.ctrl_tc_s_b.Bind(wx.EVT_BUTTON, ctrl_tc_s_b_onClick)
+            self.ctrl_tc_s.Bind(wx.EVT_SIZE, ctrl_tc_s_onResize)
+            self.ctrl_tc_s_b.Hide()
+            def ctrl_tc_s_b_OnMouseOver(e):
+                self.status('Use Yaml Editor on the Scan', hint=True)
+                e.Skip()
+            #def ctrl_tc_s_b_OnMouseLeave(e):
+            #    self.status('')
+            #    e.Skip()
+            self.ctrl_tc_s_b.Bind(wx.EVT_ENTER_WINDOW, ctrl_tc_s_b_OnMouseOver)
+            #self.ctrl_tc_s_b.Bind(wx.EVT_LEAVE_WINDOW, ctrl_tc_s_b_OnMouseLeave)
             def ctrl_tc_s_OnMouseOver(e):
+                if 0 and self.ctrl_st_s.IsEnabled():
+                    self.ctrl_tc_s_b.Show()
                 self.status('You might use drag & drop', hint=True)
                 e.Skip()
-            def ctrl_tc_s_OnMouseLeave(e):
-                self.status('')
-                e.Skip()
-
+            #def ctrl_tc_s_OnMouseLeave(e):
+            #    #self.ctrl_tc_s_b.Hide()
+            #    self.status('')
+            #    e.Skip()
             self.ctrl_tc_s.Bind(wx.EVT_ENTER_WINDOW, ctrl_tc_s_OnMouseOver)
-            self.ctrl_tc_s.Bind(wx.EVT_LEAVE_WINDOW, ctrl_tc_s_OnMouseLeave)
-
+            #self.ctrl_tc_s.Bind(wx.EVT_LEAVE_WINDOW, ctrl_tc_s_OnMouseLeave)
             def ctrl_tc_s_OnDropFiles(filenames):
                 if len(filenames) != 1:
                     wx.MessageBox('Single file is expected!', 'Error', wx.OK | wx.ICON_ERROR)
                     return
                 self._open_scan(filenames[0])
-
+                if 0 and self.ctrl_st_s.IsEnabled():
+                    self.ctrl_tc_s_b.Show()
             ctrl_tc_s_dt = FileDropTarget(self.ctrl_tc_s, ctrl_tc_s_OnDropFiles)
             self.ctrl_tc_s.SetDropTarget(ctrl_tc_s_dt)
             fgs.AddMany([(self.ctrl_st_s, 1, wx.EXPAND), (self.ctrl_tc_s, 1, wx.EXPAND)])
@@ -344,38 +338,36 @@ class GUI(Version):
             self.ctrl_tc_k = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(200, 3 * 17,))
             self.ctrl_tc_k.Enable(False)
             self.ctrl_tc_k.SetBackgroundColour(self.color_tc_bg_d)
-
             def ctrl_tc_k_OnFocus(e):
                 self.ctrl_tc_k.ShowNativeCaret(False)
                 e.Skip()
-
             def ctrl_tc_k_OnDoubleclick(e):
                 if self.ctrl_st_k.IsEnabled():
                     self.application.TextWindow(self, title='KB Preview', content=self.ctrl_tc_k.GetValue())
                 e.Skip()
-
             self.ctrl_tc_k.Bind(wx.EVT_SET_FOCUS, ctrl_tc_k_OnFocus)
             self.ctrl_tc_k.Bind(wx.EVT_LEFT_DCLICK, ctrl_tc_k_OnDoubleclick)
-
             def ctrl_tc_k_OnMouseOver(e):
                 self.status('You might use drag & drop', hint=True)
                 e.Skip()
             def ctrl_tc_k_OnMouseLeave(e):
                 self.status('')
                 e.Skip()
-
             self.ctrl_tc_k.Bind(wx.EVT_ENTER_WINDOW, ctrl_tc_k_OnMouseOver)
             self.ctrl_tc_k.Bind(wx.EVT_LEAVE_WINDOW, ctrl_tc_k_OnMouseLeave)
-
             def ctrl_tc_k_OnDropFiles(filenames):
                 if len(filenames) != 1:
                     wx.MessageBox('Single file is expected!', 'Error', wx.OK | wx.ICON_ERROR)
                     return
                 self._open_kb(filenames[0])
-
             ctrl_tc_k_dt = FileDropTarget(self.ctrl_tc_k, ctrl_tc_k_OnDropFiles)
             self.ctrl_tc_k.SetDropTarget(ctrl_tc_k_dt)
             fgs.AddMany([(self.ctrl_st_k, 1, wx.EXPAND), (self.ctrl_tc_k, 1, wx.EXPAND)])
+            def panel_OnMouseOver(e):
+                self.status('')
+                self.ctrl_tc_s_b.Hide()
+                e.Skip()
+            panel.Bind(wx.EVT_ENTER_WINDOW, panel_OnMouseOver)
 
             # Report
             #self.ctrl_st_r = wx.StaticText(panel, label='Report:')
@@ -388,7 +380,6 @@ class GUI(Version):
             #    e.Skip()
             #self.ctrl_tc_r.Bind (wx.EVT_SET_FOCUS, ctrl_tc_r_OnFocus)
             #fgs.AddMany ([(self.ctrl_st_r, 1, wx.EXPAND), (self.ctrl_tc_r, 1, wx.EXPAND)])
-
             fgs.AddGrowableRow(0, 1)
             fgs.AddGrowableRow(1, 1)
             fgs.AddGrowableRow(2, 1)
@@ -450,7 +441,7 @@ class GUI(Version):
             dialog.SetVersion(self.application.version)
             dialog.SetCopyright(self.application.c)
             dialog.SetDescription('\n'.join(map(lambda x: x[4:], self.application.about.split('\n')[1:][:-1])))
-            
+
             dialog.SetWebSite(self.application.url)
             dialog.SetLicence(self.application.license)
             wx.AboutBox(dialog)
@@ -604,7 +595,7 @@ class GUI(Version):
             self.status('Merged')
 
         def Generate_few_passwords(self, e):
-            self.application.TextWindow(self, title='Random Password Generator', content='\n'.join(rpg.Few(17)), size=(220, 270,))
+            self.application.TextWindow(self, title='Random Password Generator', content='\n'.join(pwgen.Few(15)), size=(235, 270,))
 
         #def Open_Knowledge_Base (self, e):
         #    pass
@@ -745,6 +736,7 @@ class GUI(Version):
         #        self.SetSize((-1,self.GetSize()[1]-self._statusbar_h,))
 
         def status(self, text, hint=False):
+            #print text
             self.SetStatusText(['','Hint: '][hint]+text)
 
         def VulnParam_highlighting(self, e):
@@ -790,8 +782,8 @@ class GUI(Version):
             self.menu_file_save_r.Enable(True)
 
     class ChildWindow(wx.Frame):
-        
-        def __init__(self, parent, content='', size=(500, 600,), *args, **kwargs):
+
+        def __init__(self, parent, size=(500, 600,), *args, **kwargs):
             self.parent = parent
             if parent is not None:
                 for title in ['title']:
@@ -813,7 +805,7 @@ class GUI(Version):
     class TextWindow(ChildWindow):
 
         def __init__(self, parent, content='', *args, **kwargs):
-            GUI.ChildWindow.__init__(self, parent, content=content, *args, **kwargs)
+            GUI.ChildWindow.__init__(self, parent, *args, **kwargs)
 
             tc = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY)
 
@@ -824,24 +816,26 @@ class GUI(Version):
             tc.Bind(wx.EVT_SET_FOCUS, tc_OnFocus)
             tc.SetValue(content)
 
-            self.Center()
+            #self.Center()
+            self.CenterOnScreen()
             self.Show()
 
     class HtmlWindow(ChildWindow):
 
         def __init__(self, parent, content='', *args, **kwargs):
-            GUI.ChildWindow.__init__(self, parent, content=content, *args, **kwargs)
+            GUI.ChildWindow.__init__(self, parent, *args, **kwargs)
 
             self.browser = wx.html2.WebView.New(self)
             #self.browser.LoadURL('http://...')
             self.browser.SetPage(content,'')
 
-            self.Center()
+            #self.Center()
+            self.CenterOnScreen()
             self.Show()
-
+            
     def CLI(self):
         self.__CLI(application=self)
-    
+
     class __CLI(wx.Frame):
 
         # application
@@ -858,11 +852,11 @@ class GUI(Version):
                     return sys.argv[sys.argv.index('-t')+1]
                 else:
                     return None
-                
+
             def is_yaml (filename):
                 ext = '.yaml'
                 return filename[-len(ext):] == ext
-                
+
             template_file = val('-t')
             content_file = val('-c')
             kb_file = val('-k')
@@ -897,7 +891,7 @@ class GUI(Version):
                 print
                 print '    '+self.application.title+'.exe [any other arguments]'
                 print '        display usage and exit'
-            
+
             self.Close()
 
         def Destroy(self):
