@@ -32,11 +32,12 @@ class Version(object):
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
     version = '0.5.0-alpha'
-    date = 'Mon Sep 15 17:01:05 2014'
+    date = 'Mon Sep 15 18:16:54 2014'
     changelog = '''
-    0.5.0-alpha - Mon Sep 15 17:01:05 2014
+    0.5.0-alpha - Mon Sep 15 18:16:54 2014
     - All child windows are now screen centered
     - Gui module cleanup + new, experimental, yet unusable yamled module
+    - Yamled wrapper and icon added
 
     0.4.9 - Fri Sep 12 23:55:55 2014
     - ViewState truncation now affects scan saving as well as merging into content

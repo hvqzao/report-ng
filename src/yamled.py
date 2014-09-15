@@ -17,9 +17,15 @@
 
 
 import wx
+import base64
+import cStringIO
+
+from resources.yamled import icon
 
 
 class YamledWindow(wx.Frame):
+
+    #icon
 
     class YamlEdTree(wx.TreeCtrl):
 
@@ -27,7 +33,15 @@ class YamledWindow(wx.Frame):
         
     def __init__(self, parent=None, title='', yaml=None, size=(800, 600,), *args, **kwargs):
         wx.Frame.__init__(self, parent, title='Yamled', size=size, *args, **kwargs)
-        #print self.parent
+
+        myStream = cStringIO.StringIO(base64.b64decode(icon))
+        myImage = wx.ImageFromStream(myStream)
+        myBitmap = wx.BitmapFromImage(myImage)
+        self.icon = wx.EmptyIcon()
+        self.icon.CopyFromBitmap(myBitmap)
+        self.SetIcon(self.icon)
+        
+        self.parent = parent
         splitter = wx.SplitterWindow(self, style=wx.SP_LIVE_UPDATE)
         self.tree = self.YamlEdTree(splitter)
         pan2 = wx.Window(splitter) #style=wx.BORDER_SUNKEN
