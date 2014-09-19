@@ -116,9 +116,9 @@ def webinspect_import(xml):
             ['ReportSections', UnsortableOrderedDict(map(lambda x: [x[0].replace(' ', ''), x[1]], report_sections))],
         ])]
     findings = []
-    for vuln_id in sorted(set(map(lambda x: int(x['vuln_id']), issues_list))):
+    for vuln_id in sorted(set(map(lambda x: str(x['vuln_id']), issues_list))):
         issue = UnsortableOrderedDict()
-        for i in filter(lambda x: int(x['vuln_id']) == vuln_id, issues_list):
+        for i in filter(lambda x: str(x['vuln_id']) == vuln_id, issues_list):
             for j in ['Severity', 'severity_id', 'Name', 'ReportSections', 'Classifications', 'Example']:
                 if j not in issue:
                     issue[j] = i[j]

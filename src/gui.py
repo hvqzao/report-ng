@@ -312,7 +312,7 @@ class GUI(Version):
             self.ctrl_tc_s_b.Bind(wx.EVT_ENTER_WINDOW, ctrl_tc_s_b_OnMouseOver)
             #self.ctrl_tc_s_b.Bind(wx.EVT_LEAVE_WINDOW, ctrl_tc_s_b_OnMouseLeave)
             def ctrl_tc_s_OnMouseOver(e):
-                if 1 and self.ctrl_st_s.IsEnabled():
+                if 0 and self.ctrl_st_s.IsEnabled():
                     self.ctrl_tc_s_b.Show()
                 self.status('You might use drag & drop', hint=True)
                 e.Skip()
@@ -327,7 +327,7 @@ class GUI(Version):
                     wx.MessageBox('Single file is expected!', 'Error', wx.OK | wx.ICON_ERROR)
                     return
                 self._open_scan(filenames[0])
-                if 1 and self.ctrl_st_s.IsEnabled():
+                if 0 and self.ctrl_st_s.IsEnabled():
                     self.ctrl_tc_s_b.Show()
             ctrl_tc_s_dt = FileDropTarget(self.ctrl_tc_s, ctrl_tc_s_OnDropFiles)
             self.ctrl_tc_s.SetDropTarget(ctrl_tc_s_dt)

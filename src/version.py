@@ -31,10 +31,14 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.5.0-alpha'
-    date = 'Mon Sep 15 18:16:54 2014'
+    version = '0.5.1'
+    date = 'Fri Sep 19 21:14:32 2014'
     changelog = '''
-    0.5.0-alpha - Mon Sep 15 18:16:54 2014
+    0.5.1 - Fri Sep 19 21:14:32 2014
+    - FIX: WebInspect scan import proper VulnerabilityID inputs handling
+    - Yaml editor added (not yet functional)
+    
+    0.5.0 - Mon Sep 15 18:16:54 2014
     - All child windows are now screen centered
     - Gui module cleanup + new, experimental, yet unusable yamled module
     - Yamled wrapper and icon added

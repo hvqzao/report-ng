@@ -955,7 +955,7 @@ if __name__ == '__main__':
 
     report = Report()
     report.template_load_xml('../examples/tmp/DS-template v1.0.xml', clean=True)
-    report.scan = Scan('../../c-webinspect.xml')
+    report.scan = Scan('../../scan_2.xml')
     report.xml_apply_meta()
 
     '''
