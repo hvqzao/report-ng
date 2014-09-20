@@ -294,7 +294,7 @@ class GUI(Version):
             self.ctrl_tc_s.Bind(wx.EVT_SET_FOCUS, ctrl_tc_s_OnFocus)
             self.ctrl_tc_s.Bind(wx.EVT_LEFT_DCLICK, ctrl_tc_s_OnDoubleclick)
             def ctrl_tc_s_b_onClick(e):
-                self.application.YamledWindowWrapper(self, title='Scan', yaml=self.scan.dump_yaml(truncate=self.menu_view_i.IsChecked()))
+                self.application.YamledWindowWrapper(self, title='Scan', filename=self.scan._filename)
                 pass
             def ctrl_tc_s_onResize(e):
                 size = self.ctrl_tc_s.GetSize()
@@ -312,7 +312,7 @@ class GUI(Version):
             self.ctrl_tc_s_b.Bind(wx.EVT_ENTER_WINDOW, ctrl_tc_s_b_OnMouseOver)
             #self.ctrl_tc_s_b.Bind(wx.EVT_LEAVE_WINDOW, ctrl_tc_s_b_OnMouseLeave)
             def ctrl_tc_s_OnMouseOver(e):
-                if 0 and self.ctrl_st_s.IsEnabled():
+                if self.ctrl_st_s.IsEnabled(): # Yamled
                     self.ctrl_tc_s_b.Show()
                 self.status('You might use drag & drop', hint=True)
                 e.Skip()
@@ -327,7 +327,7 @@ class GUI(Version):
                     wx.MessageBox('Single file is expected!', 'Error', wx.OK | wx.ICON_ERROR)
                     return
                 self._open_scan(filenames[0])
-                if 0 and self.ctrl_st_s.IsEnabled():
+                if self.ctrl_st_s.IsEnabled(): # Yamled
                     self.ctrl_tc_s_b.Show()
             ctrl_tc_s_dt = FileDropTarget(self.ctrl_tc_s, ctrl_tc_s_OnDropFiles)
             self.ctrl_tc_s.SetDropTarget(ctrl_tc_s_dt)
@@ -784,8 +784,8 @@ class GUI(Version):
 
     class YamledWindowWrapper(YamledWindow):
 
-        def __init__(self, parent=None, title='', yaml=None, size=(800, 600,), *args, **kwargs):
-            YamledWindow.__init__(self, parent, title=title, yaml=yaml, size=size, *args, **kwargs)
+        def __init__(self, parent=None, title='', filename=None, size=(800, 600,), *args, **kwargs):
+            YamledWindow.__init__(self, parent, title=title, filename=filename, size=size, *args, **kwargs)
             if parent is not None:
                 parent.children += [self]
                 if parent.menu_view_t.IsChecked():

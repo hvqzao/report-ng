@@ -26,6 +26,7 @@ import mangle
 class Scan(object):
     # _xml
     # _scan
+    # _filename
 
     def _webinspect_import(self):
         from webinspect import webinspect_import
@@ -38,6 +39,7 @@ class Scan(object):
         self._scan = burp_import(self._xml)
 
     def __init__(self, filename):
+        self._filename = filename
         json_ext = '.json'
         yaml_ext = '.yaml'
         if filename[-len(json_ext):] == json_ext:

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Yamled
 # Copyright (c) 2014 Marcin Woloszyn (@hvqzao)
 #
@@ -20,8 +21,11 @@ import wx
 import wx.lib.scrolledpanel as sp
 import base64
 import cStringIO
+import yaml
 
+from util import yaml_load, UnsortableOrderedDict
 from resources.yamled import icon
+from version import Version
 
 
 class YamledWindow(wx.Frame):
@@ -55,6 +59,7 @@ class YamledWindow(wx.Frame):
             items = filter(lambda x: x.GetId() == eid, self.frame.t)
             if items:
                 pos = self.frame.t.index(items[0])
+                #self.frame.tree.SetFocusedItem(self.frame.n[pos])
                 self.frame.tree.UnselectAll()
                 self.frame.tree.SelectItem(self.frame.n[pos])
         
@@ -87,9 +92,10 @@ class YamledWindow(wx.Frame):
                 self.SetInsertionPointEnd()
             e.Skip()
                     
-    def __init__(self, parent=None, title='', yaml=None, size=(800, 600,), *args, **kwargs):
+    def __init__(self, parent=None, title='', filename=None, size=(800, 600,), *args, **kwargs):
         wx.Frame.__init__(self, parent, title='Yamled', size=size, *args, **kwargs)
         self.parent = parent
+        self.application = Version()
         # icon
         myStream = cStringIO.StringIO(base64.b64decode(icon))
         myImage = wx.ImageFromStream(myStream)
@@ -97,6 +103,9 @@ class YamledWindow(wx.Frame):
         self.icon = wx.EmptyIcon()
         self.icon.CopyFromBitmap(myBitmap)
         self.SetIcon(self.icon)
+        # tree image list
+        #self.tree_image_list = wx.ImageList(16, 16)
+        #self.dotlist = self.tree_image_list.Add(wx.Image('resources/dotlist.png', wx.BITMAP_TYPE_PNG).Scale(16,16).ConvertToBitmap())
         # Menu arrangement
         menu = wx.MenuBar()
         class Index(object):
@@ -117,16 +126,21 @@ class YamledWindow(wx.Frame):
         menu_file.Append(wx.ID_EXIT, 'E&xit\tCtrl+Q', 'Exit application')
         self.Bind(wx.EVT_MENU, self.__Exit, id=wx.ID_EXIT)
         menu.Append(menu_file, '&File')
+        menu_help = wx.Menu()
+        menu_help.Append(wx.ID_ABOUT, '&About')
+        self.Bind(wx.EVT_MENU, self.About, id=wx.ID_ABOUT)
+        menu.Append(menu_help, '&Help')
         self.SetMenuBar(menu)
         # Layout
         self.splitter = wx.SplitterWindow(self, style=wx.SP_LIVE_UPDATE)
         #def splitter_dclick(e):
         #    e.Veto()
         #self.Bind(wx.EVT_SPLITTER_DCLICK, splitter_dclick, self.splitter)
-        self.splitter.SetMinimumPaneSize(80)
+        self.splitter.SetMinimumPaneSize(200)
         #self.gray = self.splitter.GetBackgroundColour()
         self.left = wx.Panel(self.splitter, style=wx.BORDER_SIMPLE)
-        self.tree = wx.TreeCtrl(self.left, style=wx.TR_HAS_BUTTONS|wx.TR_HIDE_ROOT|wx.TR_LINES_AT_ROOT|wx.TR_MULTIPLE|wx.BORDER_NONE)
+        self.tree = wx.TreeCtrl(self.left, style=wx.TR_HAS_BUTTONS|wx.TR_HIDE_ROOT|wx.TR_LINES_AT_ROOT|wx.TR_MULTIPLE|wx.BORDER_NONE) #|wx.TR_NO_LINES
+        #self.tree.AssignImageList(self.tree_image_list)
         #self.scroll_spin = False
         def splitter_repaint(e):
             self.__tree_adjust()
@@ -170,10 +184,10 @@ class YamledWindow(wx.Frame):
         #    del ctrl
         #self.AppendNode('abc','def',dict(a=2))
         #self.AppendNode('cgi','har',dict(a='frai'))
-        for i in range(1,50):
-            self.AppendNode(str(i),str(i))
-        self.Load(yaml)
-        #self.tree.ExpandAll()
+        #for i in range(1,50):
+        #    self.AppendNode(str(i),str(i))
+        self.Load(filename)
+        self.tree.ExpandAll()
         # show
         self.CenterOnScreen()
         self.Show()
@@ -195,10 +209,50 @@ class YamledWindow(wx.Frame):
         #self.stack.Layout()
         #self.t[12].SetBackgroundColour(self.white)
 
-    def Load(self, yaml):
-        if yaml == None:
+    def Load(self, filename):
+        if filename == None:
             return
-        pass
+        data = yaml_load(open(filename).read(), yaml.SafeLoader, UnsortableOrderedDict)
+        #print data
+        def walk(data, parent=None):
+            if isinstance(data, UnsortableOrderedDict):
+                for i in data:
+                    item = self.AppendNode(i+':', '', None, parent)
+                    if parent != None:
+                        self.SetData(parent, UnsortableOrderedDict())
+                    walk(data[i], item)
+            elif isinstance(data, list):
+                if isinstance(data[0], UnsortableOrderedDict):
+                    keys = data[0].keys()
+                    self.SetData(parent, keys)
+                    for i in data:
+                        if i.keys() != keys:
+                            raise Exception('List keys differ!')
+                        list_item = self.AppendNode('      '+keys[0]+':', '', None, parent)
+                        #self.tree.SetPyData(list_item, None)
+                        #self.tree.SetItemImage(list_item, self.dotlist) #, wx.TreeItemIcon_Normal)
+                        walk(i[keys[0]], list_item)
+                        for j in keys[1:]:
+                            item = self.AppendNode(j+':', '', None, list_item)
+                            walk(i[j], item)
+            else:
+                if parent != None:
+                    self.SetValue(parent, data)
+        walk(data)
+
+    def SetData(self, item, data):
+        pos = self.n.index(item)
+        self.d[pos] = data
+
+    def SetValue(self, item, value):
+        value = unicode(value).split('\n')
+        value = value[0]+['',' [...]'][len(value) > 1]
+        pos = self.n.index(item)
+        self.t[pos].SetValue(unicode(value).split('\n')[0])
+
+    def GetData(self, item):
+        pos = self.n.index(item)
+        return self.d[pos]
     
     def AppendNode(self, name, value, data=None, parent=None):
         if parent == None:
@@ -210,6 +264,7 @@ class YamledWindow(wx.Frame):
         ctrl.SetValue(value)
         self.t += [ctrl]
         self.d += [data]
+        return item
 
     #def __tree_OnPopupMenuItem(self, e):
     #    item = self.tree_popupmenu.FindItemById(e.GetId())
@@ -254,7 +309,23 @@ class YamledWindow(wx.Frame):
     def __Exit(self, e):
         self.Close()
 
+    def About(self, e):
+        dialog = wx.AboutDialogInfo()
+        #dialog.SetIcon (wx.Icon('icon.ico', wx.BITMAP_TYPE_PNG))
+        dialog.SetIcon(self.icon)
+        #dialog.SetName(self.application.long_title+' - '+self.application.title)
+        dialog.SetName('Yaml Editor - Yamled')
+        dialog.SetVersion(self.application.version)
+        dialog.SetCopyright(self.application.c)
+        #dialog.SetDescription('\n'.join(map(lambda x: x[4:], self.application.about.split('\n')[1:][:-1])))
+        dialog.SetDescription('Not yet functional')
+
+        #dialog.SetWebSite(self.application.url)
+        #dialog.SetLicence(self.application.license)
+        wx.AboutBox(dialog)
+
+
 if __name__ == '__main__':
     wx_app = wx.App(redirect=True) # redirect in wxpython 3.0 defaults to False
-    YamledWindow()
+    YamledWindow(filename='../../x.yaml')
     wx_app.MainLoop()
