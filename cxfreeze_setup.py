@@ -8,7 +8,8 @@ import sys
 base = 'Win32GUI' if sys.platform=='win32' else None
 
 executables = [
-    Executable('wasar.py', base=base, icon='src/resources/icon.ico')
+    Executable('wasar.py', base=base, icon='src/resources/icon.ico'),
+    Executable('yamled.py', base=base, icon='src/resources/yamled.ico'),
 ]
 
 from src.version import Version

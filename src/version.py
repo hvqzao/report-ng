@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.5.1'
-    date = 'Fri Sep 19 21:14:32 2014'
+    version = '0.5.2'
+    date = 'Sun Sep 21 00:49:09 2014'
     changelog = '''
+    0.5.2
+    - Yamled node collapsing/expanding added
+
     0.5.1 - Fri Sep 19 21:14:32 2014
     - FIX: WebInspect scan import proper VulnerabilityID inputs handling
     - Yaml editor added (not yet functional)

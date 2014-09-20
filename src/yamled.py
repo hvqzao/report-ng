@@ -41,6 +41,8 @@ class YamledWindow(wx.Frame):
     #stack
     #t
     #n
+    #d
+    #r
     #stack_sizer
     ##scroll_spin
 
@@ -143,7 +145,7 @@ class YamledWindow(wx.Frame):
         #self.tree.AssignImageList(self.tree_image_list)
         #self.scroll_spin = False
         def splitter_repaint(e):
-            self.__tree_adjust()
+            self._tree_adjust()
         self.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGING, splitter_repaint, self.splitter)
         #self.splitter.Bind(wx.EVT_PAINT, splitter_repaint)
         #self.white = self.tree.GetBackgroundColour()
@@ -159,6 +161,7 @@ class YamledWindow(wx.Frame):
         self.n=[]
         self.t=[]
         self.d=[]
+        self.r=[]
         node = self.tree.AppendItem(self.root, '')
         self.item_height = self.tree.GetBoundingRect(node)[-1]-1
         self.tree.Delete(node)
@@ -171,10 +174,10 @@ class YamledWindow(wx.Frame):
         #    item = self.tree_popupmenu.Append(-1, i)
         #    self.Bind(wx.EVT_MENU, self.__tree_OnPopupMenuItem, item)
         self.tree.Bind(wx.EVT_CONTEXT_MENU, self.__tree_OnPopupMenu)
-        def tree_empty_popupmenu(e):
+        def tree_empty_OnPopupMenu(e):
             if self.tree.GetCount() == 0:
                 self.__tree_OnPopupMenu(e)
-        self.tree.Bind(wx.EVT_RIGHT_DOWN, tree_empty_popupmenu)
+        self.tree.Bind(wx.EVT_RIGHT_DOWN, tree_empty_OnPopupMenu)
         #for i in range(50):
         #    self.n += [self.tree.AppendItem(self.root, str(i+1))]
         #    ctrl = self.yTextCtrl(self.stack, self, size=(-1, self.item_height), style=wx.BORDER_NONE)
@@ -188,13 +191,17 @@ class YamledWindow(wx.Frame):
         #    self.AppendNode(str(i),str(i))
         self.Load(filename)
         self.tree.ExpandAll()
+        #self._stack_adjust()
+        self.tree.Bind(wx.EVT_TREE_ITEM_COLLAPSED, self.__tree_OnCollapse)
+        self.tree.Bind(wx.EVT_TREE_ITEM_EXPANDED, self.__tree_OnExpand)
         # show
+        #self.SetDoubleBuffered(True)
         self.CenterOnScreen()
         self.Show()
         self.SetMinSize(tuple(map(lambda x: x*2/3, self.GetSize())))
         self.Bind(wx.EVT_SIZE, self.__OnResize, self)
         self.Bind(wx.EVT_PAINT, self.__OnRepaint, self)
-        #self.__tree_adjust()
+        #self._tree_adjust()
         self.stack.SetScrollRate(16, self.item_height)
         self.tree.Bind(wx.EVT_PAINT, self.__tree_OnScroll)
         self.stack.Bind(wx.EVT_PAINT, self.__stack_OnScroll)
@@ -208,7 +215,9 @@ class YamledWindow(wx.Frame):
         #self.t[2].Show()
         #self.stack.Layout()
         #self.t[12].SetBackgroundColour(self.white)
-
+        self.splitter.SetDoubleBuffered(True)
+        self.stack.SetBackgroundColour((240,255,255,255))
+        
     def Load(self, filename):
         if filename == None:
             return
@@ -264,8 +273,51 @@ class YamledWindow(wx.Frame):
         ctrl.SetValue(value)
         self.t += [ctrl]
         self.d += [data]
+        self.r += [True]
         return item
 
+    def _stack_adjust(self):
+        # recalc items visiblity
+        for i in range(len(self.n)):
+            path = []
+            item = self.n[i]
+            while item != self.root:
+                item = self.tree.GetItemParent(item)
+                path += [item]
+            self.r[i] = not bool(filter(lambda x: not self.tree.IsExpanded(x), path[:-1]))
+            # update stack textctrls visibility
+            if self.r[i]:
+                self.t[i].Show()
+            else:
+                self.t[i].Hide()
+        # update stack layout and height
+        self.stack.Layout()
+        #self.stack.SetScrollbars(16, self.item_height, 50,50)
+        #self.stack.SetScrollRate(16, self.item_height)
+        self.stack.SetVirtualSize((-1, self.item_height*(len(filter(lambda x: x, self.r)))-1))
+        #print self.stack.GetSize()[-1], self.splitter.GetSize()[-1]
+        '''
+        height_splitter = self.splitter.GetSize()[-1]
+        height_stack = self.item_height*len(filter(lambda x: x, self.r))
+        if height_stack > height_splitter:
+            self.stack.SetSize((-1,height_stack))
+            print height_stack
+        else:
+            self.stack.SetSize((-1,height_splitter))
+            print height_splitter
+        '''
+        '''
+        self.tree.Layout()
+        '''
+        
+    def __tree_OnCollapse(self, e):
+        #print e.GetItem()
+        self._stack_adjust()
+
+    def __tree_OnExpand(self, e):
+        #print e.GetItem()
+        self._stack_adjust()
+        
     #def __tree_OnPopupMenuItem(self, e):
     #    item = self.tree_popupmenu.FindItemById(e.GetId())
     #    text = item.GetText()
@@ -291,20 +343,26 @@ class YamledWindow(wx.Frame):
 
     def __stack_OnScroll(self, e):
         pos = self.stack.GetScrollPos(wx.VERTICAL)
-        if pos < len(self.n):
-            #self.scroll_spin = True
-            self.tree.ScrollTo(self.n[pos])
-       
-    def __tree_adjust(self):
+        #if pos < len(self.n):
+        #    #self.scroll_spin = True
+        #    self.tree.ScrollTo(self.n[pos])
+        n_range = filter(lambda x: self.r[x], range(len(self.r)))
+        if n_range:
+            if pos in range(len(n_range)):
+                self.tree.ScrollTo(self.n[n_range[pos]])
+            else:
+                self.tree.ScrollTo(self.n[n_range[0]])
+        
+    def _tree_adjust(self):
         self.tree.SetSize((self.left.GetSize()[0]+35, self.stack.GetSize()[1]))
-        self.__stack_OnScroll(None)
+        #self.__stack_OnScroll(None)
         
     def __OnResize(self, e):
-        self.__tree_adjust()
+        self._tree_adjust()
         e.Skip()
 
     def __OnRepaint(self, e):
-        self.__tree_adjust()
+        self._tree_adjust()
 
     def __Exit(self, e):
         self.Close()
@@ -324,8 +382,10 @@ class YamledWindow(wx.Frame):
         #dialog.SetLicence(self.application.license)
         wx.AboutBox(dialog)
 
-
-if __name__ == '__main__':
+def GUI():
     wx_app = wx.App(redirect=True) # redirect in wxpython 3.0 defaults to False
     YamledWindow(filename='../../x.yaml')
     wx_app.MainLoop()
+
+if __name__ == '__main__':
+    GUI()
