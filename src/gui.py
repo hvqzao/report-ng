@@ -294,7 +294,7 @@ class GUI(Version):
             self.ctrl_tc_s.Bind(wx.EVT_SET_FOCUS, ctrl_tc_s_OnFocus)
             self.ctrl_tc_s.Bind(wx.EVT_LEFT_DCLICK, ctrl_tc_s_OnDoubleclick)
             def ctrl_tc_s_b_onClick(e):
-                self.application.YamledWindowWrapper(self, title='Scan', filename=self.scan._filename)
+                self.application.YamledWindowWrapper(self, title='Scan', content=self.scan._scan)
                 pass
             def ctrl_tc_s_onResize(e):
                 size = self.ctrl_tc_s.GetSize()
@@ -784,8 +784,8 @@ class GUI(Version):
 
     class YamledWindowWrapper(YamledWindow):
 
-        def __init__(self, parent=None, title='', filename=None, size=(800, 600,), *args, **kwargs):
-            YamledWindow.__init__(self, parent, title=title, filename=filename, size=size, *args, **kwargs)
+        def __init__(self, parent=None, title='', content=None, size=(800, 600,), *args, **kwargs):
+            YamledWindow.__init__(self, parent, title=title, content=content, size=size, *args, **kwargs)
             if parent is not None:
                 parent.children += [self]
                 if parent.menu_view_t.IsChecked():

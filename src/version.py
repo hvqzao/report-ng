@@ -32,10 +32,11 @@ class Version(object):
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
     version = '0.5.2'
-    date = 'Sun Sep 21 00:49:09 2014'
+    date = 'Sun Sep 21 12:10:03 2014'
     changelog = '''
-    0.5.2
+    0.5.2 - Sun Sep 21 12:10:03 2014
     - Yamled node collapsing/expanding added
+    - Yamled scrolling and content loading fixes
 
     0.5.1 - Fri Sep 19 21:14:32 2014
     - FIX: WebInspect scan import proper VulnerabilityID inputs handling

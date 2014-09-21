@@ -94,7 +94,7 @@ class YamledWindow(wx.Frame):
                 self.SetInsertionPointEnd()
             e.Skip()
                     
-    def __init__(self, parent=None, title='', filename=None, size=(800, 600,), *args, **kwargs):
+    def __init__(self, parent=None, title='', content=None, size=(800, 600,), *args, **kwargs):
         wx.Frame.__init__(self, parent, title='Yamled', size=size, *args, **kwargs)
         self.parent = parent
         self.application = Version()
@@ -189,7 +189,7 @@ class YamledWindow(wx.Frame):
         #self.AppendNode('cgi','har',dict(a='frai'))
         #for i in range(1,50):
         #    self.AppendNode(str(i),str(i))
-        self.Load(filename)
+        self.Load(content)
         self.tree.ExpandAll()
         #self._stack_adjust()
         self.tree.Bind(wx.EVT_TREE_ITEM_COLLAPSED, self.__tree_OnCollapse)
@@ -216,12 +216,15 @@ class YamledWindow(wx.Frame):
         #self.stack.Layout()
         #self.t[12].SetBackgroundColour(self.white)
         self.splitter.SetDoubleBuffered(True)
-        self.stack.SetBackgroundColour((240,255,255,255))
+        #self.stack.SetBackgroundColour((240,255,255,255))
         
-    def Load(self, filename):
-        if filename == None:
+    def Load(self, content):
+        if content == None:
             return
-        data = yaml_load(open(filename).read(), yaml.SafeLoader, UnsortableOrderedDict)
+        if isinstance(content, UnsortableOrderedDict):
+            data = content
+        else:
+            data = yaml_load(open(content).read(), yaml.SafeLoader, UnsortableOrderedDict)
         #print data
         def walk(data, parent=None):
             if isinstance(data, UnsortableOrderedDict):
@@ -294,7 +297,7 @@ class YamledWindow(wx.Frame):
         self.stack.Layout()
         #self.stack.SetScrollbars(16, self.item_height, 50,50)
         #self.stack.SetScrollRate(16, self.item_height)
-        self.stack.SetVirtualSize((-1, self.item_height*(len(filter(lambda x: x, self.r)))-1))
+        self.stack.SetVirtualSize((-1, self.item_height*(len(filter(lambda x: x, self.r))-0)-0))
         #print self.stack.GetSize()[-1], self.splitter.GetSize()[-1]
         '''
         height_splitter = self.splitter.GetSize()[-1]
@@ -343,6 +346,8 @@ class YamledWindow(wx.Frame):
 
     def __stack_OnScroll(self, e):
         pos = self.stack.GetScrollPos(wx.VERTICAL)
+        #print pos, pos+self.GetSize()[-1]/self.item_height, len(filter(lambda x: x, self.r))
+        #print len(self.n), pos
         #if pos < len(self.n):
         #    #self.scroll_spin = True
         #    self.tree.ScrollTo(self.n[pos])
@@ -352,6 +357,7 @@ class YamledWindow(wx.Frame):
                 self.tree.ScrollTo(self.n[n_range[pos]])
             else:
                 self.tree.ScrollTo(self.n[n_range[0]])
+        self.__tree_OnScroll(e)
         
     def _tree_adjust(self):
         self.tree.SetSize((self.left.GetSize()[0]+35, self.stack.GetSize()[1]))
@@ -359,6 +365,8 @@ class YamledWindow(wx.Frame):
         
     def __OnResize(self, e):
         self._tree_adjust()
+        for i in [False, True]:
+            self.splitter.SetDoubleBuffered(i)
         e.Skip()
 
     def __OnRepaint(self, e):
@@ -384,7 +392,7 @@ class YamledWindow(wx.Frame):
 
 def GUI():
     wx_app = wx.App(redirect=True) # redirect in wxpython 3.0 defaults to False
-    YamledWindow(filename='../../x.yaml')
+    YamledWindow(content='../../x.yaml')
     wx_app.MainLoop()
 
 if __name__ == '__main__':
