@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.5.2'
-    date = 'Sun Sep 21 12:10:03 2014'
+    version = '0.5.3'
+    date = 'Tue Sep 23 17:53:12 2014'
     changelog = '''
+    0.5.3 - Tue Sep 23 17:53:12 2014
+    - FIX: Binary content (e.g. gif file HTTP response) in should now be handled properly
+    
     0.5.2 - Sun Sep 21 12:10:03 2014
     - Yamled node collapsing/expanding added
     - Yamled scrolling and content loading fixes

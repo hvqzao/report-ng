@@ -17,6 +17,7 @@
 
 
 from util import yaml_load, UnsortableOrderedDict
+import util
 from openxml import Openxml
 from pseudohtml import InlineHtmlParser, HtmlParser
 from scan import Scan
@@ -27,6 +28,7 @@ import yaml, json
 import os
 import os.path
 from cgi import escape
+#import base64
 #import docx
 docx = None
 
@@ -363,7 +365,7 @@ class Report(object):
                 self._openxml.parse(value, self._ihtml_parser)
                 self._openxml.remove_sdt_cursor()
             '''
-            if self._is_html(value) or self._is_ihtml(value):
+            if not util.binary(value) and (self._is_html(value) or self._is_ihtml(value)):
                 block = etree.Element('Summary')
                 for i in children:
                     block.append(etree.fromstring(etree.tostring(i)))
@@ -382,6 +384,8 @@ class Report(object):
                     parent.insert(parent.index(sdt), i)
                 parent.remove(sdt)                    
             else:
+                if util.binary(value):
+                    value = util.binary_safe(value)
                 values = unicode(value).split('\n')
                 build = []
                 for v in values:
@@ -955,8 +959,10 @@ if __name__ == '__main__':
 
     report = Report()
     report.template_load_xml('../examples/tmp/DS-template v1.0.xml', clean=True)
-    report.scan = Scan('../../scan_2.xml')
+    #report.scan = Scan('../../scan_2.xml')
+    report.scan = Scan('../../y.yaml')
     report.xml_apply_meta()
+    report.save_report_xml('../../!.xml')
 
     '''
     # sample DS

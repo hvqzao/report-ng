@@ -24,6 +24,7 @@ import cStringIO
 import yaml
 
 from util import yaml_load, UnsortableOrderedDict
+import util
 from resources.yamled import icon
 from version import Version
 
@@ -124,7 +125,9 @@ class YamledWindow(wx.Frame):
                 return self.__current
         index = Index(100)
         menu_file = wx.Menu()
-        #menu_file.AppendSeparator()
+        menu_file_close = menu_file.Append(index.next(), '&Close')
+        self.Bind(wx.EVT_MENU, self.File_Close, id=index.current)
+        menu_file.AppendSeparator()
         menu_file.Append(wx.ID_EXIT, 'E&xit\tCtrl+Q', 'Exit application')
         self.Bind(wx.EVT_MENU, self.__Exit, id=wx.ID_EXIT)
         menu.Append(menu_file, '&File')
@@ -170,9 +173,6 @@ class YamledWindow(wx.Frame):
         self.tree_popupmenu = wx.Menu()
         self.tree_popupmenu_delnode = self.tree_popupmenu.Append(-1, 'Delete node')
         self.Bind(wx.EVT_MENU, self.__tree_OnPopupMenu_DelNode, self.tree_popupmenu_delnode)
-        #for i in 'one two three four five'.split():
-        #    item = self.tree_popupmenu.Append(-1, i)
-        #    self.Bind(wx.EVT_MENU, self.__tree_OnPopupMenuItem, item)
         self.tree.Bind(wx.EVT_CONTEXT_MENU, self.__tree_OnPopupMenu)
         def tree_empty_OnPopupMenu(e):
             if self.tree.GetCount() == 0:
@@ -250,6 +250,7 @@ class YamledWindow(wx.Frame):
             else:
                 if parent != None:
                     self.SetValue(parent, data)
+                    self.SetData(parent, data)
         walk(data)
 
     def SetData(self, item, data):
@@ -257,9 +258,11 @@ class YamledWindow(wx.Frame):
         self.d[pos] = data
 
     def SetValue(self, item, value):
+        pos = self.n.index(item)
+        if util.binary(value):
+            value = util.binary_safe(value)
         value = unicode(value).split('\n')
         value = value[0]+['',' [...]'][len(value) > 1]
-        pos = self.n.index(item)
         self.t[pos].SetValue(unicode(value).split('\n')[0])
 
     def GetData(self, item):
@@ -295,23 +298,8 @@ class YamledWindow(wx.Frame):
                 self.t[i].Hide()
         # update stack layout and height
         self.stack.Layout()
-        #self.stack.SetScrollbars(16, self.item_height, 50,50)
-        #self.stack.SetScrollRate(16, self.item_height)
         self.stack.SetVirtualSize((-1, self.item_height*(len(filter(lambda x: x, self.r))-0)-0))
-        #print self.stack.GetSize()[-1], self.splitter.GetSize()[-1]
-        '''
-        height_splitter = self.splitter.GetSize()[-1]
-        height_stack = self.item_height*len(filter(lambda x: x, self.r))
-        if height_stack > height_splitter:
-            self.stack.SetSize((-1,height_stack))
-            print height_stack
-        else:
-            self.stack.SetSize((-1,height_splitter))
-            print height_splitter
-        '''
-        '''
-        self.tree.Layout()
-        '''
+        #self.tree.Layout()
         
     def __tree_OnCollapse(self, e):
         #print e.GetItem()
@@ -320,17 +308,13 @@ class YamledWindow(wx.Frame):
     def __tree_OnExpand(self, e):
         #print e.GetItem()
         self._stack_adjust()
-        
-    #def __tree_OnPopupMenuItem(self, e):
-    #    item = self.tree_popupmenu.FindItemById(e.GetId())
-    #    text = item.GetText()
-    #    wx.MessageBox("You selected item '%s'" % text)
 
     def __tree_OnPopupMenu_DelNode(self, e):
         pass
 
     def __tree_OnPopupMenu(self, e):
         #self.tree_popupmenu_delnode.SetText('Delete nodes')
+        self.tree_popupmenu_delnode.Enable(False)
         pos = e.GetPosition()
         if self.tree.GetCount() == 0:
             pos += self.splitter.GetScreenPosition()
@@ -346,11 +330,6 @@ class YamledWindow(wx.Frame):
 
     def __stack_OnScroll(self, e):
         pos = self.stack.GetScrollPos(wx.VERTICAL)
-        #print pos, pos+self.GetSize()[-1]/self.item_height, len(filter(lambda x: x, self.r))
-        #print len(self.n), pos
-        #if pos < len(self.n):
-        #    #self.scroll_spin = True
-        #    self.tree.ScrollTo(self.n[pos])
         n_range = filter(lambda x: self.r[x], range(len(self.r)))
         if n_range:
             if pos in range(len(n_range)):
@@ -372,6 +351,9 @@ class YamledWindow(wx.Frame):
     def __OnRepaint(self, e):
         self._tree_adjust()
 
+    def File_Close(self, e):
+        pass
+
     def __Exit(self, e):
         self.Close()
 
@@ -392,7 +374,9 @@ class YamledWindow(wx.Frame):
 
 def GUI():
     wx_app = wx.App(redirect=True) # redirect in wxpython 3.0 defaults to False
-    YamledWindow(content='../../x.yaml')
+    #YamledWindow(content='../../x.yaml')
+    #YamledWindow(content='../../y.yaml')
+    YamledWindow(content='../../z.yaml')
     wx_app.MainLoop()
 
 if __name__ == '__main__':

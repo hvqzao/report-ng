@@ -50,3 +50,28 @@ def yaml_load(stream, Loader=yaml.Loader, object_pairs_hook=UnsortableOrderedDic
 
     MyLoader.add_constructor(u'tag:yaml.org,2002:str', construct_yaml_str)
     return yaml.load(stream, MyLoader)
+
+def binary(data):
+    binary = False
+    try:
+        unicode(data)
+    except:
+        binary = True
+    return binary
+
+def valid_xml_char_ordinal(c):
+    codepoint = ord(c)
+    return (
+        0x20 <= codepoint <= 0xD7FF or
+        codepoint in (0x9, 0xA, 0xD) or
+        0xE000 <= codepoint <= 0xFFFD or
+        0x10000 <= codepoint <= 0x10FFFF
+        )
+
+def binary_safe(data, cut='[...]'):
+    for i in range(len(data)):
+        try:
+            unicode(data[i])
+        except:
+            break
+    return unicode(''.join(filter(lambda x: valid_xml_char_ordinal(x), data[:i]+cut)))
