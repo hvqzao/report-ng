@@ -32,10 +32,11 @@ class Version(object):
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
     version = '0.5.3'
-    date = 'Tue Sep 23 17:53:12 2014'
+    date = 'Tue Sep 23 18:11:54 2014'
     changelog = '''
     0.5.3 - Tue Sep 23 17:53:12 2014
     - FIX: Binary content (e.g. gif file HTTP response) in should now be handled properly
+    - WebInspect and Burp scans first parameter is now Name, not Severity
     
     0.5.2 - Sun Sep 21 12:10:03 2014
     - Yamled node collapsing/expanding added

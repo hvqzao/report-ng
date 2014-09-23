@@ -139,7 +139,7 @@ def burp_import(xml):
     for vuln_id in sorted(set(map(lambda x: int(x['vuln_id']), issues_list))):
         issue = UnsortableOrderedDict()
         for i in filter(lambda x: int(x['vuln_id']) == vuln_id, issues_list):
-            for j in ['Severity', 'severity_id', 'Name', 'ReportSections', 'Example']:  #, 'Classifications'
+            for j in ['Name', 'Severity', 'severity_id', 'ReportSections', 'Example']:  #, 'Classifications'
                 if j not in issue:
                     issue[j] = i[j]
                     #else:
