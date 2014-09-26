@@ -84,7 +84,9 @@ if __name__ == '__main__':
 
     #scan = Scan('../examples/tmp/b-webinspect.xml')
     #print scan.dump_yaml()
-    scan = Scan('../../c-webinspect.xml')
+    #scan = Scan('../../c-webinspect.xml')
     #print scan.modify(True)['Findings'][0]['Occurrences'][0]['Post']#.keys()
     #print scan.modify(True)['Findings'][0]['Occurrences'][0].keys()
-    print scan.dump_yaml()
+    #print scan.dump_yaml()
+    #for i in scan._scan['Findings']:
+    #    print i['Name']

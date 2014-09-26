@@ -653,7 +653,11 @@ class Report(object):
                         elif i['struct'][-1][-1] == '#':
                             i_hash = i['struct'][:]
                             i_hash[-1] = i_hash[-1][:-1]
-                            self._xml_sdt_single(len(self._v(finding, i_hash[2:])), i['sdt'], i['children'])
+                            if i_hash[2:][0] in finding:
+                                i_hash_count = len(self._v(finding, i_hash[2:])) or 1
+                            else:
+                                i_hash_count = 1
+                            self._xml_sdt_single(i_hash_count, i['sdt'], i['children'])
                             del i_hash
                         else:
                             if 'Summary' in finding and i['struct'][2] in finding['Summary']:
@@ -744,6 +748,11 @@ class Report(object):
         #print root
         # process Data.*
         #for i in self._struct:
+        def dict_count(block, key, fallback=1):
+            if key in block:
+                return len(block[key]) or fallback
+            else:
+                return fallback
         for i in filter(lambda x: x[0][-1][-1] != '?', self._struct):
             p = self._p(self._meta['Data'], i[0])
             #if p is not None and i[0] != ['Finding']:
@@ -791,7 +800,7 @@ class Report(object):
         # Findings.VolumeChart
         chart_struct = filter(lambda x: x[0] == ['Findings', 'VolumeChart'], self._struct)
         if chart_struct:
-            findings_by_volume_map = map(lambda x: [x['Severity'], len(x['Occurrences'])], self._meta['Findings'])
+            findings_by_volume_map = map(lambda x: [x['Severity'], dict_count(x, 'Occurrences', fallback=1)], self._meta['Findings'])
             findings_by_volume = map(lambda z: reduce(lambda x,y: x+y, map(lambda x: x[1], filter(lambda x: x[0] == z, findings_by_volume_map))+[0]), self.severity.keys())
             self._xml_apply_chart(chart_struct, findings_by_volume)
         del chart_struct
@@ -958,11 +967,12 @@ if __name__ == '__main__':
     '''
 
     report = Report()
-    report.template_load_xml('../examples/tmp/DS-template v1.0.xml', clean=True)
-    #report.scan = Scan('../../scan_2.xml')
-    report.scan = Scan('../../y.yaml')
+    report.template_load_xml('../../issue/a.xml', clean=True)
+    report.content_load_yaml ('../../issue/a.yaml') 
+    report.scan = Scan('../../issue/b.xml')
+    #report.kb_load_csv('../../issue/a.csv')
     report.xml_apply_meta()
-    report.save_report_xml('../../!.xml')
+    #report.save_report_xml('../../issue/!.xml')
 
     '''
     # sample DS

@@ -96,7 +96,11 @@ def burp_import(xml):
         #confidence = issue.xpath('./confidence')[0].text
         name = issue.xpath('./name')[0].text
         vuln_id = issue.xpath('./type')[0].text
-        issue_background = issue.xpath('./issueBackground')[0].text
+        issue_background_element = issue.xpath('./issueBackground')
+        if issue_background_element:
+            issue_background = issue_background_element[0].text
+        else:
+            issue_background = ''
         issue_detail_element = issue.xpath('./issueDetail')
         if issue_detail_element:
             issue_detail = issue_detail_element[0].text
@@ -112,6 +116,9 @@ def burp_import(xml):
             ['issueDetail', etree.tostring(soupparser.fromstring(issue_detail))],
             ['remediationBackground', etree.tostring(soupparser.fromstring(remediation_background))],
         ])
+        #if 'Host header poisoning' in name:
+        #if vuln_id == '134217728':
+        #    print name
         for i in report_sections:
             report_sections[i] = fine_tune(report_sections[i], i)
         issues_list += [UnsortableOrderedDict([
@@ -136,9 +143,9 @@ def burp_import(xml):
                 map(lambda x: [x.replace(' ', ''), report_sections[x]], report_sections.keys()))],
         ])]
     findings = []
-    for vuln_id in sorted(set(map(lambda x: int(x['vuln_id']), issues_list))):
+    for vuln_name in sorted(set(map(lambda x: x['Name'], issues_list))):
         issue = UnsortableOrderedDict()
-        for i in filter(lambda x: int(x['vuln_id']) == vuln_id, issues_list):
+        for i in filter(lambda x: x['Name'] == vuln_name, issues_list):
             for j in ['Name', 'Severity', 'severity_id', 'ReportSections', 'Example']:  #, 'Classifications'
                 if j not in issue:
                     issue[j] = i[j]
@@ -165,7 +172,10 @@ if __name__ == '__main__':
 
     import yaml
     from lxml import etree
-    xml = etree.parse('../examples/tmp/b-burp.xml')
+    #xml = etree.parse('../examples/tmp/b-burp.xml')
+    xml = etree.parse('../../issue/b.xml')
     scan = burp_import(xml)
-    sample = scan['Findings'][-2]
-    print yaml.dump(sample, default_flow_style=False, allow_unicode=True).decode('utf-8')
+    #for i in scan['Findings']:
+    #    print i['Name']
+    #sample = scan['Findings'][-2]
+    #print yaml.dump(sample, default_flow_style=False, allow_unicode=True).decode('utf-8')
