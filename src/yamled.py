@@ -45,7 +45,6 @@ class YamledWindow(wx.Frame):
     #d
     #r
     #stack_sizer
-    ##scroll_spin
 
     class yTextCtrl(wx.TextCtrl):
 
@@ -146,7 +145,6 @@ class YamledWindow(wx.Frame):
         self.left = wx.Panel(self.splitter, style=wx.BORDER_SIMPLE)
         self.tree = wx.TreeCtrl(self.left, style=wx.TR_HAS_BUTTONS|wx.TR_HIDE_ROOT|wx.TR_LINES_AT_ROOT|wx.TR_MULTIPLE|wx.BORDER_NONE) #|wx.TR_NO_LINES
         #self.tree.AssignImageList(self.tree_image_list)
-        #self.scroll_spin = False
         def splitter_repaint(e):
             self._tree_adjust()
         self.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGING, splitter_repaint, self.splitter)
@@ -322,9 +320,6 @@ class YamledWindow(wx.Frame):
         self.tree.PopupMenu(self.tree_popupmenu, pos)
     
     def __tree_OnScroll(self, e):
-        #if self.scroll_spin == True:
-        #    self.scroll_spin = False
-        #    return
         pos = self.tree.GetScrollPos(wx.VERTICAL)
         self.stack.Scroll((-1, pos))
 
