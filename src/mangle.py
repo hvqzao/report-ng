@@ -16,10 +16,15 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
+#def line_cap(content,cap=1000):
+#    return '\n'.join(map(lambda x: x[:cap], content.split('\n')))
+
 def request_tune(content):
+    #content = line_cap(content)
     return content.strip()
 
 def response_tune(content):
+    #content = line_cap(content)
     blank = content.find('\n\n')
     if blank == -1:
         return content.strip()
