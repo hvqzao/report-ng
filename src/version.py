@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.5.5'
-    date = 'Fri Sep 26 13:56:07 2014'
+    version = '0.5.6'
+    date = 'Thu Nov 13 14:31:49 2014'
     changelog = '''
+    0.5.6 - Thu Nov 13 14:31:49 2014
+    - FIX: params truncation handling bugfix
+    
     0.5.5 - Fri Sep 26 13:09:41 2014
     - FIX: Burp scan imports issueBackground is now handled as optional field
     - FIX: Due to specific Burp extension, scan grouping is now name based as vuln_id became ambiguous

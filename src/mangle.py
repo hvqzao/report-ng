@@ -34,6 +34,8 @@ def response_tune(content):
 def http_param_truncate(param, search=['__VIEWSTATE', 'javax.faces.ViewState'], maxlen=160, replacement='[...]'):
     if not isinstance(search,list):
         search = [search]
+    if not isinstance(param,list):
+        return param
     if not filter(lambda x: x+'=' in param, search):
         return param
     for subject in search:

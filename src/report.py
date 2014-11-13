@@ -966,6 +966,7 @@ if __name__ == '__main__':
     #report.save_report_xml('../../bug-01/!.xml')
     '''
 
+    '''
     report = Report()
     report.template_load_xml('../../issue/a.xml', clean=True)
     report.content_load_yaml ('../../issue/a.yaml') 
@@ -973,7 +974,11 @@ if __name__ == '__main__':
     #report.kb_load_csv('../../issue/a.csv')
     report.xml_apply_meta()
     #report.save_report_xml('../../issue/!.xml')
+    '''
 
+    #report = Report()
+    #report.scan = Scan('../../_prep-joined.yaml')
+    
     '''
     # sample DS
     report = Report()
