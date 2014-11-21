@@ -31,7 +31,7 @@ def response_tune(content):
     else:
         return (content[:blank+2]+'\n'.join(content[blank+2:].split('\n')[:4])+'\n[...]').strip()
 
-def http_param_truncate(param, search=['__VIEWSTATE', 'javax.faces.ViewState'], maxlen=160, replacement='[...]'):
+def http_param_truncate(param, search=['__VIEWSTATE', '__EVENTVALIDATION', 'javax.faces.ViewState'], maxlen=160, replacement='[...]'):
     if not isinstance(search,list):
         search = [search]
     if not isinstance(param,list):

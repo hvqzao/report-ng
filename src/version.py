@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.5.6'
-    date = 'Thu Nov 13 14:31:49 2014'
+    version = '0.5.7'
+    date = 'Fri Nov 21 07:28:04 2014'
     changelog = '''
+    0.5.7 - Fri Nov 21 07:28:04 2014
+    - __EVENTVALIDATION is now shortened same way as __VIEWSTATE
+    
     0.5.6 - Thu Nov 13 14:31:49 2014
     - FIX: params truncation handling bugfix
     
