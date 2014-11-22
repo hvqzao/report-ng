@@ -45,6 +45,7 @@ class YamledWindow(wx.Frame):
     #d
     #r
     #stack_sizer
+    SPACER = '      '
 
     class yTextCtrl(wx.TextCtrl):
 
@@ -215,7 +216,32 @@ class YamledWindow(wx.Frame):
         #self.t[12].SetBackgroundColour(self.white)
         self.splitter.SetDoubleBuffered(True)
         #self.stack.SetBackgroundColour((240,255,255,255))
-        
+        #self.Rebuild()
+            
+    '''
+    def Rebuild(self):
+        #struct = UnsortableOrderedDict()
+        root = self.tree.GetRootItem()
+        def walk(parent):
+            struct = UnsortableOrderedDict()
+            (item, cookie) = self.tree.GetFirstChild(parent)
+            while item:
+                name = self.tree.GetItemText(item)
+                if name[:len(self.SPACER)] == self.SPACER:
+                    name = name[len(self.SPACER):-1]
+                else:
+                    name = name[:-1]
+                #print '*', name
+                if self.tree.ItemHasChildren(item):
+                    struct[name] = walk(item)
+                else:
+                    struct[name] = '[...]' #self.GetData(item)
+                (item, cookie) = self.tree.GetNextChild(item, cookie)
+            return struct
+        print walk(root)
+        #print self.GetData(item)
+    '''
+    
     def Load(self, content):
         if content == None:
             return
@@ -238,7 +264,7 @@ class YamledWindow(wx.Frame):
                     for i in data:
                         if i.keys() != keys:
                             raise Exception('List keys differ!')
-                        list_item = self.AppendNode('      '+keys[0]+':', '', None, parent)
+                        list_item = self.AppendNode(self.SPACER+keys[0]+':', '', None, parent)
                         #self.tree.SetPyData(list_item, None)
                         #self.tree.SetItemImage(list_item, self.dotlist) #, wx.TreeItemIcon_Normal)
                         walk(i[keys[0]], list_item)

@@ -1,6 +1,10 @@
 # Todo:
 
 ```
+- yamled: delete node
+- yamled: popup menu: collapse node
+- yamled: popup menu: expand node
+
 - Finding.Severity as optional
 ```
 
