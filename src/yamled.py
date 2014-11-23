@@ -216,13 +216,16 @@ class YamledWindow(wx.Frame):
         #self.t[12].SetBackgroundColour(self.white)
         self.splitter.SetDoubleBuffered(True)
         #self.stack.SetBackgroundColour((240,255,255,255))
-        #self.Rebuild()
+        #self.Extract()
             
-    '''
-    def Rebuild(self):
-        #struct = UnsortableOrderedDict()
+    def Extract(self):
+        #print
+        #for i in range(len(self.n)):
+        #    print self.tree.GetItemText(self.n[i]),  self.tree.ItemHasChildren(self.n[i]), self.d[i], isinstance(self.d[i], list)
+        #print
         root = self.tree.GetRootItem()
-        def walk(parent):
+        def walk(parent, listmode=False):
+            stack = []
             struct = UnsortableOrderedDict()
             (item, cookie) = self.tree.GetFirstChild(parent)
             while item:
@@ -231,16 +234,26 @@ class YamledWindow(wx.Frame):
                     name = name[len(self.SPACER):-1]
                 else:
                     name = name[:-1]
-                #print '*', name
+                data = self.GetData(item)
                 if self.tree.ItemHasChildren(item):
-                    struct[name] = walk(item)
+                    result = walk(item, isinstance(data, list))
+                    if listmode:
+                        struct[name] = data
+                        for i in result.keys():
+                            struct[i] = result[i]
+                        stack += [struct]
+                        struct = UnsortableOrderedDict()
+                    else:
+                        struct[name] = result
                 else:
-                    struct[name] = '[...]' #self.GetData(item)
+                    struct[name] = self.GetData(item)
                 (item, cookie) = self.tree.GetNextChild(item, cookie)
-            return struct
-        print walk(root)
-        #print self.GetData(item)
-    '''
+            if listmode:
+                return stack
+            else:
+                return struct
+        #print walk(root)
+        return walk(root)
     
     def Load(self, content):
         if content == None:
@@ -395,6 +408,7 @@ class YamledWindow(wx.Frame):
 
 def GUI():
     wx_app = wx.App(redirect=True) # redirect in wxpython 3.0 defaults to False
+    #wx_app = wx.App(redirect=False)
     #YamledWindow(content='../../x.yaml')
     #YamledWindow(content='../../y.yaml')
     YamledWindow(content='../../z.yaml')
