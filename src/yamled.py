@@ -35,6 +35,7 @@ class YamledWindow(wx.Frame):
     #icon
     ##gray
     ##white
+    #menu_file_save_as
     #splitter
     #left
     #tree
@@ -125,8 +126,11 @@ class YamledWindow(wx.Frame):
                 return self.__current
         index = Index(100)
         menu_file = wx.Menu()
-        menu_file_close = menu_file.Append(index.next(), '&Close')
-        self.Bind(wx.EVT_MENU, self.File_Close, id=index.current)
+        #menu_file_close = menu_file.Append(index.next(), '&Close')
+        #self.Bind(wx.EVT_MENU, self.File_Close, id=index.current)
+        self.menu_file_save_as = menu_file.Append(index.next(), '&Save As...')
+        self.menu_file_save_as.Enable(False)
+        self.Bind(wx.EVT_MENU, self.File_Save_As, id=index.current)
         menu_file.AppendSeparator()
         menu_file.Append(wx.ID_EXIT, 'E&xit\tCtrl+Q', 'Exit application')
         self.Bind(wx.EVT_MENU, self.__Exit, id=wx.ID_EXIT)
@@ -172,6 +176,11 @@ class YamledWindow(wx.Frame):
         self.tree_popupmenu = wx.Menu()
         self.tree_popupmenu_delnode = self.tree_popupmenu.Append(-1, 'Delete node')
         self.Bind(wx.EVT_MENU, self.__tree_OnPopupMenu_DelNode, self.tree_popupmenu_delnode)
+        self.tree_popupmenu.AppendSeparator()
+        tree_popupmenu_collapse_all = self.tree_popupmenu.Append(-1, 'Collapse all')
+        self.Bind(wx.EVT_MENU, self.__tree_OnPopupMenu_CollapseAll, tree_popupmenu_collapse_all)
+        tree_popupmenu_expand_all = self.tree_popupmenu.Append(-1, 'Expand all')
+        self.Bind(wx.EVT_MENU, self.__tree_OnPopupMenu_ExpandAll, tree_popupmenu_expand_all)
         self.tree.Bind(wx.EVT_CONTEXT_MENU, self.__tree_OnPopupMenu)
         def tree_empty_OnPopupMenu(e):
             if self.tree.GetCount() == 0:
@@ -188,7 +197,8 @@ class YamledWindow(wx.Frame):
         #self.AppendNode('cgi','har',dict(a='frai'))
         #for i in range(1,50):
         #    self.AppendNode(str(i),str(i))
-        self.Load(content)
+        if content != None:
+            self.Load(content)
         self.tree.ExpandAll()
         #self._stack_adjust()
         self.tree.Bind(wx.EVT_TREE_ITEM_COLLAPSED, self.__tree_OnCollapse)
@@ -289,6 +299,7 @@ class YamledWindow(wx.Frame):
                     self.SetValue(parent, data)
                     self.SetData(parent, data)
         walk(data)
+        self.menu_file_save_as.Enable(True)
 
     def SetData(self, item, data):
         pos = self.n.index(item)
@@ -319,6 +330,19 @@ class YamledWindow(wx.Frame):
         self.r += [True]
         return item
 
+    def DeleteNode(self, item):
+        while self.tree.ItemHasChildren(item):
+            (child, cookie) = self.tree.GetFirstChild(item)
+            self.DeleteNode(child)
+        pos = self.n.index(item)
+        self.stack_sizer.Hide(self.t[pos])
+        self.stack_sizer.Remove(self.t[pos])
+        self.tree.Delete(self.n[pos])
+        del self.n[pos]
+        del self.t[pos]
+        del self.d[pos]
+        del self.r[pos]
+
     def _stack_adjust(self):
         # recalc items visiblity
         for i in range(len(self.n)):
@@ -347,11 +371,29 @@ class YamledWindow(wx.Frame):
         self._stack_adjust()
 
     def __tree_OnPopupMenu_DelNode(self, e):
-        pass
+        for i in self.tree.GetSelections():
+            self.DeleteNode(i)
+        self._stack_adjust()
+
+    def __tree_OnPopupMenu_CollapseAll(self, e):
+        self.tree.CollapseAll()
+        self._stack_adjust()
+
+    def __tree_OnPopupMenu_ExpandAll(self, e):
+        self.tree.ExpandAll()
+        self._stack_adjust()
 
     def __tree_OnPopupMenu(self, e):
-        #self.tree_popupmenu_delnode.SetText('Delete nodes')
-        self.tree_popupmenu_delnode.Enable(False)
+        if len(self.tree.GetSelections()) > 0:
+            self.tree_popupmenu_delnode.Enable(True)
+            if len(self.tree.GetSelections()) > 1:
+                self.tree_popupmenu_delnode.SetText('Delete nodes')
+            else:
+                self.tree_popupmenu_delnode.SetText('Delete node')
+        else:
+            self.tree_popupmenu_delnode.SetText('Delete node')
+            self.tree_popupmenu_delnode.Enable(False)
+        #self.tree_popupmenu_delnode.Enable(False)
         pos = e.GetPosition()
         if self.tree.GetCount() == 0:
             pos += self.splitter.GetScreenPosition()
@@ -388,6 +430,17 @@ class YamledWindow(wx.Frame):
     def File_Close(self, e):
         pass
 
+    def File_Save_As(self, e):
+        openFileDialog = wx.FileDialog(self, 'Save Yaml As', '', '',
+                                       'Yaml files (*.yaml)|*.yaml|All files (*.*)|*.*',
+                                       wx.FD_SAVE | wx.wx.FD_OVERWRITE_PROMPT)
+        if openFileDialog.ShowModal() == wx.ID_CANCEL:
+                return
+        filename = openFileDialog.GetPath()
+        h = open(filename, 'w')
+        h.write(yaml.dump(self.Extract(), default_flow_style=False, allow_unicode=True).decode('utf-8').encode('utf-8'))
+        h.close()
+
     def __Exit(self, e):
         self.Close()
 
@@ -412,6 +465,7 @@ def GUI():
     #YamledWindow(content='../../x.yaml')
     #YamledWindow(content='../../y.yaml')
     YamledWindow(content='../../z.yaml')
+    #YamledWindow()
     wx_app.MainLoop()
 
 if __name__ == '__main__':

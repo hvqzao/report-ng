@@ -69,6 +69,7 @@ class GUI(Version):
         #ctrl_tc_t
         #ctrl_st_c
         #ctrl_tc_c
+        #ctrl_tc_c_b
         #ctrl_st_s
         #ctrl_tc_s
         #ctrl_tc_s_b
@@ -246,7 +247,7 @@ class GUI(Version):
             self.ctrl_tc_t.SetDropTarget(ctrl_tc_t_dt)
             fgs.AddMany([(self.ctrl_st_t, 1, wx.EXPAND), (self.ctrl_tc_t, 1, wx.EXPAND)])
 
-            # Content
+            # Content + Edit
             self.ctrl_st_c = wx.StaticText(panel, label='Content:')
             self.ctrl_st_c.Enable(False)
             self.ctrl_tc_c = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(200, 3 * 17,))
@@ -263,7 +264,27 @@ class GUI(Version):
                 e.Skip()
             self.ctrl_tc_c.Bind(wx.EVT_SET_FOCUS, ctrl_tc_c_OnFocus)
             self.ctrl_tc_c.Bind(wx.EVT_LEFT_DCLICK, ctrl_tc_c_OnDoubleclick)
+            def ctrl_tc_c_b_onClick(e):
+                self.application.YamledWindowWrapper(self, title='Content', content=self.report._content)
+                pass
+            def ctrl_tc_c_onResize(e):
+                size = self.ctrl_tc_c.GetSize()
+                self.ctrl_tc_c_b.SetPosition((size[0]-36-1, -1))
+            self.ctrl_tc_c_b = wx.Button(self.ctrl_tc_c, index.next(), 'E', size=(16, 16))
+            self.ctrl_tc_c_b.Bind(wx.EVT_BUTTON, ctrl_tc_c_b_onClick)
+            self.ctrl_tc_c.Bind(wx.EVT_SIZE, ctrl_tc_c_onResize)
+            self.ctrl_tc_c_b.Hide()
+            def ctrl_tc_c_b_OnMouseOver(e):
+                self.status('Send Content to Yaml Editor', hint=True)
+                e.Skip()
+            #def ctrl_tc_c_b_OnMouseLeave(e):
+            #    self.status('')
+            #    e.Skip()
+            self.ctrl_tc_c_b.Bind(wx.EVT_ENTER_WINDOW, ctrl_tc_c_b_OnMouseOver)
+            #self.ctrl_tc_c_b.Bind(wx.EVT_LEAVE_WINDOW, ctrl_tc_c_b_OnMouseLeave)
             def ctrl_tc_c_OnMouseOver(e):
+                if self.ctrl_st_c.IsEnabled(): # Yamled
+                    self.ctrl_tc_c_b.Show()
                 self.status('You might use drag & drop', hint=True)
                 e.Skip()
             #def ctrl_tc_c_OnMouseLeave(e):
@@ -276,6 +297,8 @@ class GUI(Version):
                     wx.MessageBox('Single file is expected!', 'Error', wx.OK | wx.ICON_ERROR)
                     return
                 self._open_content(filenames[0])
+                if self.ctrl_st_c.IsEnabled(): # Yamled
+                    self.ctrl_tc_c_b.Show()
             ctrl_tc_c_dt = FileDropTarget(self.ctrl_tc_c, ctrl_tc_c_OnDropFiles)
             self.ctrl_tc_c.SetDropTarget(ctrl_tc_c_dt)
             fgs.AddMany([(self.ctrl_st_c, 1, wx.EXPAND), (self.ctrl_tc_c, 1, wx.EXPAND)])
@@ -304,7 +327,7 @@ class GUI(Version):
             self.ctrl_tc_s.Bind(wx.EVT_SIZE, ctrl_tc_s_onResize)
             self.ctrl_tc_s_b.Hide()
             def ctrl_tc_s_b_OnMouseOver(e):
-                self.status('Use Yaml Editor on the Scan', hint=True)
+                self.status('Send Scan to Yaml Editor', hint=True)
                 e.Skip()
             #def ctrl_tc_s_b_OnMouseLeave(e):
             #    self.status('')
@@ -366,6 +389,7 @@ class GUI(Version):
             fgs.AddMany([(self.ctrl_st_k, 1, wx.EXPAND), (self.ctrl_tc_k, 1, wx.EXPAND)])
             def panel_OnMouseOver(e):
                 self.status('')
+                self.ctrl_tc_c_b.Hide()
                 self.ctrl_tc_s_b.Hide()
                 e.Skip()
             panel.Bind(wx.EVT_ENTER_WINDOW, panel_OnMouseOver)

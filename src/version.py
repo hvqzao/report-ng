@@ -31,9 +31,15 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.5.7'
-    date = 'Fri Nov 21 07:28:04 2014'
+    version = '0.5.8'
+    date = 'Sun Nov 23 21:01:03 2014'
     changelog = '''
+    0.5.8 - Sun Nov 23 21:01:03 2014
+    - Yamled button is now available for Content
+    - Yamled saving scan is now possible
+    - Yamled nodes deletion has been added
+    - Yamled popup menu has been extended: Collapse All / Expand All
+    
     0.5.7 - Fri Nov 21 07:28:04 2014
     - __EVENTVALIDATION is now shortened same way as __VIEWSTATE
     
