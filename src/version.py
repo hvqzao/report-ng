@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.5.8'
-    date = 'Sun Nov 23 21:01:03 2014'
+    version = '0.5.9'
+    date = 'Thu Dec 25 22:55:01 2014'
     changelog = '''
+    0.5.9 - Thu Dec 25 22:55:01 2014
+    - FIX: Two cases for loading of manually created yaml file were fixed
+    
     0.5.8 - Sun Nov 23 21:01:03 2014
     - Yamled button is now available for Content
     - Yamled saving scan is now possible

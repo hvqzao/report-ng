@@ -281,19 +281,34 @@ class YamledWindow(wx.Frame):
                         self.SetData(parent, UnsortableOrderedDict())
                     walk(data[i], item)
             elif isinstance(data, list):
-                if isinstance(data[0], UnsortableOrderedDict):
-                    keys = data[0].keys()
+                if len(data) == 0:
+                    self.SetValue(parent, '')
+                    self.SetData(parent, '')
+                elif isinstance(data[0], UnsortableOrderedDict):
+                    #keys = data[0].keys()
+                    keys = []
+                    for i in data:
+                        for j in i.keys():
+                            if j not in keys:
+                                keys += [j]
+                    #print keys
                     self.SetData(parent, keys)
                     for i in data:
-                        if i.keys() != keys:
-                            raise Exception('List keys differ!')
+                        #print
+                        #print keys, i.keys()
+                        #if i.keys() != keys:
+                        #    raise Exception('List keys differ!')
                         list_item = self.AppendNode(self.SPACER+keys[0]+':', '', None, parent)
                         #self.tree.SetPyData(list_item, None)
                         #self.tree.SetItemImage(list_item, self.dotlist) #, wx.TreeItemIcon_Normal)
                         walk(i[keys[0]], list_item)
                         for j in keys[1:]:
                             item = self.AppendNode(j+':', '', None, list_item)
-                            walk(i[j], item)
+                            if j in i:
+                                walk(i[j], item)
+                            else:
+                                self.SetValue(parent, '')
+                                self.SetData(parent, '')
             else:
                 if parent != None:
                     self.SetValue(parent, data)
@@ -464,7 +479,8 @@ def GUI():
     #wx_app = wx.App(redirect=False)
     #YamledWindow(content='../../x.yaml')
     #YamledWindow(content='../../y.yaml')
-    YamledWindow(content='../../z.yaml')
+    #YamledWindow(content='../../z.yaml')
+    YamledWindow(content='../../_yamled_dies.yaml')
     #YamledWindow()
     wx_app.MainLoop()
 
