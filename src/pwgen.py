@@ -19,7 +19,7 @@
 import os, random, string
 
 length = 25
-chars = string.ascii_letters + string.digits + '!@#$%^&*()'
+chars = string.ascii_letters + string.digits # + '!@#$%^&*()'
 random.seed = (os.urandom(1024))
 
 def One(length=length, chars=chars):
