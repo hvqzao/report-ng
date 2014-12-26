@@ -73,7 +73,13 @@ def webinspect_import(xml):
         fullurl = scheme+'://'+host+['', ':'+str(port)][bool(port)]+location
         #print method, location
         if method == 'POST':
-            post = request.split('\n')[-1]
+            # fix tested only for Burp reports:
+            #post = request.split('\n')[-1]
+            request_temp = request.replace('\r','')
+            loc = request_temp.find('\n\n')
+            if loc != -1:
+                post = request_temp[loc:].strip()
+            del request_temp
         else:
             post = ''
         vulnparam = session.xpath('./AttackParamDescriptor')[0].text

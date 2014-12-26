@@ -31,10 +31,14 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.5.9'
+    version = '0.6.0'
     date = 'Thu Dec 25 22:55:01 2014'
     changelog = '''
+    0.6.0 - Fri Dec 26 21:05:43 2014
+    - FIX: Multipart requests will now be shown as proper multiline content
+    
     0.5.9 - Thu Dec 25 22:55:01 2014
+    - FIX: Multipart requests data will now land in Finding.Occurrences.Post
     - FIX: Two cases for loading of manually created yaml file were fixed
     
     0.5.8 - Sun Nov 23 21:01:03 2014

@@ -428,13 +428,14 @@ class Report(object):
             return text
 
     def _xml_apply_data(self, struct, value, sdt, children):
-        #print '*',struct#, value
+        #print '*',struct, value
         if not children:
             return
         if not self._xml_sdt_single(value, sdt, children, struct=struct) and children[0].tag in ['{%s}tr' % self.ns.w]:
             #print '+',struct
             build = []
             for row in value:
+                #print row
                 block = etree.fromstring(etree.tostring(children[0]))
                 aliases = self._xml_block_aliases(block)
                 for col in row:
@@ -450,17 +451,22 @@ class Report(object):
                     if not alias_match:
                         continue
                     alias = alias_match[0]
+
                     tags = etree.ETXPath('.//{%s}t' % self.ns.w)(alias['children'][0])
                     if len(tags) > 0:
                         val = row[col]
                         #if struct == ['Finding', 'Occurrences'] and 'Method' in row and 'VulnParam' in row and row['VulnParam']:
                         if struct == ['Finding', 'Occurrences'] and 'Method' in row:
-                            if col == 'Post' and row['Method'] == 'POST':
-                                if self.__truncate:
-                                    val = mangle.http_param_truncate(val)
-                            if col == 'Location' and row['Method'] == 'GET' or col == 'Post' and row['Method'] == 'POST':
-                                if self.__vulnparam_highlighting and 'VulnParam' in row and row['VulnParam']:
-                                    val = self.surround(val,row['VulnParam'],'red')
+                            if col == 'Post' and '\n' in val and not self._is_html(val) and not self._is_ihtml(val):
+                                # highlighting could be added here as well I suppose
+                                val = '<html>'+val.replace('\n','<br/>\n')+'</html>'
+                            else:
+                                if col == 'Post' and row['Method'] == 'POST':
+                                    if self.__truncate:
+                                        val = mangle.http_param_truncate(val)
+                                if col == 'Location' and row['Method'] == 'GET' or col == 'Post' and row['Method'] == 'POST':
+                                    if self.__vulnparam_highlighting and 'VulnParam' in row and row['VulnParam']:
+                                        val = self.surround(val,row['VulnParam'],'red')
                         if self._is_html(val):
                             self._openxml.set_sdt_cursor(cursor=tags[0])
                             self._openxml.parse(val, self._html_parser)
@@ -617,6 +623,7 @@ class Report(object):
                                 del kb_p
                         #self._xml_sdt_single (self._kb_val (finding_val, kb_val), i['sdt'], i['children'])
                         ultimate_val = self._kb_val(finding_val, kb_val)
+                        #print '+', alias_abs
                         #print '=',ultimate_val
                         self._xml_apply_data(i['struct'], ultimate_val, i['sdt'], i['children'])
                         #print finding['Name'], i['struct']

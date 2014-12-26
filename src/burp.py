@@ -64,7 +64,12 @@ def burp_import(xml):
             request = base64.b64decode(request_element[0].text).replace('\r','')
             method = request_element[0].attrib['method']
             if method == 'POST':
-                post = request.split('\n')[-1]
+                #post = request.split('\n')[-1]
+                request_temp = request.replace('\r','')
+                loc = request_temp.find('\n\n')
+                if loc != -1:
+                    post = request_temp[loc:].strip()
+                del request_temp
             else:
                 post = ''
         else:
@@ -173,7 +178,8 @@ if __name__ == '__main__':
     import yaml
     from lxml import etree
     #xml = etree.parse('../examples/tmp/b-burp.xml')
-    xml = etree.parse('../../issue/b.xml')
+    #xml = etree.parse('../../issue/b.xml')
+    xml = etree.parse('../../_lp_xssburp_multipart.xml')
     scan = burp_import(xml)
     #for i in scan['Findings']:
     #    print i['Name']
