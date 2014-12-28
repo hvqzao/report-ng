@@ -46,6 +46,7 @@ class YamledWindow(wx.Frame):
     #d
     #r
     #stack_sizer
+    edit_rows = 5
     SPACER = '      '
 
     class yTextCtrl(wx.TextCtrl):
@@ -80,7 +81,7 @@ class YamledWindow(wx.Frame):
                 e.Skip()
             
         def __OnKillFocus(self, e):
-            self.SetEditable(False)
+            #self.SetEditable(False)
             e.Skip()
 
         def __OnLeftUp(self, e):
@@ -91,9 +92,26 @@ class YamledWindow(wx.Frame):
                 self.SetFocus()
                 self.frame.tree.UnselectAll()
             else:
-                self.SetEditable(True)
-                self.SetFocus()
-                self.SetInsertionPointEnd()
+                #self.SetEditable(True)
+                #self.SetFocus()
+                #self.SetInsertionPointEnd()
+                index = self.frame.t.index(self)
+                edit = wx.TextCtrl(self.frame.stack, pos=self.GetPosition(), size=map(lambda x: (x[0]+15, x[1]*self.frame.edit_rows), [self.GetSize()])[0], style=wx.BORDER_NONE | wx.TE_MULTILINE)
+                def edit_OnDestroy(e):
+                    val = edit.GetValue()
+                    try:
+                        self.frame.SetData(self.frame.n[index], val)
+                        self.frame.SetValue(self.frame.n[index], val)
+                    except:
+                        pass
+                edit.Bind(wx.EVT_WINDOW_DESTROY, edit_OnDestroy)
+                def edit_OnKillFocus(e):
+                    edit.Destroy()
+                edit.Bind(wx.EVT_KILL_FOCUS, edit_OnKillFocus)
+                edit.Raise()
+                edit.SetValue(unicode(self.frame.d[index]))
+                edit.SetFocus()
+
             e.Skip()
                     
     def __init__(self, parent=None, title='', content=None, size=(800, 600,), *args, **kwargs):
@@ -245,6 +263,8 @@ class YamledWindow(wx.Frame):
                 else:
                     name = name[:-1]
                 data = self.GetData(item)
+                if data == None:
+                    continue
                 if self.tree.ItemHasChildren(item):
                     result = walk(item, isinstance(data, list))
                     if listmode:
@@ -352,6 +372,7 @@ class YamledWindow(wx.Frame):
         pos = self.n.index(item)
         self.stack_sizer.Hide(self.t[pos])
         self.stack_sizer.Remove(self.t[pos])
+        self.t[pos].Destroy()
         self.tree.Delete(self.n[pos])
         del self.n[pos]
         del self.t[pos]
@@ -428,9 +449,9 @@ class YamledWindow(wx.Frame):
             else:
                 self.tree.ScrollTo(self.n[n_range[0]])
         self.__tree_OnScroll(e)
-        
+
     def _tree_adjust(self):
-        self.tree.SetSize((self.left.GetSize()[0]+35, self.stack.GetSize()[1]))
+        self.tree.SetSize((self.left.GetSize()[0] + 35, self.stack.GetSize()[1]))
         #self.__stack_OnScroll(None)
         
     def __OnResize(self, e):
@@ -468,7 +489,7 @@ class YamledWindow(wx.Frame):
         dialog.SetVersion(self.application.version)
         dialog.SetCopyright(self.application.c)
         #dialog.SetDescription('\n'.join(map(lambda x: x[4:], self.application.about.split('\n')[1:][:-1])))
-        dialog.SetDescription('Not yet functional')
+        dialog.SetDescription('This editor is part of Wasar project\nFunctionality:\n- Tree view of yaml structure\n- Editing values\n- Deleting node or subtree\n- Saving yaml file')
 
         #dialog.SetWebSite(self.application.url)
         #dialog.SetLicence(self.application.license)
@@ -479,8 +500,8 @@ def GUI():
     #wx_app = wx.App(redirect=False)
     #YamledWindow(content='../../x.yaml')
     #YamledWindow(content='../../y.yaml')
-    #YamledWindow(content='../../z.yaml')
-    YamledWindow(content='../../_yamled_dies.yaml')
+    #YamledWindow(content='../../_yamled_dies.yaml')
+    YamledWindow(content='../workbench/yamled/sample-1.yaml')
     #YamledWindow()
     wx_app.MainLoop()
 
