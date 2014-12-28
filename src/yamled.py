@@ -96,12 +96,18 @@ class YamledWindow(wx.Frame):
                 #self.SetFocus()
                 #self.SetInsertionPointEnd()
                 index = self.frame.t.index(self)
-                edit = wx.TextCtrl(self.frame.stack, pos=self.GetPosition(), size=map(lambda x: (x[0]+15, x[1]*self.frame.edit_rows), [self.GetSize()])[0], style=wx.BORDER_NONE | wx.TE_MULTILINE)
+                diff = len(self.frame.t)-index
+                if diff < self.frame.edit_rows:
+                    diff = self.frame.edit_rows - diff
+                else:
+                    diff = 0
+                edit = wx.TextCtrl(self.frame.stack, pos=map(lambda x: (x[0], x[1]-diff*self.frame.item_height), [self.GetPosition()])[0], size=map(lambda x: (x[0]+15, x[1]*self.frame.edit_rows), [self.GetSize()])[0], style=wx.BORDER_NONE | wx.TE_MULTILINE)
                 def edit_OnDestroy(e):
                     val = edit.GetValue()
                     try:
                         self.frame.SetData(self.frame.n[index], val)
                         self.frame.SetValue(self.frame.n[index], val)
+                        self.frame.tree.SetItemDropHighlight(self.frame.n[index], highlight=False)
                     except:
                         pass
                 edit.Bind(wx.EVT_WINDOW_DESTROY, edit_OnDestroy)
@@ -111,7 +117,7 @@ class YamledWindow(wx.Frame):
                 edit.Raise()
                 edit.SetValue(unicode(self.frame.d[index]))
                 edit.SetFocus()
-
+                self.frame.tree.SetItemDropHighlight(self.frame.n[index])
             e.Skip()
                     
     def __init__(self, parent=None, title='', content=None, size=(800, 600,), *args, **kwargs):

@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.6.0'
-    date = 'Thu Dec 25 22:55:01 2014'
+    version = '0.6.1'
+    date = 'Sun Dec 28 23:28:41 2014'
     changelog = '''
+    0.6.1 - Sun Dec 28 23:28:41 2014
+    - Yamled values editing is now using multiline field
+    
     0.6.0 - Fri Dec 26 21:05:43 2014
     - FIX: Multipart requests will now be shown as proper multiline content
     
