@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.6.2'
+    version = '0.6.3'
     date = 'Mon Dec 29 19:50:06 2014'
     changelog = '''
+    0.6.3 - Mon Dec 29 23:58:28 2014
+    - Yamled add new node (currently only when selected node is parent to a list)
+    
     0.6.2 - Mon Dec 29 19:50:06 2014
     - Yamled editing minor enhancements
 
