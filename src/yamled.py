@@ -36,6 +36,7 @@ class YamledWindow(wx.Frame):
     ##gray
     ##white
     #menu_file_save_as
+    #menu_file_close
     #splitter
     #left
     #tree
@@ -101,7 +102,7 @@ class YamledWindow(wx.Frame):
                     self.frame.edit_ctrl.Destroy()
                 else:
                     index = self.frame.t.index(self)
-                    if filter(lambda x: isinstance(self.frame.d[index], x), [str, unicode]):
+                    if filter(lambda x: isinstance(self.frame.d[index], x), [str, unicode, int]):
                         rows = len(self.frame.t)
                         length = self.frame.edit_rows
                         if  length > rows:
@@ -162,8 +163,12 @@ class YamledWindow(wx.Frame):
                 return self.__current
         index = Index(100)
         menu_file = wx.Menu()
-        #menu_file_close = menu_file.Append(index.next(), '&Close')
-        #self.Bind(wx.EVT_MENU, self.File_Close, id=index.current)
+        self.menu_file_open = menu_file.Append(index.next(), '&Open...')
+        self.menu_file_open.Enable(True)
+        self.Bind(wx.EVT_MENU, self.File_Open, id=index.current)
+        self.menu_file_close = menu_file.Append(index.next(), '&Close')
+        self.menu_file_close.Enable(False)
+        self.Bind(wx.EVT_MENU, self.File_Close, id=index.current)
         self.menu_file_save_as = menu_file.Append(index.next(), '&Save As...')
         self.menu_file_save_as.Enable(False)
         self.Bind(wx.EVT_MENU, self.File_Save_As, id=index.current)
@@ -235,7 +240,6 @@ class YamledWindow(wx.Frame):
         #    self.AppendNode(str(i),str(i))
         if content != None:
             self.Load(content)
-        self.tree.ExpandAll()
         #self._stack_adjust()
         self.tree.Bind(wx.EVT_TREE_ITEM_COLLAPSED, self.__tree_OnCollapse)
         self.tree.Bind(wx.EVT_TREE_ITEM_EXPANDED, self.__tree_OnExpand)
@@ -303,7 +307,7 @@ class YamledWindow(wx.Frame):
         #print walk(root)
         return walk(root)
     
-    def Load(self, content):
+    def Load(self, content, expand=True):
         if content == None:
             return
         if isinstance(content, UnsortableOrderedDict):
@@ -353,6 +357,9 @@ class YamledWindow(wx.Frame):
                     self.SetData(parent, data)
         walk(data)
         self.menu_file_save_as.Enable(True)
+        self.menu_file_close.Enable(True)
+        if expand:
+            self.tree.ExpandAll()
 
     def SetData(self, item, data):
         pos = self.n.index(item)
@@ -481,8 +488,20 @@ class YamledWindow(wx.Frame):
     def __OnRepaint(self, e):
         self._tree_adjust()
 
+    def File_Open(self, e):
+        openFileDialog = wx.FileDialog(self, 'Open Yaml', '', '',
+                                       'Yaml files (*.yaml)|*.yaml|All files (*.*)|*.*',
+                                       wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
+        if openFileDialog.ShowModal() == wx.ID_CANCEL:
+                return
+        self.File_Close(e)
+        self.Load(openFileDialog.GetPath())
+
     def File_Close(self, e):
-        pass
+        while self.n:
+            self.DeleteNode(self.n[0])
+        self.menu_file_save_as.Enable(False)
+        self.menu_file_close.Enable(False)
 
     def File_Save_As(self, e):
         openFileDialog = wx.FileDialog(self, 'Save Yaml As', '', '',
@@ -507,7 +526,7 @@ class YamledWindow(wx.Frame):
         dialog.SetVersion(self.application.version)
         dialog.SetCopyright(self.application.c)
         #dialog.SetDescription('\n'.join(map(lambda x: x[4:], self.application.about.split('\n')[1:][:-1])))
-        dialog.SetDescription('This editor is part of Wasar project\nFunctionality:\n- Tree view of yaml structure\n- Editing values\n- Deleting node or subtree\n- Saving yaml file')
+        dialog.SetDescription('This editor was developed as part of Wasar project\nIt supports only the most basic functionality\nThis include:\n- Opening, saving and closing yaml file\n- Tree view of yaml structure\n- Editing values\n- Deleting node or subtree')
 
         #dialog.SetWebSite(self.application.url)
         #dialog.SetLicence(self.application.license)
