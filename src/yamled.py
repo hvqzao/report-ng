@@ -50,6 +50,7 @@ class YamledWindow(wx.Frame):
     edit_rows = 5
     edit_ctrl = None
     label_ctrl = None
+    label_blacklist = []
     SPACER = '      '
 
     class yTextCtrl(wx.TextCtrl):
@@ -459,7 +460,12 @@ class YamledWindow(wx.Frame):
     def __tree_EndLabelEdit(self, e):
         item = e.GetItem()
         e.Veto()
-        self.tree.SetItemText(item, e.GetLabel().replace(':','')+':')
+        new_label = e.GetLabel().replace(':','')
+        if len(new_label) > 0 and new_label not in self.label_blacklist:
+            self.tree.SetItemText(item, new_label+':')
+        else:
+            self.DeleteNode(item)
+            self._stack_adjust()
         self.label_ctrl = None
 
     def __last_descendant(self, item):
@@ -481,11 +487,26 @@ class YamledWindow(wx.Frame):
                 for i in range(1, len(self.d[index][1:])+1):
                     self.InsertNode(pos+i, self.d[index][i]+':', '', '', node)
                 self.tree.Expand(node)
+            if isinstance(self.d[index], UnsortableOrderedDict):
+                pos = self.n.index(self.__last_descendant(self.n[index])[-1])
+                self.label_blacklist = []
+                (item, cookie) = self.tree.GetFirstChild(self.n[index])
+                while item:
+                    name = self.tree.GetItemText(item)
+                    if name[:len(self.SPACER)] == self.SPACER:
+                        name = name[len(self.SPACER):-1]
+                    else:
+                        name = name[:-1]
+                    self.label_blacklist += [name]
+                    (item, cookie) = self.tree.GetNextChild(item, cookie)
+                node = self.InsertNode(pos, '', '', '', self.n[index])
+                self.label_ctrl = node
+                self.tree.EditLabel(node)
         else:
-            item = self.AppendNode('', '', '', self.root)
-            self.label_ctrl = item
-            self.tree.EditLabel(item)
-            #pass
+            node = self.AppendNode('', '', '', self.root)
+            self.label_blacklist = []
+            self.label_ctrl = node
+            self.tree.EditLabel(node)
         self._stack_adjust()
 
     def __tree_OnPopupMenu_DelNode(self, e):
@@ -509,7 +530,8 @@ class YamledWindow(wx.Frame):
                 self.tree_popupmenu_delnode.SetText('Delete nodes')
             else:
                 index = self.n.index(self.tree.GetSelections()[0])
-                if filter(lambda x: isinstance(self.d[index], x), [list]):
+                #print type(self.d[index]), self.d[index]
+                if filter(lambda x: isinstance(self.d[index], x), [list, UnsortableOrderedDict]):
                     self.tree_popupmenu_newchildnode.Enable(True)
                 self.tree_popupmenu_delnode.SetText('Delete node')
         else:
