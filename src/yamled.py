@@ -530,7 +530,7 @@ class YamledWindow(wx.Frame):
                 self.tree_popupmenu_delnode.SetText('Delete nodes')
             else:
                 index = self.n.index(self.tree.GetSelections()[0])
-                #print type(self.d[index]), self.d[index]
+                print type(self.d[index]), self.d[index]
                 if filter(lambda x: isinstance(self.d[index], x), [list, UnsortableOrderedDict]):
                     self.tree_popupmenu_newchildnode.Enable(True)
                 self.tree_popupmenu_delnode.SetText('Delete node')
@@ -539,9 +539,9 @@ class YamledWindow(wx.Frame):
             self.tree_popupmenu_delnode.Enable(False)
         if len(self.n):
             self.tree_popupmenu_newchildnode.SetText('New child node')
-        else:
-            self.tree_popupmenu_newchildnode.Enable(True)
-            self.tree_popupmenu_newchildnode.SetText('New root node')
+        #else:
+        #    self.tree_popupmenu_newchildnode.Enable(True)
+        #    self.tree_popupmenu_newchildnode.SetText('New root node')
         #self.tree_popupmenu_delnode.Enable(False)
         pos = e.GetPosition()
         if self.tree.GetCount() == 0:
@@ -614,7 +614,7 @@ class YamledWindow(wx.Frame):
         dialog.SetVersion(self.application.version)
         dialog.SetCopyright(self.application.c)
         #dialog.SetDescription('\n'.join(map(lambda x: x[4:], self.application.about.split('\n')[1:][:-1])))
-        dialog.SetDescription('This editor was developed as part of Wasar project\nIt supports only the most basic functionality\nThis include:\n- Opening, saving and closing yaml file\n- Tree view of yaml structure\n- Editing values\n- Deleting node or subtree')
+        dialog.SetDescription('This editor was developed as part of Wasar project\nIt supports only the most basic functionality\nThis include:\n- Opening, saving and closing yaml file\n- Tree view of yaml structure\n- Editing values\n- Adding new child node or structure (limited capability)\n- Deleting node or subtree')
 
         #dialog.SetWebSite(self.application.url)
         #dialog.SetLicence(self.application.license)
@@ -626,8 +626,8 @@ def GUI():
     #YamledWindow(content='../../x.yaml')
     #YamledWindow(content='../../y.yaml')
     #YamledWindow(content='../../_yamled_dies.yaml')
-    YamledWindow(content='../workbench/yamled/sample-1.yaml')
-    #YamledWindow()
+    #YamledWindow(content='../workbench/yamled/sample-1.yaml')
+    YamledWindow()
     wx_app.MainLoop()
 
 if __name__ == '__main__':
