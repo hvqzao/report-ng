@@ -49,6 +49,7 @@ class YamledWindow(wx.Frame):
     #stack_sizer
     edit_rows = 5
     edit_ctrl = None
+    label_ctrl = None
     SPACER = '      '
 
     class yTextCtrl(wx.TextCtrl):
@@ -189,7 +190,7 @@ class YamledWindow(wx.Frame):
         self.splitter.SetMinimumPaneSize(200)
         #self.gray = self.splitter.GetBackgroundColour()
         self.left = wx.Panel(self.splitter, style=wx.BORDER_SIMPLE)
-        self.tree = wx.TreeCtrl(self.left, style=wx.TR_HAS_BUTTONS|wx.TR_HIDE_ROOT|wx.TR_LINES_AT_ROOT|wx.TR_MULTIPLE|wx.BORDER_NONE) #|wx.TR_NO_LINES
+        self.tree = wx.TreeCtrl(self.left, style=wx.TR_HAS_BUTTONS|wx.TR_HIDE_ROOT|wx.TR_LINES_AT_ROOT|wx.TR_MULTIPLE|wx.TR_EDIT_LABELS|wx.BORDER_NONE) #|wx.TR_NO_LINES
         #self.tree.AssignImageList(self.tree_image_list)
         def splitter_repaint(e):
             self._tree_adjust()
@@ -215,9 +216,9 @@ class YamledWindow(wx.Frame):
         del node
         # tree popupmenu
         self.tree_popupmenu = wx.Menu()
-        self.tree_popupmenu_newnode = self.tree_popupmenu.Append(-1, 'New node')
-        self.tree_popupmenu_newnode.Enable(False)
-        self.Bind(wx.EVT_MENU, self.__tree_OnPopupMenu_NewNode, self.tree_popupmenu_newnode)
+        self.tree_popupmenu_newchildnode = self.tree_popupmenu.Append(-1, 'New child node')
+        self.tree_popupmenu_newchildnode.Enable(False)
+        self.Bind(wx.EVT_MENU, self.__tree_OnPopupMenu_NewChildNode, self.tree_popupmenu_newchildnode)
         self.tree_popupmenu_delnode = self.tree_popupmenu.Append(-1, 'Delete node')
         self.Bind(wx.EVT_MENU, self.__tree_OnPopupMenu_DelNode, self.tree_popupmenu_delnode)
         self.tree_popupmenu.AppendSeparator()
@@ -246,6 +247,8 @@ class YamledWindow(wx.Frame):
         #self._stack_adjust()
         self.tree.Bind(wx.EVT_TREE_ITEM_COLLAPSED, self.__tree_OnCollapse)
         self.tree.Bind(wx.EVT_TREE_ITEM_EXPANDED, self.__tree_OnExpand)
+        self.tree.Bind(wx.EVT_TREE_BEGIN_LABEL_EDIT, self.__tree_BeginLabelEdit)
+        self.tree.Bind(wx.EVT_TREE_END_LABEL_EDIT, self.__tree_EndLabelEdit)
         # show
         #self.SetDoubleBuffered(True)
         self.CenterOnScreen()
@@ -441,12 +444,23 @@ class YamledWindow(wx.Frame):
         #self.tree.Layout()
         
     def __tree_OnCollapse(self, e):
-        #print e.GetItem()
         self._stack_adjust()
 
     def __tree_OnExpand(self, e):
-        #print e.GetItem()
         self._stack_adjust()
+
+    def __tree_BeginLabelEdit(self, e):
+        item = e.GetItem()
+        if item == self.label_ctrl:
+            self.tree.SetItemText(item, self.tree.GetItemText(item)[:-1])
+        else:
+            e.Veto()
+
+    def __tree_EndLabelEdit(self, e):
+        item = e.GetItem()
+        e.Veto()
+        self.tree.SetItemText(item, e.GetLabel().replace(':','')+':')
+        self.label_ctrl = None
 
     def __last_descendant(self, item):
         ''' find last child/descendant of given tree item '''
@@ -458,14 +472,20 @@ class YamledWindow(wx.Frame):
             return False
         return filter(lambda x: descendant(x, item), self.n)
 
-    def __tree_OnPopupMenu_NewNode(self, e):
-        index = self.n.index(self.tree.GetSelections()[0])
-        if isinstance(self.d[index], list):
-            pos = self.n.index(self.__last_descendant(self.n[index])[-1])
-            node = self.InsertNode(pos, self.SPACER+self.d[index][0]+':', '', '', self.n[index])
-            for i in range(1, len(self.d[index][1:])+1):
-                self.InsertNode(pos+i, self.d[index][i]+':', '', '', node)
-            self.tree.Expand(node)
+    def __tree_OnPopupMenu_NewChildNode(self, e):
+        if len(self.n):
+            index = self.n.index(self.tree.GetSelections()[0])
+            if isinstance(self.d[index], list):
+                pos = self.n.index(self.__last_descendant(self.n[index])[-1])
+                node = self.InsertNode(pos, self.SPACER+self.d[index][0]+':', '', '', self.n[index])
+                for i in range(1, len(self.d[index][1:])+1):
+                    self.InsertNode(pos+i, self.d[index][i]+':', '', '', node)
+                self.tree.Expand(node)
+        else:
+            item = self.AppendNode('', '', '', self.root)
+            self.label_ctrl = item
+            self.tree.EditLabel(item)
+            #pass
         self._stack_adjust()
 
     def __tree_OnPopupMenu_DelNode(self, e):
@@ -482,7 +502,7 @@ class YamledWindow(wx.Frame):
         self._stack_adjust()
 
     def __tree_OnPopupMenu(self, e):
-        self.tree_popupmenu_newnode.Enable(False)
+        self.tree_popupmenu_newchildnode.Enable(False)
         if len(self.tree.GetSelections()) > 0:
             self.tree_popupmenu_delnode.Enable(True)
             if len(self.tree.GetSelections()) > 1:
@@ -490,11 +510,16 @@ class YamledWindow(wx.Frame):
             else:
                 index = self.n.index(self.tree.GetSelections()[0])
                 if filter(lambda x: isinstance(self.d[index], x), [list]):
-                    self.tree_popupmenu_newnode.Enable(True)
+                    self.tree_popupmenu_newchildnode.Enable(True)
                 self.tree_popupmenu_delnode.SetText('Delete node')
         else:
             self.tree_popupmenu_delnode.SetText('Delete node')
             self.tree_popupmenu_delnode.Enable(False)
+        if len(self.n):
+            self.tree_popupmenu_newchildnode.SetText('New child node')
+        else:
+            self.tree_popupmenu_newchildnode.Enable(True)
+            self.tree_popupmenu_newchildnode.SetText('New root node')
         #self.tree_popupmenu_delnode.Enable(False)
         pos = e.GetPosition()
         if self.tree.GetCount() == 0:
