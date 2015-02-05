@@ -22,6 +22,7 @@ import wx.lib.scrolledpanel as sp
 import base64
 import cStringIO
 import yaml
+import os
 
 from util import yaml_load, UnsortableOrderedDict
 import util
@@ -31,6 +32,7 @@ from version import Version
 
 class YamledWindow(wx.Frame):
 
+    #root
     #parent
     #icon
     ##gray
@@ -52,6 +54,11 @@ class YamledWindow(wx.Frame):
     label_ctrl = None
     label_blacklist = []
     SPACER = '      '
+    title = 'Yamled'
+    filename = None
+    file_changed = None
+    #orig_label_text
+
 
     class yTextCtrl(wx.TextCtrl):
 
@@ -118,25 +125,39 @@ class YamledWindow(wx.Frame):
                         self.frame.edit_ctrl = edit
                         def edit_OnDestroy(e):
                             val = edit.GetValue()
+                            if val != orig:
+                                self.frame._title_update(contents_changed=True)
                             try:
                                 self.frame.SetData(self.frame.n[index], val)
                                 self.frame.SetValue(self.frame.n[index], val)
                                 self.frame.tree.SetItemDropHighlight(self.frame.n[index], highlight=False)
                             except:
                                 pass
-                            self.frame.edit_ctrl = None
+                            try:
+                                self.frame.edit_ctrl = None
+                            except:
+                                pass
                         edit.Bind(wx.EVT_WINDOW_DESTROY, edit_OnDestroy)
                         def edit_OnKillFocus(e):
                             edit.Destroy()
                         edit.Bind(wx.EVT_KILL_FOCUS, edit_OnKillFocus)
+                        def edit_OnKey(e):
+                            keyCode = e.GetKeyCode()
+                            e.Skip()
+                            if keyCode == wx.WXK_ESCAPE:
+                                self.SetFocus()
+                        edit.Bind(wx.EVT_CHAR_HOOK, edit_OnKey)
                         edit.Raise()
-                        edit.SetValue(unicode(self.frame.d[index]))
+                        orig = unicode(self.frame.d[index])
+                        edit.SetValue(orig)
                         edit.SetFocus()
                         self.frame.tree.SetItemDropHighlight(self.frame.n[index])
             e.Skip()
                     
     def __init__(self, parent=None, title='', content=None, size=(800, 600,), *args, **kwargs):
-        wx.Frame.__init__(self, parent, title='Yamled', size=size, *args, **kwargs)
+        if title:
+            self.title = title
+        wx.Frame.__init__(self, parent, title=self.title, size=size, *args, **kwargs)
         self.parent = parent
         self.application = Version()
         # icon
@@ -257,6 +278,7 @@ class YamledWindow(wx.Frame):
         self.SetMinSize(tuple(map(lambda x: x*2/3, self.GetSize())))
         self.Bind(wx.EVT_SIZE, self.__OnResize, self)
         self.Bind(wx.EVT_PAINT, self.__OnRepaint, self)
+        self.Bind(wx.EVT_CLOSE, self.__OnClose)
         #self._tree_adjust()
         self.stack.SetScrollRate(16, self.item_height)
         self.tree.Bind(wx.EVT_PAINT, self.__tree_OnScroll)
@@ -274,6 +296,7 @@ class YamledWindow(wx.Frame):
         self.splitter.SetDoubleBuffered(True)
         #self.stack.SetBackgroundColour((240,255,255,255))
         #self.Extract()
+        #print yaml.dump(self.Extract(), default_flow_style=False, allow_unicode=True).decode('utf-8').encode('utf-8')
             
     def Extract(self):
         #print
@@ -305,22 +328,33 @@ class YamledWindow(wx.Frame):
                     else:
                         struct[name] = result
                 else:
-                    struct[name] = self.GetData(item)
+                    if listmode:
+                        stack += [UnsortableOrderedDict([(name,data)])]
+                    else:
+                        struct[name] = self.GetData(item)
                 (item, cookie) = self.tree.GetNextChild(item, cookie)
             if listmode:
                 return stack
             else:
                 return struct
-        #print walk(root)
-        return walk(root)
+        return walk(root)    
+
+    def _title_update(self, contents_changed=None):
+        if contents_changed in [True, False]:
+            self.file_changed = contents_changed
+        self.SetTitle(self.title+[' ',' - '+str(self.filename)][bool(self.filename)]+['','*'][bool(self.file_changed)])
     
     def Load(self, content, expand=True):
         if content == None:
             return
         if isinstance(content, UnsortableOrderedDict):
             data = content
+            self.filename = None
+            self.file_changed = None
         else:
             data = yaml_load(open(content).read(), yaml.SafeLoader, UnsortableOrderedDict)
+            self.filename = os.path.abspath(content)
+            self.file_changed = False
         #print data
         def walk(data, parent=None):
             if isinstance(data, UnsortableOrderedDict):
@@ -365,6 +399,7 @@ class YamledWindow(wx.Frame):
         walk(data)
         self.menu_file_save_as.Enable(True)
         self.menu_file_close.Enable(True)
+        self._title_update(contents_changed=False)
         if expand:
             self.tree.ExpandAll()
 
@@ -395,6 +430,7 @@ class YamledWindow(wx.Frame):
         self.t += [ctrl]
         self.d += [data]
         self.r += [True]
+        #self._title_update(contents_changed=True)
         return item
 
     def InsertNode(self, after, name, value, data=None, parent=None):
@@ -409,6 +445,7 @@ class YamledWindow(wx.Frame):
         self.t.insert(index, ctrl)
         self.d.insert(index, data)
         self.r.insert(index, True)
+        #self._title_update(contents_changed=True)
         return item
 
     def DeleteNode(self, item):
@@ -424,6 +461,7 @@ class YamledWindow(wx.Frame):
         del self.t[pos]
         del self.d[pos]
         del self.r[pos]
+        #self._title_update(contents_changed=True)
 
     def _stack_adjust(self):
         # recalc items visiblity
@@ -453,7 +491,8 @@ class YamledWindow(wx.Frame):
     def __tree_BeginLabelEdit(self, e):
         item = e.GetItem()
         if item == self.label_ctrl:
-            self.tree.SetItemText(item, self.tree.GetItemText(item)[:-1])
+            self.orig_label_text = self.tree.GetItemText(item)[:-1]
+            self.tree.SetItemText(item, self.orig_label_text)
         else:
             e.Veto()
 
@@ -463,6 +502,8 @@ class YamledWindow(wx.Frame):
         new_label = e.GetLabel().replace(':','')
         if len(new_label) > 0 and new_label not in self.label_blacklist:
             self.tree.SetItemText(item, new_label+':')
+            if new_label != self.orig_label_text:
+                self._title_update(contents_changed=True)
         else:
             self.DeleteNode(item)
             self._stack_adjust()
@@ -486,6 +527,7 @@ class YamledWindow(wx.Frame):
                 node = self.InsertNode(pos, self.SPACER+self.d[index][0]+':', '', '', self.n[index])
                 for i in range(1, len(self.d[index][1:])+1):
                     self.InsertNode(pos+i, self.d[index][i]+':', '', '', node)
+                self._title_update(contents_changed=True)
                 self.tree.Expand(node)
             if isinstance(self.d[index], UnsortableOrderedDict):
                 pos = self.n.index(self.__last_descendant(self.n[index])[-1])
@@ -512,6 +554,7 @@ class YamledWindow(wx.Frame):
     def __tree_OnPopupMenu_DelNode(self, e):
         for i in self.tree.GetSelections():
             self.DeleteNode(i)
+        self._title_update(contents_changed=True)
         self._stack_adjust()
 
     def __tree_OnPopupMenu_CollapseAll(self, e):
@@ -522,6 +565,16 @@ class YamledWindow(wx.Frame):
         self.tree.ExpandAll()
         self._stack_adjust()
 
+    def parentIndex(self, index):
+        parent = self.tree.GetItemParent(self.n[index])
+        if parent == self.root:
+            return None
+        else:
+            return self.n.index(parent)
+
+    def is_list_or_uoDict(self, index):
+        return bool(filter(lambda x: isinstance(self.d[index], x), [list, UnsortableOrderedDict]))
+    
     def __tree_OnPopupMenu(self, e):
         self.tree_popupmenu_newchildnode.Enable(False)
         if len(self.tree.GetSelections()) > 0:
@@ -530,8 +583,8 @@ class YamledWindow(wx.Frame):
                 self.tree_popupmenu_delnode.SetText('Delete nodes')
             else:
                 index = self.n.index(self.tree.GetSelections()[0])
-                print type(self.d[index]), self.d[index]
-                if filter(lambda x: isinstance(self.d[index], x), [list, UnsortableOrderedDict]):
+                #print type(self.d[index]), self.d[index]
+                if self.is_list_or_uoDict(index):
                     self.tree_popupmenu_newchildnode.Enable(True)
                 self.tree_popupmenu_delnode.SetText('Delete node')
         else:
@@ -584,12 +637,21 @@ class YamledWindow(wx.Frame):
                 return
         self.File_Close(e)
         self.Load(openFileDialog.GetPath())
+        self._stack_adjust()
 
     def File_Close(self, e):
+        #if self.filename != None and self.file_changed:
+        if self.file_changed:
+            dlg = wx.MessageDialog(self, 'You have unsaved changes. Do you want to close the file anyway?', 'Question', wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
+            if not dlg.ShowModal() == wx.ID_YES:
+                return
         while self.n:
             self.DeleteNode(self.n[0])
         self.menu_file_save_as.Enable(False)
         self.menu_file_close.Enable(False)
+        self.filename = None
+        self.file_changed = None
+        self._title_update()
 
     def File_Save_As(self, e):
         openFileDialog = wx.FileDialog(self, 'Save Yaml As', '', '',
@@ -601,9 +663,22 @@ class YamledWindow(wx.Frame):
         h = open(filename, 'w')
         h.write(yaml.dump(self.Extract(), default_flow_style=False, allow_unicode=True).decode('utf-8').encode('utf-8'))
         h.close()
+        self.filename = os.path.abspath(filename)
+        self._title_update(contents_changed=False)
 
     def __Exit(self, e):
         self.Close()
+
+    def __OnClose(self, event):
+        #if self.filename != None and self.file_changed:
+        if self.file_changed:
+            dlg = wx.MessageDialog(self, 'You have unsaved changes. Do you really want to quit?', 'Question', wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
+            if dlg.ShowModal() == wx.ID_YES:
+                self.Destroy()
+            else:
+                event.Veto()
+        else:
+            self.Destroy()
 
     def About(self, e):
         dialog = wx.AboutDialogInfo()
@@ -627,6 +702,8 @@ def GUI():
     #YamledWindow(content='../../y.yaml')
     #YamledWindow(content='../../_yamled_dies.yaml')
     #YamledWindow(content='../workbench/yamled/sample-1.yaml')
+    #YamledWindow(content='../workbench/yamled/pt.yaml')
+    #YamledWindow(content=yaml_load(open('../workbench/yamled/burp-state-1-report.yaml').read(), yaml.SafeLoader, UnsortableOrderedDict))
     YamledWindow()
     wx_app.MainLoop()
 

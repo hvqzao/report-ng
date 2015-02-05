@@ -48,7 +48,9 @@ class Scan(object):
             self._scan = yaml_load(open(filename).read(), yaml.SafeLoader, UnsortableOrderedDict)
         else:
             # xml
-            self._xml = etree.parse(filename)
+            #self._xml = etree.parse(filename)
+            etree_parser = etree.XMLParser(huge_tree=True)
+            self._xml = etree.parse(filename, parser=etree_parser)
             root = self._xml.getroot()
             if root.tag == 'Sessions':
                 self._webinspect_import()
@@ -82,6 +84,23 @@ class Scan(object):
 if __name__ == '__main__':
     pass
 
+    #scan = Scan('../workbench/webin.xml')
+    '''
+    # XMLSyntaxError: xmlSAX2Characters: huge text node, line 353377, column 10000871
+    line = 353377
+    column = 10000871
+    line = open('../workbench/webin.xml').read().split('\n')[line]
+    print 'line length:', len(line)
+    block = 100
+    index = 0
+    while index < len(line):
+        row = line[index:index+block]
+        if filter(lambda x: x in row, ['<','>']):
+            print index, row
+        index += block
+    print
+    '''
+    
     #scan = Scan('../examples/tmp/b-webinspect.xml')
     #print scan.dump_yaml()
     #scan = Scan('../../c-webinspect.xml')
