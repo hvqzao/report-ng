@@ -29,7 +29,6 @@ import util
 from resources.yamled import icon
 from version import Version
 
-
 class YamledWindow(wx.Frame):
 
     #root
@@ -288,6 +287,23 @@ class YamledWindow(wx.Frame):
             self.SetFocus()
             self.tree.UnselectAll()
         self.stack.Bind(wx.EVT_LEFT_UP, stack_focus_release)
+        class FileDropTarget(wx.FileDropTarget):
+            def __init__(self, target, handler):
+                wx.FileDropTarget.__init__(self)
+                self.target = target
+                self.handler = handler
+            def OnDropFiles(self, x, y, filenames):
+                self.handler(filenames)
+        def onDropFiles(filenames):
+            if len(filenames) != 1:
+                wx.MessageBox('Single file is expected!', 'Error', wx.OK | wx.ICON_ERROR)
+                return
+            if self.file_changed:
+                dlg = wx.MessageDialog(self, 'You have unsaved changes. Do you want to discard them before opening new file?', 'Question', wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
+                if dlg.ShowModal() == wx.ID_YES:
+                    self.Load(filenames[0])
+        dt = FileDropTarget(self.splitter, onDropFiles)
+        self.splitter.SetDropTarget(dt)
         #self.t[2].Hide()
         #self.stack.Layout()
         #self.t[2].Show()
@@ -295,8 +311,11 @@ class YamledWindow(wx.Frame):
         #self.t[12].SetBackgroundColour(self.white)
         self.splitter.SetDoubleBuffered(True)
         #self.stack.SetBackgroundColour((240,255,255,255))
-        #self.Extract()
-        #print yaml.dump(self.Extract(), default_flow_style=False, allow_unicode=True).decode('utf-8').encode('utf-8')
+        #extract = self.Extract()
+        #if self.orig != extract:
+        #    #print extract
+        #    print yaml.dump(extract, default_flow_style=False, allow_unicode=True).decode('utf-8').encode('utf-8')
+        #self.Destroy()
             
     def Extract(self):
         #print
@@ -304,7 +323,7 @@ class YamledWindow(wx.Frame):
         #    print self.tree.GetItemText(self.n[i]),  self.tree.ItemHasChildren(self.n[i]), self.d[i], isinstance(self.d[i], list)
         #print
         root = self.tree.GetRootItem()
-        def walk(parent, listmode=False):
+        def walk(parent, listmode=False, level=0):
             stack = []
             struct = UnsortableOrderedDict()
             (item, cookie) = self.tree.GetFirstChild(parent)
@@ -315,35 +334,33 @@ class YamledWindow(wx.Frame):
                 else:
                     name = name[:-1]
                 data = self.GetData(item)
-                if data == None:
-                    continue
-                if self.tree.ItemHasChildren(item):
-                    result = walk(item, isinstance(data, list))
-                    if listmode:
-                        struct[name] = data
-                        for i in result.keys():
-                            struct[i] = result[i]
-                        stack += [struct]
-                        struct = UnsortableOrderedDict()
+                #print level, name, type(data), data
+                if data != None:
+                    if self.tree.ItemHasChildren(item):
+                        result = walk(item, isinstance(data, list), level=level+1)
+                        if listmode:
+                            struct[name] = data
+                            for i in result.keys():
+                                struct[i] = result[i]
+                            stack += [struct]
+                            struct = UnsortableOrderedDict()
+                        else:
+                            struct[name] = result
                     else:
-                        struct[name] = result
-                else:
-                    if listmode:
-                        stack += [UnsortableOrderedDict([(name,data)])]
-                    else:
-                        struct[name] = self.GetData(item)
+                        if listmode:
+                            stack += [UnsortableOrderedDict([(name,data)])]
+                        else:
+                            struct[name] = self.GetData(item)
                 (item, cookie) = self.tree.GetNextChild(item, cookie)
             if listmode:
                 return stack
             else:
                 return struct
-        return walk(root)    
+        #result = walk(root)
+        #print
+        #return result
+        return walk(root)
 
-    def _title_update(self, contents_changed=None):
-        if contents_changed in [True, False]:
-            self.file_changed = contents_changed
-        self.SetTitle(self.title+[' ',' - '+str(self.filename)][bool(self.filename)]+['','*'][bool(self.file_changed)])
-    
     def Load(self, content, expand=True):
         if content == None:
             return
@@ -355,14 +372,17 @@ class YamledWindow(wx.Frame):
             data = yaml_load(open(content).read(), yaml.SafeLoader, UnsortableOrderedDict)
             self.filename = os.path.abspath(content)
             self.file_changed = False
+        self.orig = data
         #print data
-        def walk(data, parent=None):
+        #print yaml.dump(data, default_flow_style=False, allow_unicode=True).decode('utf-8').encode('utf-8')
+        def walk(data, parent=None, level=0):
+            #print level, data
             if isinstance(data, UnsortableOrderedDict):
                 for i in data:
                     item = self.AppendNode(i+':', '', None, parent)
                     if parent != None:
                         self.SetData(parent, UnsortableOrderedDict())
-                    walk(data[i], item)
+                    walk(data[i], item, level=level+1)
             elif isinstance(data, list):
                 if len(data) == 0:
                     self.SetValue(parent, '')
@@ -374,7 +394,6 @@ class YamledWindow(wx.Frame):
                         for j in i.keys():
                             if j not in keys:
                                 keys += [j]
-                    #print keys
                     self.SetData(parent, keys)
                     for i in data:
                         #print
@@ -384,25 +403,31 @@ class YamledWindow(wx.Frame):
                         list_item = self.AppendNode(self.SPACER+keys[0]+':', '', None, parent)
                         #self.tree.SetPyData(list_item, None)
                         #self.tree.SetItemImage(list_item, self.dotlist) #, wx.TreeItemIcon_Normal)
-                        walk(i[keys[0]], list_item)
+                        walk(i[keys[0]], list_item, level=level+1)
                         for j in keys[1:]:
                             item = self.AppendNode(j+':', '', None, list_item)
                             if j in i:
-                                walk(i[j], item)
-                            else:
-                                self.SetValue(parent, '')
-                                self.SetData(parent, '')
+                                walk(i[j], item, level=level+1)
+                            #else:
+                            #    self.SetValue(parent, '')
+                            #    self.SetData(parent, '')
             else:
                 if parent != None:
                     self.SetValue(parent, data)
                     self.SetData(parent, data)
         walk(data)
+        
         self.menu_file_save_as.Enable(True)
         self.menu_file_close.Enable(True)
         self._title_update(contents_changed=False)
         if expand:
             self.tree.ExpandAll()
 
+    def _title_update(self, contents_changed=None):
+        if contents_changed in [True, False]:
+            self.file_changed = contents_changed
+        self.SetTitle(self.title+[' ',' - '+str(self.filename)][bool(self.filename)]+['','*'][bool(self.file_changed)])
+    
     def SetData(self, item, data):
         pos = self.n.index(item)
         self.d[pos] = data
@@ -583,7 +608,7 @@ class YamledWindow(wx.Frame):
                 self.tree_popupmenu_delnode.SetText('Delete nodes')
             else:
                 index = self.n.index(self.tree.GetSelections()[0])
-                #print type(self.d[index]), self.d[index]
+                #print type(self.d[index]), '"'+str(self.d[index])+'"'
                 if self.is_list_or_uoDict(index):
                     self.tree_popupmenu_newchildnode.Enable(True)
                 self.tree_popupmenu_delnode.SetText('Delete node')
@@ -704,6 +729,10 @@ def GUI():
     #YamledWindow(content='../workbench/yamled/sample-1.yaml')
     #YamledWindow(content='../workbench/yamled/pt.yaml')
     #YamledWindow(content=yaml_load(open('../workbench/yamled/burp-state-1-report.yaml').read(), yaml.SafeLoader, UnsortableOrderedDict))
+    #YamledWindow(content='../workbench/yamled/asdf.yaml')
+    #YamledWindow(content='../workbench/yamled/asdfgh.yaml')
+    #YamledWindow(content='../workbench/yamled/burp-state-1-report.yaml')
+    #YamledWindow(content='../workbench/yamled/_export_webinspect.yaml')
     YamledWindow()
     wx_app.MainLoop()
 
