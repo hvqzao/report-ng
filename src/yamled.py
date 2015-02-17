@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Yamled
-# Copyright (c) 2014 Marcin Woloszyn (@hvqzao)
+# Copyright (c) 2015 Marcin Woloszyn (@hvqzao)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -36,6 +36,7 @@ class YamledWindow(wx.Frame):
     #icon
     ##gray
     ##white
+    #menu_file_save
     #menu_file_save_as
     #menu_file_close
     #splitter
@@ -57,7 +58,7 @@ class YamledWindow(wx.Frame):
     filename = None
     file_changed = None
     #orig_label_text
-
+    T = False # icon
 
     class yTextCtrl(wx.TextCtrl):
 
@@ -95,6 +96,10 @@ class YamledWindow(wx.Frame):
             e.Skip()
 
         def __OnLeftUp(self, e):
+            self.Edit()
+            e.Skip()
+
+        def Edit(self):
             focused = self.frame.FindFocus()
             if focused == self:
                 pass
@@ -144,14 +149,16 @@ class YamledWindow(wx.Frame):
                             keyCode = e.GetKeyCode()
                             e.Skip()
                             if keyCode == wx.WXK_ESCAPE:
-                                self.SetFocus()
+                                try:
+                                    self.SetFocus()
+                                except:
+                                    pass
                         edit.Bind(wx.EVT_CHAR_HOOK, edit_OnKey)
                         edit.Raise()
                         orig = unicode(self.frame.d[index])
                         edit.SetValue(orig)
                         edit.SetFocus()
                         self.frame.tree.SetItemDropHighlight(self.frame.n[index])
-            e.Skip()
                     
     def __init__(self, parent=None, title='', content=None, size=(800, 600,), *args, **kwargs):
         if title:
@@ -167,8 +174,9 @@ class YamledWindow(wx.Frame):
         self.icon.CopyFromBitmap(myBitmap)
         self.SetIcon(self.icon)
         # tree image list
-        #self.tree_image_list = wx.ImageList(16, 16)
-        #self.dotlist = self.tree_image_list.Add(wx.Image('resources/dotlist.png', wx.BITMAP_TYPE_PNG).Scale(16,16).ConvertToBitmap())
+        if self.T:
+            self.tree_image_list = wx.ImageList(16, 16)
+            self.dotlist = self.tree_image_list.Add(wx.Image('resources/dotlist.png', wx.BITMAP_TYPE_PNG).Scale(16,16).ConvertToBitmap())
         # Menu arrangement
         menu = wx.MenuBar()
         class Index(object):
@@ -191,6 +199,9 @@ class YamledWindow(wx.Frame):
         self.menu_file_close = menu_file.Append(index.next(), '&Close')
         self.menu_file_close.Enable(False)
         self.Bind(wx.EVT_MENU, self.File_Close, id=index.current)
+        self.menu_file_save = menu_file.Append(index.next(), '&Save\tCtrl+S')
+        self.menu_file_save.Enable(False)
+        self.Bind(wx.EVT_MENU, self.File_Save, id=index.current)
         self.menu_file_save_as = menu_file.Append(index.next(), '&Save As...')
         self.menu_file_save_as.Enable(False)
         self.Bind(wx.EVT_MENU, self.File_Save_As, id=index.current)
@@ -212,7 +223,8 @@ class YamledWindow(wx.Frame):
         #self.gray = self.splitter.GetBackgroundColour()
         self.left = wx.Panel(self.splitter, style=wx.BORDER_SIMPLE)
         self.tree = wx.TreeCtrl(self.left, style=wx.TR_HAS_BUTTONS|wx.TR_HIDE_ROOT|wx.TR_LINES_AT_ROOT|wx.TR_MULTIPLE|wx.TR_EDIT_LABELS|wx.BORDER_NONE) #|wx.TR_NO_LINES
-        #self.tree.AssignImageList(self.tree_image_list)
+        if self.T:
+            self.tree.AssignImageList(self.tree_image_list)
         def splitter_repaint(e):
             self._tree_adjust()
         self.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGING, splitter_repaint, self.splitter)
@@ -245,6 +257,8 @@ class YamledWindow(wx.Frame):
         self.tree_popupmenu.AppendSeparator()
         tree_popupmenu_collapse_all = self.tree_popupmenu.Append(-1, 'Collapse all')
         self.Bind(wx.EVT_MENU, self.__tree_OnPopupMenu_CollapseAll, tree_popupmenu_collapse_all)
+        tree_popupmenu_expand_children = self.tree_popupmenu.Append(-1, 'Expand children')
+        self.Bind(wx.EVT_MENU, self.__tree_OnPopupMenu_ExpandChildren, tree_popupmenu_expand_children)
         tree_popupmenu_expand_all = self.tree_popupmenu.Append(-1, 'Expand all')
         self.Bind(wx.EVT_MENU, self.__tree_OnPopupMenu_ExpandAll, tree_popupmenu_expand_all)
         self.tree.Bind(wx.EVT_CONTEXT_MENU, self.__tree_OnPopupMenu)
@@ -298,10 +312,10 @@ class YamledWindow(wx.Frame):
             if len(filenames) != 1:
                 wx.MessageBox('Single file is expected!', 'Error', wx.OK | wx.ICON_ERROR)
                 return
-            if self.file_changed:
-                dlg = wx.MessageDialog(self, 'You have unsaved changes. Do you want to discard them before opening new file?', 'Question', wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
-                if dlg.ShowModal() == wx.ID_YES:
-                    self.Load(filenames[0])
+            #if self.file_changed:
+            #    dlg = wx.MessageDialog(self, 'You have unsaved changes. Do you want to discard them before opening new file?', 'Question', wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
+            if self._File_Close():
+                self.Load(filenames[0])
         dt = FileDropTarget(self.splitter, onDropFiles)
         self.splitter.SetDropTarget(dt)
         #self.t[2].Hide()
@@ -311,6 +325,14 @@ class YamledWindow(wx.Frame):
         #self.t[12].SetBackgroundColour(self.white)
         self.splitter.SetDoubleBuffered(True)
         #self.stack.SetBackgroundColour((240,255,255,255))
+        def tree_OnKey(e):
+            keyCode = e.GetKeyCode()
+            e.Skip()
+            if keyCode == wx.WXK_RETURN:
+                sel = self.tree.GetSelections()
+                if len(sel) > 0:
+                    self.t[self.n.index(sel[0])].Edit()
+        self.tree.Bind(wx.EVT_CHAR_HOOK, tree_OnKey)
         #extract = self.Extract()
         #if self.orig != extract:
         #    #print extract
@@ -402,7 +424,8 @@ class YamledWindow(wx.Frame):
                         #    raise Exception('List keys differ!')
                         list_item = self.AppendNode(self.SPACER+keys[0]+':', '', None, parent)
                         #self.tree.SetPyData(list_item, None)
-                        #self.tree.SetItemImage(list_item, self.dotlist) #, wx.TreeItemIcon_Normal)
+                        if self.T:
+                            self.tree.SetItemImage(list_item, self.dotlist) #, wx.TreeItemIcon_Normal)
                         walk(i[keys[0]], list_item, level=level+1)
                         for j in keys[1:]:
                             item = self.AppendNode(j+':', '', None, list_item)
@@ -426,6 +449,7 @@ class YamledWindow(wx.Frame):
     def _title_update(self, contents_changed=None):
         if contents_changed in [True, False]:
             self.file_changed = contents_changed
+        self.menu_file_save.Enable(self.filename != None and bool(contents_changed))
         self.SetTitle(self.title+[' ',' - '+str(self.filename)][bool(self.filename)]+['','*'][bool(self.file_changed)])
     
     def SetData(self, item, data):
@@ -586,6 +610,16 @@ class YamledWindow(wx.Frame):
         self.tree.CollapseAll()
         self._stack_adjust()
 
+    def __tree_OnPopupMenu_ExpandChildren(self, e):
+        for i in self.tree.GetSelections():
+            self.tree.CollapseAllChildren(i)
+            self.tree.Expand(i)
+            (item, cookie) = self.tree.GetFirstChild(i)
+            while item:
+                self.tree.Expand(i)
+                (item, cookie) = self.tree.GetNextChild(item, cookie)
+        self._stack_adjust()
+
     def __tree_OnPopupMenu_ExpandAll(self, e):
         self.tree.ExpandAll()
         self._stack_adjust()
@@ -665,11 +699,14 @@ class YamledWindow(wx.Frame):
         self._stack_adjust()
 
     def File_Close(self, e):
+        self._File_Close()
+
+    def _File_Close(self):
         #if self.filename != None and self.file_changed:
         if self.file_changed:
             dlg = wx.MessageDialog(self, 'You have unsaved changes. Do you want to close the file anyway?', 'Question', wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
             if not dlg.ShowModal() == wx.ID_YES:
-                return
+                return False
         while self.n:
             self.DeleteNode(self.n[0])
         self.menu_file_save_as.Enable(False)
@@ -677,6 +714,16 @@ class YamledWindow(wx.Frame):
         self.filename = None
         self.file_changed = None
         self._title_update()
+        return True
+
+    def _Save(self):
+        h = open(self.filename, 'w')
+        h.write(yaml.dump(self.Extract(), default_flow_style=False, allow_unicode=True).decode('utf-8').encode('utf-8'))
+        h.close()
+        self._title_update(contents_changed=False)
+
+    def File_Save(self, e):
+        self._Save()
 
     def File_Save_As(self, e):
         openFileDialog = wx.FileDialog(self, 'Save Yaml As', '', '',
@@ -685,11 +732,8 @@ class YamledWindow(wx.Frame):
         if openFileDialog.ShowModal() == wx.ID_CANCEL:
                 return
         filename = openFileDialog.GetPath()
-        h = open(filename, 'w')
-        h.write(yaml.dump(self.Extract(), default_flow_style=False, allow_unicode=True).decode('utf-8').encode('utf-8'))
-        h.close()
         self.filename = os.path.abspath(filename)
-        self._title_update(contents_changed=False)
+        self._Save()
 
     def __Exit(self, e):
         self.Close()
@@ -714,8 +758,20 @@ class YamledWindow(wx.Frame):
         dialog.SetVersion(self.application.version)
         dialog.SetCopyright(self.application.c)
         #dialog.SetDescription('\n'.join(map(lambda x: x[4:], self.application.about.split('\n')[1:][:-1])))
-        dialog.SetDescription('This editor was developed as part of Wasar project\nIt supports only the most basic functionality\nThis include:\n- Opening, saving and closing yaml file\n- Tree view of yaml structure\n- Editing values\n- Adding new child node or structure (limited capability)\n- Deleting node or subtree')
-
+        dialog.SetDescription('\n'.join([
+            '',
+            'This editor is developed as part of Wasar project.',
+            '',
+            'It supports only basic functionality.',
+            'This include:',
+            '- Opening (drag & drop is supported), saving and closing yaml file',
+            '- Tree view of yaml structure',
+            '- Editing values',
+            '- Adding new child node or structure (limited capability)',
+            '- Deleting node or subtree',
+            '',
+            'In other words - the tool is intended to simplify work with yaml files, ',
+            'not to allow designing them from scratch.']))
         #dialog.SetWebSite(self.application.url)
         #dialog.SetLicence(self.application.license)
         wx.AboutBox(dialog)

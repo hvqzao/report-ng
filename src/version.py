@@ -31,9 +31,15 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.6.5'
-    date = 'Thu Feb  5 21:20:53 2015'
+    version = '0.6.6'
+    date = 'Tue Feb 17 17:03:30 2015'
     changelog = '''
+    0.6.6 - Tue Feb 17 12:03:30 2015
+    - FIX: Yamled load on drag & drop should now work
+    - FIX: Yamled crash on use of Escape should now be eliminated
+    - Yamled tree view now allows use of Enter key to edit value of selected key
+    - Yamled Ctrl+S save is now supported
+    
     0.6.5 - Thu Feb  5 21:20:53 2015
     - FIX: Yamled infinite loop during file saving has been eliminated
     - FIX: Loaded data should now be properly structured
