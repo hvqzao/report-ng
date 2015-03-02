@@ -814,12 +814,12 @@ class GUI(Version):
                 parent.children += [self]
                 if parent.menu_view_t.IsChecked():
                     self.SetWindowStyle(self.GetWindowStyle() | wx.STAY_ON_TOP)
-            self.Bind(wx.EVT_CLOSE, lambda x: self.Destroy())
+            #self.Bind(wx.EVT_CLOSE, lambda x: self.Destroy())
 
         def Destroy(self):
             del self.parent.children[self.parent.children.index(self)]
             #print 'destroying ChildWindow'
-            super(wx.Frame, self).Destroy()
+            super(YamledWindow, self).Destroy()
             
     class ChildWindow(wx.Frame):
 

@@ -37,6 +37,18 @@ def fine_tune(content, section_name):
     #print
     return content
 
+def _extract_post(request, method):
+    if method == 'POST':
+        #post = request.split('\n')[-1]
+        request_temp = request.replace('\r','')
+        loc = request_temp.find('\n\n')
+        if loc != -1:
+            post = request_temp[loc:].strip()
+        del request_temp
+    else:
+        post = ''
+    return post
+
 def burp_import(xml):
     # Burp Suite Pro (1.6beta2 / 1.6.01 used)
     issues_list = []
@@ -63,15 +75,7 @@ def burp_import(xml):
         if request_element:
             request = base64.b64decode(request_element[0].text).replace('\r','')
             method = request_element[0].attrib['method']
-            if method == 'POST':
-                #post = request.split('\n')[-1]
-                request_temp = request.replace('\r','')
-                loc = request_temp.find('\n\n')
-                if loc != -1:
-                    post = request_temp[loc:].strip()
-                del request_temp
-            else:
-                post = ''
+            post = _extract_post(request, method)
         else:
             request = ''
             method = None
@@ -172,6 +176,57 @@ def burp_import(xml):
         del i['severity_id']
     return UnsortableOrderedDict([['Findings', findings], ])
 
+def burp_items_import(xml):
+    # Burp Pro (1.6.11)
+    item_list = []
+    items = xml.xpath('/items/item')
+    for item in items:
+        host = item.xpath('./host')[0].text
+        method = item.xpath('./method')[0].text
+        port = item.xpath('./port')[0].text
+        location = item.xpath('./path')[0].text
+        scheme = item.xpath('./protocol')[0].text
+        #post = item.xpath('./post')[0].text
+        request_element = item.xpath('./request')
+        if 'base64' in request_element[0].attrib and request_element[0].attrib['base64'].lower() == 'true':
+            request = base64.b64decode(request_element[0].text).replace('\r','')
+        else:
+            request = request_element[0].text.replace('\r','')
+        post = _extract_post(request,method)
+        response_element = item.xpath('./response')
+        if response_element:
+            if 'base64' in response_element[0].attrib and response_element[0].attrib['base64'].lower() == 'true':
+                response = base64.b64decode(response_element[0].text).replace('\r','')
+            else:
+                response = response_element[0].text.replace('\r','')
+            status_code = item.xpath('./status')[0].text
+            status_description = ' '.join(response.split('\n')[0].split(' ')[2:])
+        else:
+            response = ''
+            status_code = ''
+            status_description = ''
+
+        #print scheme,host,port,method,location,post,status_code,status_description
+        #print request.split('\n')[:3]
+        #print '-'
+        #print response.split('\n')[:3]
+        build = UnsortableOrderedDict()
+        build['Scheme'] = scheme
+        build['Host'] = host
+        build['Port'] = port
+        build['Method'] = method
+        build['Location'] = location
+        build['Post'] = post
+        build['VulnParam'] = ''
+        build['StatusCode'] = status_code
+        build['StatusDescription'] = status_description
+        #build['Request'] = base64.b64encode (zlib.compress (request))
+        #build['Response'] = base64.b64encode (zlib.compress (response))
+        #build['Request'] = request
+        #build['Response'] = response
+        item_list += [build]
+    return UnsortableOrderedDict([['Occurrences', item_list], ])
+
 if __name__ == '__main__':
     pass
 
@@ -179,8 +234,12 @@ if __name__ == '__main__':
     from lxml import etree
     #xml = etree.parse('../examples/tmp/b-burp.xml')
     #xml = etree.parse('../../issue/b.xml')
-    xml = etree.parse('../../_lp_xssburp_multipart.xml')
-    scan = burp_import(xml)
+    #xml = etree.parse('../../_lp_xssburp_multipart.xml')
+    #scan = burp_import(xml)
+    
+    xml = etree.parse('../workbench/xss-2-intruder-items.xml')
+    scan = burp_items_import(xml)
+    
     #for i in scan['Findings']:
     #    print i['Name']
     #sample = scan['Findings'][-2]

@@ -129,8 +129,11 @@ class YamledWindow(wx.Frame):
                         self.frame.edit_ctrl = edit
                         def edit_OnDestroy(e):
                             val = edit.GetValue()
-                            if val != orig:
-                                self.frame._title_update(contents_changed=True)
+                            try:
+                                if val != orig:
+                                    self.frame._title_update(contents_changed=True)
+                            except:
+                                pass
                             try:
                                 self.frame.SetData(self.frame.n[index], val)
                                 self.frame.SetValue(self.frame.n[index], val)
@@ -155,7 +158,8 @@ class YamledWindow(wx.Frame):
                                     pass
                         edit.Bind(wx.EVT_CHAR_HOOK, edit_OnKey)
                         edit.Raise()
-                        orig = unicode(self.frame.d[index])
+                        #orig = unicode(self.frame.d[index])
+                        orig = self.frame.d[index] #.encode('utf-8')
                         edit.SetValue(orig)
                         edit.SetFocus()
                         self.frame.tree.SetItemDropHighlight(self.frame.n[index])
@@ -790,6 +794,7 @@ def GUI():
     #YamledWindow(content='../workbench/yamled/burp-state-1-report.yaml')
     #YamledWindow(content='../workbench/yamled/_export_webinspect.yaml')
     YamledWindow()
+    #YamledWindow(content='../workbench/xss-2-intruder-items.yaml')
     wx_app.MainLoop()
 
 if __name__ == '__main__':

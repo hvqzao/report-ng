@@ -30,13 +30,15 @@ class Scan(object):
 
     def _webinspect_import(self):
         from webinspect import webinspect_import
-
         self._scan = webinspect_import(self._xml)
 
     def _burp_import(self):
         from burp import burp_import
-
         self._scan = burp_import(self._xml)
+
+    def _burp_items_import(self):
+        from burp import burp_items_import
+        self._scan = burp_items_import(self._xml)
 
     def __init__(self, filename):
         self._filename = filename
@@ -56,6 +58,8 @@ class Scan(object):
                 self._webinspect_import()
             elif root.tag == 'issues':
                 self._burp_import()
+            elif root.tag == 'items':
+                self._burp_items_import()
             else:
                 raise Exception('Unknown scan format!')
 
@@ -100,6 +104,7 @@ if __name__ == '__main__':
         index += block
     print
     '''
+    #scan = Scan('../workbench/xss-2-intruder-items.xml')
     
     #scan = Scan('../examples/tmp/b-webinspect.xml')
     #print scan.dump_yaml()

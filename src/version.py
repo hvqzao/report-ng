@@ -31,9 +31,14 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.6.6'
-    date = 'Tue Feb 17 17:03:30 2015'
+    version = '0.6.7'
+    date = 'Mon Mar  2 15:15:58 2015'
     changelog = '''
+    0.6.7 - Mon Mar  2 15:15:58 2015
+    - It is now possible to import Occurrences from Burp's "Save (selected) items"
+      right click popup menu action generated xml. This might be useful for adding
+      earlier filtered items discovered during Intruder tests.
+
     0.6.6 - Tue Feb 17 12:03:30 2015
     - FIX: Yamled load on drag & drop should now work
     - FIX: Yamled crash on use of Escape should now be eliminated
