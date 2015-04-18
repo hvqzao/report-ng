@@ -1,5 +1,5 @@
 # Wasar
-# Copyright (c) 2014 Marcin Woloszyn (@hvqzao)
+# Copyright (c) 2015 Marcin Woloszyn (@hvqzao)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -951,8 +951,8 @@ if __name__ == '__main__':
     report = Report()
     #report.kb_load_yaml('../examples/example-2-kb.yaml')
     #print report._kb
-    #report.kb_load_csv('../../test-KB.csv')
-    report.kb_load_csv('../../KB.csv')
+    #report.kb_load_csv('../workbench/test-KB.csv')
+    report.kb_load_csv('../workbench/KB.csv')
     #print report._kb['KB'][0]
     #print report.meta_dump_yaml()
     print report.kb_dump_yaml()
@@ -960,58 +960,58 @@ if __name__ == '__main__':
 
     '''
     report = Report()
-    report.kb_load_csv('../../KB-1.csv')
+    report.kb_load_csv('../workbench/KB-1.csv')
     #print report.kb_dump_yaml()
     #print filter(lambda x: 'Hidden' in x['Name'], report._kb['KB'])
     for i in map(lambda x:x['Aliases'], report._kb['KB']):
         print i.split('\n')
         print
 
-    #report.template_load_xml('../../bug-01/template.xml', clean=True)
-    #report.scan = Scan('../../bug-01/burp scan bug.yaml')
+    #report.template_load_xml('../workbench/bug-01/template.xml', clean=True)
+    #report.scan = Scan('../workbench/bug-01/burp scan bug.yaml')
     #report.xml_apply_meta()
-    #report.save_report_xml('../../bug-01/!.xml')
+    #report.save_report_xml('../workbench/bug-01/!.xml')
     '''
 
     '''
     report = Report()
-    report.template_load_xml('../../issue/a.xml', clean=True)
-    report.content_load_yaml ('../../issue/a.yaml') 
-    report.scan = Scan('../../issue/b.xml')
-    #report.kb_load_csv('../../issue/a.csv')
+    report.template_load_xml('../workbench/issue/a.xml', clean=True)
+    report.content_load_yaml ('../workbench/issue/a.yaml') 
+    report.scan = Scan('../workbench/issue/b.xml')
+    #report.kb_load_csv('../workbench/issue/a.csv')
     report.xml_apply_meta()
-    #report.save_report_xml('../../issue/!.xml')
+    #report.save_report_xml('../workbench/issue/!.xml')
     '''
 
     #report = Report()
-    #report.scan = Scan('../../_prep-joined.yaml')
+    #report.scan = Scan('../workbench/_prep-joined.yaml')
     
     '''
     # sample DS
     report = Report()
-    report.template_load_xml('../examples/tmp/DS-template v1.0.xml', clean=True)
-    report.content_load_yaml ('../examples/tmp/DS-template v1.0-content.yaml') 
-    report.kb_load_csv('../../KB.csv')
-    report.scan = Scan('../examples/tmp/b-webinspect.xml')
+    report.template_load_xml('../workbench/s-template v1.0.xml', clean=True)
+    report.content_load_yaml ('../workbench/s-template v1.0-content.yaml') 
+    report.kb_load_csv('../workbench/KB.csv')
+    report.scan = Scan('../workbench/b-webinspect.xml')
     report.xml_apply_meta()
-    report.save_report_xml('../examples/tmp/output-2.xml')
+    report.save_report_xml('../workbench/output-2.xml')
     '''
     
     '''
     report = Report()
-    #report.template_load_xml('../examples/example-2-webinspect-report-template.xml', clean=True)
-    #report.template_load_xml('../examples/example-2-scan-report-template.xml', clean=True)
-    report.template_load_xml('../examples/tmp/PT-template-v0.6-v0.2.xml', clean=False)
+    #report.template_load_xml('../workbench/example-2-webinspect-report-template.xml', clean=True)
+    #report.template_load_xml('../workbench/example-2-scan-report-template.xml', clean=True)
+    report.template_load_xml('../workbench/pt-template-v0.6-v0.2.xml', clean=False)
     #print report.template_dump_yaml()
-    #report.content_load_yaml ('../examples/example-2-content.yaml')
-    #report.content_load_yaml ('../examples/tmp/test-v0.3-content.yaml')
-    report.content_load_yaml ('../examples/tmp/PT-template-v0.6-v0.2-content.yaml')
+    #report.content_load_yaml ('../workbench/example-2-content.yaml')
+    #report.content_load_yaml ('../workbench/test-v0.3-content.yaml')
+    report.content_load_yaml ('../workbench/pt-template-v0.6-v0.2-content.yaml')
     #report.kb_load_yaml('../examples/example-2-kb.yaml')
-    #report.kb_load_csv('../../Knowledge Base.csv')
-    report.kb_load_csv('../../KB.csv')
+    #report.kb_load_csv('../workbench/Knowledge Base.csv')
+    report.kb_load_csv('../workbench/KB.csv')
     #print report.kb_dump_yaml()
-    #scan = Scan('../examples/tmp/b-webinspect.xml')
-    #scan= Scan('../examples/tmp/b-burp.xml')
+    #scan = Scan('../workbench/b-webinspect.xml')
+    #scan= Scan('../workbench/b-burp.xml')
     #print scan.dump_yaml()
     #report.scan = scan
     #print report.content_dump_yaml()
@@ -1020,42 +1020,42 @@ if __name__ == '__main__':
     #print scan._scan['Findings']
     #report.merge_scan(scan)
     #print report._content
-    #report.scan = Scan('../examples/tmp/b-webinspect.xml')
-    #report.scan = Scan('../examples/tmp/b-webinspect.yaml')
-    #report.scan = Scan('../examples/tmp/b-burp.xml')
-    #report.scan = Scan('../examples/tmp/b-burp.yaml')
-    #report.scan = Scan('../examples/tmp/a-webinspect-http.xml')
-    #report.scan = Scan('../examples/tmp/z-webinspect.xml')
-    #report.scan = Scan('../examples/tmp/c-webinspect.yaml')
+    #report.scan = Scan('../workbench/b-webinspect.xml')
+    #report.scan = Scan('../workbench/b-webinspect.yaml')
+    #report.scan = Scan('../workbench/b-burp.xml')
+    #report.scan = Scan('../workbench/b-burp.yaml')
+    #report.scan = Scan('../workbench/a-webinspect-http.xml')
+    #report.scan = Scan('../workbench/z-webinspect.xml')
+    #report.scan = Scan('../workbench/c-webinspect.yaml')
     #print map(lambda x: x['Name'], report.scan._scan['Findings'])
     #print report.scan.dump_yaml()
     #report.xml_apply_meta(vulnparam_highlighting=False)
     report.xml_apply_meta()
     #print report.meta_dump_yaml()
-    #report.save_report_xml('../examples/tmp/output.xml')
-    #report.save_report_xml('../examples/tmp/output-2.xml')
-    report.save_report_xml('../examples/tmp/test-output.xml')
+    #report.save_report_xml('../workbench/output.xml')
+    #report.save_report_xml('../workbench/output-2.xml')
+    report.save_report_xml('../workbench/test-output.xml')
     #print 'end.'
     '''
     
     '''
     report = Report()
-    report.template_load_xml ('../examples/example-1-content-report-template.xml')
+    report.template_load_xml ('../workbench/example-1-content-report-template.xml')
     #report.template_reload(clean=True)
     #print report.template_dump_struct()
     #print report.template_dump_yaml()
-    report.content_load_yaml ('../examples/example-1-content.yaml')
+    report.content_load_yaml ('../workbench/example-1-content.yaml')
     report.xml_apply_meta()
-    report.save_report_xml('../examples/tmp/output.xml')
+    report.save_report_xml('../workbench/output.xml')
     #report.template_reload(clean=True)
     #report.content_load_yaml ('../examples/example-1-content.yaml')
     #report.xml_apply_meta()
-    #report.save_report_xml('../examples/tmp/output.xml')
+    #report.save_report_xml('../workbench/output.xml')
     '''
     
     '''
     report = Report()
-    report.scan = Scan('../examples/tmp/b-burp.xml')
+    report.scan = Scan('../workbench/b-burp.xml')
     print report.scan.dump_yaml()
     '''
 
@@ -1065,7 +1065,7 @@ if __name__ == '__main__':
     #print report.template_dump_struct()
     report.content_load_yaml ('../examples/example-1-content.yaml')
     report.xml_apply_meta()
-    report.save_report_xml('../examples/tmp/output.xml')
+    report.save_report_xml('../workbench/output.xml')
     '''
     
     '''
@@ -1105,13 +1105,13 @@ if __name__ == '__main__':
     # test: merge_scan
     report = Report()
     report.content_load_yaml('../examples/example-2-content.yaml')
-    scan = Scan('../examples/tmp/test-case-example-2-merge-1.yaml')
+    scan = Scan('../workbench/test-case-example-2-merge-1.yaml')
     report.merge_scan(scan)
-    scan = Scan('../examples/tmp/test-case-example-2-merge-2.yaml')
+    scan = Scan('../workbench/test-case-example-2-merge-2.yaml')
     report.merge_scan(scan)
-    scan = Scan('../examples/tmp/test-case-example-2-merge-3.yaml')
+    scan = Scan('../workbench/test-case-example-2-merge-3.yaml')
     report.merge_scan(scan)
-    scan = Scan('../examples/tmp/test-case-example-2-merge-4.yaml')
+    scan = Scan('../workbench/test-case-example-2-merge-4.yaml')
     report.merge_scan(scan)
     print report.content_dump_yaml()
     '''

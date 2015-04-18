@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Yamled
 # Copyright (c) 2015 Marcin Woloszyn (@hvqzao)
 #
@@ -128,13 +127,10 @@ class YamledWindow(wx.Frame):
                         edit = wx.TextCtrl(self.frame.stack, pos=map(lambda x: (x[0], x[1]-diff*self.frame.item_height), [self.GetPosition()])[0], size=map(lambda x: (x[0]+15, x[1]*length), [self.GetSize()])[0], style=wx.BORDER_NONE | wx.TE_MULTILINE)
                         self.frame.edit_ctrl = edit
                         def edit_OnDestroy(e):
-                            val = edit.GetValue()
                             try:
+                                val = edit.GetValue()
                                 if val != orig:
                                     self.frame._title_update(contents_changed=True)
-                            except:
-                                pass
-                            try:
                                 self.frame.SetData(self.frame.n[index], val)
                                 self.frame.SetValue(self.frame.n[index], val)
                                 self.frame.tree.SetItemDropHighlight(self.frame.n[index], highlight=False)
@@ -146,16 +142,19 @@ class YamledWindow(wx.Frame):
                                 pass
                         edit.Bind(wx.EVT_WINDOW_DESTROY, edit_OnDestroy)
                         def edit_OnKillFocus(e):
-                            edit.Destroy()
+                            try:
+                                edit.Destroy()
+                            except:
+                                pass
                         edit.Bind(wx.EVT_KILL_FOCUS, edit_OnKillFocus)
                         def edit_OnKey(e):
-                            keyCode = e.GetKeyCode()
-                            e.Skip()
-                            if keyCode == wx.WXK_ESCAPE:
-                                try:
+                            try:
+                                keyCode = e.GetKeyCode()
+                                e.Skip()
+                                if keyCode == wx.WXK_ESCAPE:
                                     self.SetFocus()
-                                except:
-                                    pass
+                            except:
+                                pass
                         edit.Bind(wx.EVT_CHAR_HOOK, edit_OnKey)
                         edit.Raise()
                         #orig = unicode(self.frame.d[index])
@@ -783,9 +782,9 @@ class YamledWindow(wx.Frame):
 def GUI():
     wx_app = wx.App(redirect=True) # redirect in wxpython 3.0 defaults to False
     #wx_app = wx.App(redirect=False)
-    #YamledWindow(content='../../x.yaml')
-    #YamledWindow(content='../../y.yaml')
-    #YamledWindow(content='../../_yamled_dies.yaml')
+    #YamledWindow(content='../workbench/x.yaml')
+    #YamledWindow(content='../workbench/y.yaml')
+    #YamledWindow(content='../workbench/_yamled_dies.yaml')
     #YamledWindow(content='../workbench/yamled/sample-1.yaml')
     #YamledWindow(content='../workbench/yamled/pt.yaml')
     #YamledWindow(content=yaml_load(open('../workbench/yamled/burp-state-1-report.yaml').read(), yaml.SafeLoader, UnsortableOrderedDict))

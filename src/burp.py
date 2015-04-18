@@ -1,5 +1,5 @@
 # Wasar
-# Copyright (c) 2014 Marcin Woloszyn (@hvqzao)
+# Copyright (c) 2015 Marcin Woloszyn (@hvqzao)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -232,9 +232,7 @@ if __name__ == '__main__':
 
     import yaml
     from lxml import etree
-    #xml = etree.parse('../examples/tmp/b-burp.xml')
-    #xml = etree.parse('../../issue/b.xml')
-    #xml = etree.parse('../../_lp_xssburp_multipart.xml')
+    #xml = etree.parse('../workbench/b.xml')
     #scan = burp_import(xml)
     
     xml = etree.parse('../workbench/xss-2-intruder-items.xml')

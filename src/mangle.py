@@ -1,5 +1,5 @@
 # Wasar
-# Copyright (c) 2014 Marcin Woloszyn (@hvqzao)
+# Copyright (c) 2015 Marcin Woloszyn (@hvqzao)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -56,5 +56,5 @@ def http_param_truncate(param, search=['__VIEWSTATE', '__EVENTVALIDATION', 'java
 if __name__ == '__main__':
     pass
 
-    #print request_tune(open('../examples/tmp/b-request.txt').read())
-    print response_tune(open('../examples/tmp/b-response.txt').read())
+    #print request_tune(open('../workbench/b-request.txt').read())
+    print response_tune(open('../workbench/b-response.txt').read())

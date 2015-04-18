@@ -1,7 +1,7 @@
 ﻿# comment 1
 Report:
   # comment 2
-  Name: Name1 łąść ŁĄŚĆ # file encoding is UTF-8
+  Name: Name1 łąść ŁĄŚĆ # <-- file encoding must be "UTF-8" in order for this to work!
   # comment 3
   Type: "Type1"
   Environment: Environment1

@@ -1,5 +1,5 @@
 # Wasar
-# Copyright (c) 2014 Marcin Woloszyn (@hvqzao)
+# Copyright (c) 2015 Marcin Woloszyn (@hvqzao)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -106,9 +106,9 @@ if __name__ == '__main__':
     '''
     #scan = Scan('../workbench/xss-2-intruder-items.xml')
     
-    #scan = Scan('../examples/tmp/b-webinspect.xml')
+    #scan = Scan('../workbench/b-webinspect.xml')
     #print scan.dump_yaml()
-    #scan = Scan('../../c-webinspect.xml')
+    #scan = Scan('../workbench/c-webinspect.xml')
     #print scan.modify(True)['Findings'][0]['Occurrences'][0]['Post']#.keys()
     #print scan.modify(True)['Findings'][0]['Occurrences'][0].keys()
     #print scan.dump_yaml()

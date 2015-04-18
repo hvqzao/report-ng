@@ -1,5 +1,5 @@
 # Wasar
-# Copyright (c) 2014 Marcin Woloszyn (@hvqzao)
+# Copyright (c) 2015 Marcin Woloszyn (@hvqzao)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.6.7'
-    date = 'Mon Mar  2 15:15:58 2015'
+    version = '0.6.8'
+    date = 'Thu Apr  9 17:27:37 2015'
     changelog = '''
+    0.6.8 - Thu Apr  9 15:27:37 2015
+    - Minor code cleanups. Yamled still needs performance upgrade fixes.
+
     0.6.7 - Mon Mar  2 15:15:58 2015
     - It is now possible to import Occurrences from Burp's "Save (selected) items"
       right click popup menu action generated xml. This might be useful for adding
@@ -431,7 +434,7 @@ class Version(object):
     ## Scans
 
     HP WebInspect 10.1.177.0 and Burp Suite Pro 1.6beta2 / 1.6.01 were used
-    during tests. To prepare source scan data within HP WebInspect, Export
+    during initial tests. To prepare source scan data within HP WebInspect, Export
     Scan Details (Full) with XML Export Format. For Burp use Report Selected
     Issues, select XML and pick Base64-encode requests and responses.
     '''

@@ -1,5 +1,5 @@
 # Wasar
-# Copyright (c) 2014 Marcin Woloszyn (@hvqzao)
+# Copyright (c) 2015 Marcin Woloszyn (@hvqzao)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -151,7 +151,7 @@ if __name__ == '__main__':
 
     import yaml
     from lxml import etree
-    xml = etree.parse('../examples/tmp/b-webinspect.xml')
+    xml = etree.parse('../workbench/b-webinspect.xml')
     scan = webinspect_import(xml)
     sample = scan['Findings'][-2]
     print yaml.dump(sample, default_flow_style=False, allow_unicode=True).decode('utf-8')

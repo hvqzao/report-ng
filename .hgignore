@@ -3,7 +3,7 @@ syntax: glob
 build/
 examples/old/
 examples/tmp/
-release/
+proprietary/
 tmp/
 workbench/
 *.pyc
