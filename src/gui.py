@@ -61,6 +61,7 @@ class GUI(Version):
         #menu_view_s
         #menu_view_v
         #menu_view_i
+        #menu_view_r
         #menu_view_t
         #menu_tools_template_structure_preview
         #menu_tools_merge_scan_into_content
@@ -179,6 +180,8 @@ class GUI(Version):
             self.menu_view_i = menu_view.Append(index.next(), 'V&iewState truncation', 'Warning! Application performance will noticeably decrease!', kind=wx.ITEM_CHECK)
             self.Bind(wx.EVT_MENU, self.Viewstate_truncation, id=index.current)
             self.menu_view_i.Check(True)
+            self.menu_view_r = menu_view.Append(index.next(), 'Include &requests and responses', 'Warning! Have a small scan or be very patient!', kind=wx.ITEM_CHECK)
+            self.menu_view_r.Check(False)
             menu_view.AppendSeparator()
             self.menu_view_t = menu_view.Append(index.next(), 'Always on &top', kind=wx.ITEM_CHECK)
             self.Bind(wx.EVT_MENU, self.Always_on_top, id=index.current)
@@ -590,7 +593,7 @@ class GUI(Version):
             self.menu_file_save_s.Enable(False)
             if self.scan is not None:
                 del self.scan
-            self.scan = Scan(filename)
+            self.scan = Scan(filename, requests_and_responses=self.menu_view_r.IsChecked())
             if self.menu_view_y.IsChecked():
                 self.ctrl_tc_s.SetValue(self.scan.dump_yaml(truncate=self.menu_view_i.IsChecked()))
             else:

@@ -17,7 +17,7 @@
 
 
 from util import UnsortableOrderedDict
-#import zlib
+import zlib
 import base64
 from lxml import etree
 from lxml.html import soupparser
@@ -49,8 +49,8 @@ def _extract_post(request, method):
         post = ''
     return post
 
-def burp_import(xml):
-    # Burp Suite Pro (1.6beta2 / 1.6.01 used)
+def burp_import(xml, requests_and_responses=False):
+    # initially: Burp Suite Pro (1.6beta2 / 1.6.01 used), recently: 1.6.16
     issues_list = []
     issues = xml.xpath('/issues/issue')
     for issue in issues:
@@ -130,7 +130,7 @@ def burp_import(xml):
         #    print name
         for i in report_sections:
             report_sections[i] = fine_tune(report_sections[i], i)
-        issues_list += [UnsortableOrderedDict([
+        issues_item = [
             ['Severity', severity],
             ['severity_id', severity_id],
             ['Name', name],
@@ -143,14 +143,22 @@ def burp_import(xml):
             ['Post', post],
             ['VulnParam', vulnparam],
             ['Example', UnsortableOrderedDict([('VulnParam',vulnparam,),('Request',mangle.request_tune(request),),('Response',mangle.response_tune(response),)])],
+        ]
+        if requests_and_responses:
+            issues_item += [
             #['Request', base64.b64encode (zlib.compress (request.encode('utf-8')))],
             #['Response', base64.b64encode (zlib.compress (response.encode('utf-8')))],
+            ['Request', base64.b64encode (zlib.compress (request))],
+            ['Response', base64.b64encode (zlib.compress (response))],
+        ]
+        issues_item += [
             ['StatusCode', status_code],
             ['StatusDescription', status_description],
             #['Classifications', map(lambda x: UnsortableOrderedDict([['Name', x[3]], ['URL', x[2]]]), classifications)],
             ['ReportSections', UnsortableOrderedDict(
                 map(lambda x: [x.replace(' ', ''), report_sections[x]], report_sections.keys()))],
-        ])]
+        ]
+        issues_list += [UnsortableOrderedDict(issues_item)]
     findings = []
     for vuln_name in sorted(set(map(lambda x: x['Name'], issues_list))):
         issue = UnsortableOrderedDict()
@@ -167,8 +175,9 @@ def burp_import(xml):
                 v = UnsortableOrderedDict()
                 for k in ['Scheme', 'Host', 'Port', 'Method', 'Location', 'Post', 'VulnParam', 'StatusCode', 'StatusDescription']:
                     v[k] = i[k]
-                #for k in ['Request','Response']:
-                #    v[k] = i[k]                        
+                if requests_and_responses:
+                    for k in ['Request','Response']:
+                        v[k] = i[k]                        
                 issue[j] += [v]
         findings += [issue]
     findings.sort(key=lambda x: x['severity_id'], reverse=True)
@@ -176,7 +185,7 @@ def burp_import(xml):
         del i['severity_id']
     return UnsortableOrderedDict([['Findings', findings], ])
 
-def burp_items_import(xml):
+def burp_items_import(xml, requests_and_responses=False):
     # Burp Pro (1.6.11)
     item_list = []
     items = xml.xpath('/items/item')
@@ -220,8 +229,9 @@ def burp_items_import(xml):
         build['VulnParam'] = ''
         build['StatusCode'] = status_code
         build['StatusDescription'] = status_description
-        #build['Request'] = base64.b64encode (zlib.compress (request))
-        #build['Response'] = base64.b64encode (zlib.compress (response))
+        if requests_and_responses:
+            build['Request'] = base64.b64encode (zlib.compress (request))
+            build['Response'] = base64.b64encode (zlib.compress (response))
         #build['Request'] = request
         #build['Response'] = response
         item_list += [build]

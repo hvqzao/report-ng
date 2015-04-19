@@ -27,21 +27,23 @@ class Scan(object):
     # _xml
     # _scan
     # _filename
+    # _requests_and_responses
 
     def _webinspect_import(self):
         from webinspect import webinspect_import
-        self._scan = webinspect_import(self._xml)
+        self._scan = webinspect_import(self._xml, requests_and_responses=self._requests_and_responses)
 
     def _burp_import(self):
         from burp import burp_import
-        self._scan = burp_import(self._xml)
+        self._scan = burp_import(self._xml, requests_and_responses=self._requests_and_responses)
 
     def _burp_items_import(self):
         from burp import burp_items_import
-        self._scan = burp_items_import(self._xml)
+        self._scan = burp_items_import(self._xml, requests_and_responses=self._requests_and_responses)
 
-    def __init__(self, filename):
+    def __init__(self, filename, requests_and_responses=False):
         self._filename = filename
+        self._requests_and_responses = requests_and_responses
         json_ext = '.json'
         yaml_ext = '.yaml'
         if filename[-len(json_ext):] == json_ext:

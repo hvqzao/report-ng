@@ -17,8 +17,8 @@
 
 
 from util import UnsortableOrderedDict
-#import zlib
-#import base64
+import zlib
+import base64
 from lxml import etree
 from lxml.html import soupparser
 import re
@@ -44,8 +44,8 @@ def fine_tune(content, fullurl):
     #print
     return content
     
-def webinspect_import(xml):
-    # HP WebInspect (10.1.177.0)
+def webinspect_import(xml, requests_and_responses=False):
+    # initially, HP WebInspect (10.1.177.0), recently 10.40
     issues_list = []
     issues = xml.xpath('/Sessions/Session/Issues/Issue')
     for issue in issues:
@@ -100,7 +100,7 @@ def webinspect_import(xml):
             if report_sections[i][1]:
                 report_sections[i][1] = fine_tune(etree.tostring(soupparser.fromstring(report_sections[i][1])), fullurl)
         #print issue.xpath ('./DetectionSelection/*')
-        issues_list += [UnsortableOrderedDict([
+        issues_item = [
             ['Severity', severity],
             ['severity_id', severity_id],
             ['Name', name],
@@ -114,13 +114,19 @@ def webinspect_import(xml):
             ['VulnParam', vulnparam],
             ['Example', UnsortableOrderedDict([('VulnParam',vulnparam,),('Request',mangle.request_tune(request),),('Response',mangle.response_tune(response),)])],
             #['Request', request],
-            #['Request', base64.b64encode (zlib.compress (request.encode('utf-8')))],
-            #['Response', base64.b64encode (zlib.compress (response.encode('utf-8')))],
+        ]
+        if requests_and_responses:
+            issues_item += [
+                ['Request', base64.b64encode (zlib.compress (request.encode('utf-8')))],
+                ['Response', base64.b64encode (zlib.compress (response.encode('utf-8')))],
+            ]
+        issues_item += [
             ['StatusCode', status_code],
             ['StatusDescription', status_description],
             ['Classifications', map(lambda x: UnsortableOrderedDict([['Name', x[3]], ['URL', '<ihtml><a href="'+x[2]+'">'+x[2]+'</a></ihtml>']]), classifications)],
             ['ReportSections', UnsortableOrderedDict(map(lambda x: [x[0].replace(' ', ''), x[1]], report_sections))],
-        ])]
+        ]
+        issues_list += [UnsortableOrderedDict(issues_item)]
     findings = []
     for vuln_id in sorted(set(map(lambda x: str(x['vuln_id']), issues_list))):
         issue = UnsortableOrderedDict()
@@ -137,8 +143,9 @@ def webinspect_import(xml):
                 v = UnsortableOrderedDict()
                 for k in ['Scheme', 'Host', 'Port', 'Method', 'Location', 'Post', 'VulnParam', 'StatusCode', 'StatusDescription']:
                     v[k] = i[k]
-                #for k in ['Request','Response']:
-                #    v[k] = i[k]                        
+                if requests_and_responses:
+                    for k in ['Request','Response']:
+                        v[k] = i[k]                        
                 issue[j] += [v]
         findings += [issue]
     findings.sort(key=lambda x: x['severity_id'], reverse=True)
