@@ -58,6 +58,7 @@ class YamledWindow(wx.Frame):
     file_changed = None
     #orig_label_text
     T = False # icon
+    #perf = True
 
     class yTextCtrl(wx.TextCtrl):
 
@@ -280,8 +281,21 @@ class YamledWindow(wx.Frame):
         #self.AppendNode('cgi','har',dict(a='frai'))
         #for i in range(1,50):
         #    self.AppendNode(str(i),str(i))
+
+        #if self.perf:
+        #    self.perf_load = Perf('Load')
+        #    self.perf_load.start()
+        #    self.perf_stack_adjust = Perf('_stack_adjust')
+        #    self.perf_tree_adjust = Perf('_tree_adjust')
+
         if content != None:
             self.Load(content)
+
+        #if self.perf:
+        #    self.perf_load.end().result()
+        #    self.perf_stack_adjust.result()
+        #    self.perf_tree_adjust.result()
+            
         #self._stack_adjust()
         self.tree.Bind(wx.EVT_TREE_ITEM_COLLAPSED, self.__tree_OnCollapse)
         self.tree.Bind(wx.EVT_TREE_ITEM_EXPANDED, self.__tree_OnExpand)
@@ -516,6 +530,8 @@ class YamledWindow(wx.Frame):
         #self._title_update(contents_changed=True)
 
     def _stack_adjust(self):
+        #if self.perf:
+        #    self.perf_stack_adjust.start()
         # recalc items visiblity
         for i in range(len(self.n)):
             path = []
@@ -533,6 +549,8 @@ class YamledWindow(wx.Frame):
         self.stack.Layout()
         self.stack.SetVirtualSize((-1, self.item_height*(len(filter(lambda x: x, self.r))-0)-0))
         #self.tree.Layout()
+        #if self.perf:
+        #    self.perf_stack_adjust.end()
         
     def __tree_OnCollapse(self, e):
         self._stack_adjust()
@@ -679,9 +697,13 @@ class YamledWindow(wx.Frame):
         self.__tree_OnScroll(e)
 
     def _tree_adjust(self):
+        #if self.perf:
+        #    self.perf_tree_adjust.start()
         self.tree.SetSize((self.left.GetSize()[0] + 35, self.stack.GetSize()[1]))
         #self.__stack_OnScroll(None)
-        
+        #if self.perf:
+        #    self.perf_tree_adjust.end()
+            
     def __OnResize(self, e):
         self._tree_adjust()
         for i in [False, True]:
@@ -779,6 +801,26 @@ class YamledWindow(wx.Frame):
         #dialog.SetLicence(self.application.license)
         wx.AboutBox(dialog)
 
+##class Perf(object):
+##    #s - time sum
+##    #n - count
+##    #t - temp
+##    def __init__(self, name):
+##        self.s = 0
+##        self.n = 0
+##        self.name = name
+##    def start(self):
+##        import time
+##        self.t = time.time()
+##        return self
+##    def end(self):
+##        import time
+##        self.s += time.time() - self.t
+##        self.n += 1
+##        return self
+##    def result(self):
+##        print self.name,self.n,self.s
+
 def GUI():
     wx_app = wx.App(redirect=True) # redirect in wxpython 3.0 defaults to False
     #wx_app = wx.App(redirect=False)
@@ -792,6 +834,7 @@ def GUI():
     #YamledWindow(content='../workbench/yamled/asdfgh.yaml')
     #YamledWindow(content='../workbench/yamled/burp-state-1-report.yaml')
     #YamledWindow(content='../workbench/yamled/_export_webinspect.yaml')
+    #YamledWindow(content='../workbench/yamled/midsized.yaml')
     YamledWindow()
     #YamledWindow(content='../workbench/xss-2-intruder-items.yaml')
     wx_app.MainLoop()
