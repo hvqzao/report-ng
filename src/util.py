@@ -75,3 +75,22 @@ def binary_safe(data, cut='[...]'):
         except:
             break
     return unicode(''.join(filter(lambda x: valid_xml_char_ordinal(x), data[:i]+cut)))
+
+'''
+def failsafe(value):
+    #return unicode(value, "utf-8", errors="ignore")
+    #return value.encode('utf-8', 'ignore')
+    #return value.encode('ascii', 'ignore')
+    #print '******',value
+    #import unicodedata
+    #return unicodedata.normalize('NFKD', unicode(value)).encode('ascii','ignore')
+
+    #http://stackoverflow.com/questions/21129020/how-to-fix-unicodedecodeerror-ascii-codec-cant-decode-byte
+    # guarantee unicode string
+    _u = lambda t: t.decode('UTF-8', 'replace') if isinstance(t, str) else t
+    _uu = lambda *tt: tuple(_u(t) for t in tt) 
+    # guarantee byte string in UTF8 encoding
+    _u8 = lambda t: t.encode('UTF-8', 'replace') if isinstance(t, unicode) else t
+    _uu8 = lambda *tt: tuple(_u8(t) for t in tt)
+    return _uu8(value)
+'''

@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.6.9'
-    date = 'Sun Apr 19 21:06:39 2015'
+    version = '0.7.0'
+    date = 'Mon May 18 10:57:28 2015'
     changelog = '''
+    0.7.0 - Mon May 18 10:57:28 2015
+    - FIX: Temporary workaround for minor issue during report generation
+
     0.6.9 - Sun Apr 19 21:06:39 2015
     - Ability to include requests and responses from imported scan (slow and heavy!).
 

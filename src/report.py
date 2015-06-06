@@ -339,12 +339,14 @@ class Report(object):
     @staticmethod
     def _is_html(value):
         preamble = '<html>'
-        return unicode(value).strip().lower()[:len(preamble)] == preamble
+        #return unicode(value).strip().lower()[:len(preamble)] == preamble
+        return str(value).strip().lower()[:len(preamble)] == preamble
 
     @staticmethod
     def _is_ihtml(value):
         preamble = '<ihtml>'
-        return unicode(value).strip().lower()[:len(preamble)] == preamble
+        #return unicode(value).strip().lower()[:len(preamble)] == preamble
+        return str(value).strip().lower()[:len(preamble)] == preamble
 
     def _xml_sdt_single(self, value, sdt, children, struct=None):
         #print value
@@ -957,6 +959,14 @@ if __name__ == '__main__':
     #print report.meta_dump_yaml()
     print report.kb_dump_yaml()
     '''
+
+    report = Report()
+    report.template_load_xml('../workbench/p/templ.xml', clean=True)
+    report.content_load_yaml ('../workbench/p/templ.yaml') 
+    report.scan = Scan('../workbench/p/scan.yaml')
+    report.kb_load_csv('../workbench/p/kb.csv')
+    report.xml_apply_meta()
+    report.save_report_xml('../workbench/p/!.xml')
 
     '''
     report = Report()

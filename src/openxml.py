@@ -679,17 +679,20 @@ class Openxml(object):
         return e
 
     def parse(self, data, parser):
-        clean =  etree.tostring(soupparser.fromstring(data))
-        #clean = clean.replace('<br/><br/>','<br/>') #.replace('\n','')
-        #print clean
-        pre_before = '<html><ihtml>'
-        pre_remove = '<html>'
-        #post_before = '</ihtml></html>'
-        post_remove = '</html>'
-        if clean[:len(pre_before)] == pre_before:
-            clean = clean[len(pre_remove):-len(post_remove)]
-        etree.XML(clean, parser)
-
+        # TODO, workaround for workbench/p/
+        try:
+            clean =  etree.tostring(soupparser.fromstring(data))
+            #clean = clean.replace('<br/><br/>','<br/>') #.replace('\n','')
+            #print clean
+            pre_before = '<html><ihtml>'
+            pre_remove = '<html>'
+            #post_before = '</ihtml></html>'
+            post_remove = '</html>'
+            if clean[:len(pre_before)] == pre_before:
+                clean = clean[len(pre_remove):-len(post_remove)]
+            etree.XML(clean, parser)
+        except:
+            pass
 
 if __name__ == '__main__':
     xml = etree.parse('d6-empty.xml')
