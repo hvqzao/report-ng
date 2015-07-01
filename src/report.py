@@ -339,14 +339,18 @@ class Report(object):
     @staticmethod
     def _is_html(value):
         preamble = '<html>'
-        #return unicode(value).strip().lower()[:len(preamble)] == preamble
-        return str(value).strip().lower()[:len(preamble)] == preamble
+        try:
+            return unicode(value).strip().lower()[:len(preamble)] == preamble
+        except:
+            return str(value).strip().lower()[:len(preamble)] == preamble
 
     @staticmethod
     def _is_ihtml(value):
         preamble = '<ihtml>'
-        #return unicode(value).strip().lower()[:len(preamble)] == preamble
-        return str(value).strip().lower()[:len(preamble)] == preamble
+        try:
+            return unicode(value).strip().lower()[:len(preamble)] == preamble
+        except:
+            return str(value).strip().lower()[:len(preamble)] == preamble
 
     def _xml_sdt_single(self, value, sdt, children, struct=None):
         #print value
@@ -961,13 +965,23 @@ if __name__ == '__main__':
     '''
 
     report = Report()
+    report.template_load_xml('../workbench/j/PT template v1.4.xml', clean=True)
+    report.content_load_yaml ('../workbench/j/PT content v1.3.yaml') 
+    #report.scan = Scan('../workbench/j/...yaml')
+    report.kb_load_csv('../workbench/j/KB_latest.csv')
+    report.xml_apply_meta()
+    #report.save_report_xml('../workbench/j/!.xml')
+
+    '''
+    report = Report()
     report.template_load_xml('../workbench/p/templ.xml', clean=True)
     report.content_load_yaml ('../workbench/p/templ.yaml') 
     report.scan = Scan('../workbench/p/scan.yaml')
     report.kb_load_csv('../workbench/p/kb.csv')
     report.xml_apply_meta()
     report.save_report_xml('../workbench/p/!.xml')
-
+    '''
+    
     '''
     report = Report()
     report.kb_load_csv('../workbench/KB-1.csv')
