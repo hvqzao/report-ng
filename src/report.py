@@ -673,8 +673,11 @@ class Report(object):
                             self._xml_sdt_single(i_hash_count, i['sdt'], i['children'])
                             del i_hash
                         else:
+                            #print finding
                             if 'Summary' in finding and i['struct'][2] in finding['Summary']:
                                 finding_val = finding['Summary'][i['struct'][2]]
+                            elif finding.has_key(i['struct'][2]):
+                                finding_val = finding[i['struct'][2]]
                             else:
                                 finding_val = ''
                             kb_val = None
@@ -965,12 +968,12 @@ if __name__ == '__main__':
     '''
 
     report = Report()
-    report.template_load_xml('../workbench/j/PT template v1.4.xml', clean=True)
-    report.content_load_yaml ('../workbench/j/PT content v1.3.yaml') 
+    report.template_load_xml('../workbench/s/PT template v1.4.xml', clean=True)
+    report.content_load_yaml ('../workbench/s/x.yaml') 
     #report.scan = Scan('../workbench/j/...yaml')
-    report.kb_load_csv('../workbench/j/KB_latest.csv')
+    #report.kb_load_csv('../workbench/j/KB_latest.csv')
     report.xml_apply_meta()
-    #report.save_report_xml('../workbench/j/!.xml')
+    #report.save_report_xml('../workbench/s/!.xml')
 
     '''
     report = Report()

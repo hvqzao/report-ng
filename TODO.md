@@ -1,11 +1,11 @@
 # Todo:
 
 ```
-- yamled: delete node
-- yamled: popup menu: collapse node
-- yamled: popup menu: expand node
+- yamled: crash on esc edit (0.7.1)
+- yamled: find
+- yamled: when selected node on left, highlight siblings on right (e.g. Name:)
 
-- Finding.Severity as optional
+
 ```
 
 # For consideration:

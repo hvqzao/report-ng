@@ -213,6 +213,11 @@ class YamledWindow(wx.Frame):
         menu_file.Append(wx.ID_EXIT, 'E&xit\tCtrl+Q', 'Exit application')
         self.Bind(wx.EVT_MENU, self.__Exit, id=wx.ID_EXIT)
         menu.Append(menu_file, '&File')
+        menu_edit = wx.Menu()
+        self.menu_edit_find = menu_edit.Append(wx.ID_FIND, '&Find...')
+        self.Bind(wx.EVT_MENU, self.Find, id=wx.ID_FIND)
+        self.menu_edit_find.Enable(False)
+        menu.Append(menu_edit, '&Edit')
         menu_help = wx.Menu()
         menu_help.Append(wx.ID_ABOUT, '&About')
         self.Bind(wx.EVT_MENU, self.About, id=wx.ID_ABOUT)
@@ -439,7 +444,7 @@ class YamledWindow(wx.Frame):
                         #print keys, i.keys()
                         #if i.keys() != keys:
                         #    raise Exception('List keys differ!')
-                        list_item = self.AppendNode(self.SPACER+keys[0]+':', '', None, parent)
+                        list_item = self.AppendNode(self.SPACER+keys[0]+':', '', None, parent, bold=True)
                         #self.tree.SetPyData(list_item, None)
                         if self.T:
                             self.tree.SetItemImage(list_item, self.dotlist) #, wx.TreeItemIcon_Normal)
@@ -484,13 +489,27 @@ class YamledWindow(wx.Frame):
     def GetData(self, item):
         pos = self.n.index(item)
         return self.d[pos]
+
+    def _yCtrl (self):
+        ctrl = self.yTextCtrl(self.stack, self, size=(-1, self.item_height), style=wx.BORDER_NONE)
+        #ctrl = self.yTextCtrl(self.stack, self, size=(-1, self.item_height), style=wx.BORDER_NONE | wx.TE_RICH2)
+        #ctrl.SetBackgroundColour((250,250,0))
+        #ctrl.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_MENU))
+        return ctrl
+
+    def _fatCtrl (self, ctrl):
+        font = ctrl.GetFont() 
+        font.MakeBold()
+        ctrl.SetFont(font)
     
-    def AppendNode(self, name, value, data=None, parent=None):
+    def AppendNode(self, name, value, data=None, parent=None, bold=False):
         if parent == None:
             parent = self.root
         item = self.tree.AppendItem(parent, name)
         self.n += [item]
-        ctrl = self.yTextCtrl(self.stack, self, size=(-1, self.item_height), style=wx.BORDER_NONE)
+        ctrl = self._yCtrl()
+        if bold:
+            self._fatCtrl(ctrl)
         self.stack_sizer.Add(ctrl, flag=wx.LEFT|wx.RIGHT|wx.EXPAND)
         ctrl.SetValue(value)
         self.t += [ctrl]
@@ -499,13 +518,15 @@ class YamledWindow(wx.Frame):
         #self._title_update(contents_changed=True)
         return item
 
-    def InsertNode(self, after, name, value, data=None, parent=None):
+    def InsertNode(self, after, name, value, data=None, parent=None, bold=False):
         index = after+1
         if parent == None:
             parent = self.n[after]
         item = self.tree.InsertItem(parent, self.n[after], name)
         self.n.insert(index, item)
-        ctrl = self.yTextCtrl(self.stack, self, size=(-1, self.item_height), style=wx.BORDER_NONE)
+        ctrl = self._yCtrl()
+        if bold:
+            self._fatCtrl(ctrl)
         self.stack_sizer.Insert(index, ctrl, flag=wx.LEFT|wx.RIGHT|wx.EXPAND)
         ctrl.SetValue(value)
         self.t.insert(index, ctrl)
@@ -594,7 +615,7 @@ class YamledWindow(wx.Frame):
             index = self.n.index(self.tree.GetSelections()[0])
             if isinstance(self.d[index], list):
                 pos = self.n.index(self.__last_descendant(self.n[index])[-1])
-                node = self.InsertNode(pos, self.SPACER+self.d[index][0]+':', '', '', self.n[index])
+                node = self.InsertNode(pos, self.SPACER+self.d[index][0]+':', '', '', self.n[index], bold=True)
                 for i in range(1, len(self.d[index][1:])+1):
                     self.InsertNode(pos+i, self.d[index][i]+':', '', '', node)
                 self._title_update(contents_changed=True)
@@ -800,6 +821,19 @@ class YamledWindow(wx.Frame):
         #dialog.SetWebSite(self.application.url)
         #dialog.SetLicence(self.application.license)
         wx.AboutBox(dialog)
+
+    def Find(self, e):
+        # scroll to tree ctrl
+        # self.tree
+        # self.n[item]
+        # self.tree.ScrollTo(self.n[-1])
+
+        # scroll to stack textctrl
+        # self.stack
+        # self.t[ctrl]
+        #self.stack.Scroll(0,self.t[-1].GetPosition())
+
+        pass
 
 ##class Perf(object):
 ##    #s - time sum
