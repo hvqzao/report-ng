@@ -968,12 +968,14 @@ if __name__ == '__main__':
     '''
 
     report = Report()
-    report.template_load_xml('../workbench/s/PT template v1.4.xml', clean=True)
-    report.content_load_yaml ('../workbench/s/x.yaml') 
+    #report.template_load_xml('../workbench/s/PT template v1.4.xml', clean=True)
+    report.template_load_xml('../workbench/k/PT Polish template v1.0.xml', clean=True)
+    #report.content_load_yaml('../workbench/s/x.yaml')
+    report.content_load_yaml('../workbench/k/PT Polish content.yaml')
     #report.scan = Scan('../workbench/j/...yaml')
     #report.kb_load_csv('../workbench/j/KB_latest.csv')
     report.xml_apply_meta()
-    #report.save_report_xml('../workbench/s/!.xml')
+    report.save_report_xml('../workbench/k/!.xml')
 
     '''
     report = Report()
