@@ -8,16 +8,16 @@ import sys
 base = 'Win32GUI' if sys.platform=='win32' else None
 
 executables = [
-    Executable('wasar.py', base=base, icon='src/resources/icon.ico'),
+    Executable('report-ng.py', base=base, icon='src/resources/icon.ico'),
     Executable('yamled.py', base=base, icon='src/resources/yamled.ico'),
 ]
 
 from src.version import Version
 version = Version()
 
-setup(name='wasar',
+setup(name='report-ng',
       version = version.version,
-      description = 'wasar-'+version.version, #version.long_title,
+      description = 'report-ng-'+version.version, #version.long_title,
       author = version.c,      
       options = dict(build_exe = buildOptions),
       executables = executables)

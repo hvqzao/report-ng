@@ -5,5 +5,4 @@
 - yamled: find
 - yamled: when selected node on left, highlight siblings on right (e.g. Name:)
 
-
 ```

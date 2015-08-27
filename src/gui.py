@@ -1,4 +1,4 @@
-# Wasar
+# report-ng
 # Copyright (c) 2015 Marcin Woloszyn (@hvqzao)
 #
 # This program is free software; you can redistribute it and/or
@@ -465,7 +465,7 @@ class GUI(Version):
             dialog = wx.AboutDialogInfo()
             #dialog.SetIcon (wx.Icon('icon.ico', wx.BITMAP_TYPE_PNG))
             dialog.SetIcon(self.icon)
-            dialog.SetName(self.application.long_title+' - '+self.application.title)
+            dialog.SetName(self.application.title+': '+self.application.long_title)
             dialog.SetVersion(self.application.version)
             dialog.SetCopyright(self.application.c)
             dialog.SetDescription('\n'.join(map(lambda x: x[4:], self.application.about.split('\n')[1:][:-1])))

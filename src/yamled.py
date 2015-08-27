@@ -806,7 +806,7 @@ class YamledWindow(wx.Frame):
         #dialog.SetDescription('\n'.join(map(lambda x: x[4:], self.application.about.split('\n')[1:][:-1])))
         dialog.SetDescription('\n'.join([
             '',
-            'This editor is developed as part of Wasar project.',
+            'This editor is developed as part of report-ng project.',
             '',
             'It supports only basic functionality.',
             'This include:',

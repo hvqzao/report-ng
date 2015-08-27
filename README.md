@@ -1,9 +1,10 @@
-# Wasar - Web Application Security Assessment Reporting
+# report-ng - Web application security assessment reporting Tool
 
 The idea behind is to speed up the preparation stage of penetration
 testing and automated scan reports as well as make it more uniform.
 
-![alt text](http://i.imgur.com/VJjUcFY.png "Web Application Security Assessment Reporting")
+Code quality is poor, it does not contain tests, but application
+itself has proven its value in production use.
 
 ## Basics
 

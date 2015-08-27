@@ -1,4 +1,4 @@
-# Wasar
+# report-ng
 # Copyright (c) 2015 Marcin Woloszyn (@hvqzao)
 #
 # This program is free software; you can redistribute it and/or

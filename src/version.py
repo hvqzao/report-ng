@@ -1,4 +1,4 @@
-# Wasar
+# report-ng
 # Copyright (c) 2015 Marcin Woloszyn (@hvqzao)
 #
 # This program is free software; you can redistribute it and/or
@@ -20,10 +20,10 @@ if __name__ == '__main__':
     import datetime ; print datetime.datetime.ctime(datetime.datetime.now())
 
 class Version(object):
-    title = 'Wasar'
-    long_title = 'Web Application Security Assessment Reporting tool'
+    title = 'report-ng'
+    long_title = 'Web application security assessment reporting tool'
     c = 'Copyright (C) 2014 Marcin Woloszyn (@hvqzao)'
-    #url = 'https://github.com/hvqzao/wasar'
+    #url = 'https://github.com/hvqzao/report-ng'
     url = ''
     #license = 'Distributed under GNU General Public License, Version 2, June 1991'
     license = ''
