@@ -3,8 +3,9 @@
 The idea behind is to speed up the preparation stage of penetration
 testing and automated scan reports as well as make it more uniform.
 
-Code quality is poor, it does not contain tests, but application
-itself has proven its value in production use.
+Developed with Python 2.7 on Windows. Code is a little bit messy,
+it does not contain tests, but application itself has proven its
+value in production use for over a year now.
 
 ## Basics
 
