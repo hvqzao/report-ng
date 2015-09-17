@@ -7,8 +7,23 @@ Developed with Python 2.7 on Windows. Code is a little bit messy,
 it does not contain tests, but application itself has proven its
 value in production use for over a year now.
 
+## Download
+
+https://github.com/hvqzao/report-ng/releases/download/report-ng-0.7.2/report-ng-0.7.2.zip
+
+## Demo
+
 Watch it in action on Youtube:
-[![report-ng in action](https://cloud.githubusercontent.com/assets/4956006/9931996/a2a05a92-5d40-11e5-8043-3e412563498e.png)](https://www.youtube.com/watch?v=F6F4648hj2c&t=4m54s)
+https://www.youtube.com/watch?v=F6F4648hj2c&t=4m54s
+
+Merging scans:
+https://www.youtube.com/watch?v=k0O7YE93Vdk
+
+report-ng in action:
+![report-ng](https://cloud.githubusercontent.com/assets/4956006/9931996/a2a05a92-5d40-11e5-8043-3e412563498e.png)
+
+built-in yaml editor:
+![yamled](https://cloud.githubusercontent.com/assets/4956006/9932323/47facdea-5d43-11e5-99e9-619bcec548c6.png)
 
 ## Basics
 
