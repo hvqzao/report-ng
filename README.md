@@ -1,4 +1,4 @@
-# report-ng - Web application security assessment reporting Tool
+# report-ng - Web application security assessment reporting tool
 
 The idea behind is to speed up the preparation stage of penetration
 testing and automated scan reports as well as make it more uniform.
@@ -6,6 +6,8 @@ testing and automated scan reports as well as make it more uniform.
 Developed with Python 2.7 on Windows. Code is a little bit messy,
 it does not contain tests, but application itself has proven its
 value in production use for over a year now.
+
+[![report-ng in action](http://img.youtube.com/vi/F6F4648hj2c/0.jpg)](https://www.youtube.com/watch?v=F6F4648hj2c&t=4m54s)
 
 ## Basics
 
