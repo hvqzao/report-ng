@@ -7,12 +7,8 @@ Developed with Python 2.7 on Windows. Code is a little bit messy,
 it does not contain tests, but application itself has proven its
 value in production use for over a year now.
 
-<<<<<<< HEAD
 Watch it in action on Youtube:
 [![report-ng in action](https://cloud.githubusercontent.com/assets/4956006/9931996/a2a05a92-5d40-11e5-8043-3e412563498e.png)](https://www.youtube.com/watch?v=F6F4648hj2c&t=4m54s)
-=======
-[![report-ng in action](http://img.youtube.com/vi/F6F4648hj2c/0.jpg)](https://www.youtube.com/watch?v=F6F4648hj2c&t=4m54s)
->>>>>>> 62bfc1277143debe54dd5d7907e026a66a375462
 
 ## Basics
 
