@@ -1,0 +1,6 @@
+build/
+proprietary/
+tmp/
+workbench/
+*.pyc
+Thumbs.db

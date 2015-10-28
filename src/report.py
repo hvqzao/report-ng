@@ -398,7 +398,7 @@ class Report(object):
                     block = etree.fromstring(etree.tostring(p_r_tc[0]))
                     tags = etree.ETXPath('.//{%s}t' % self.ns.w)(block)
                     if len(tags) > 0:
-                        tags[0].text = unicode(v)
+                        tags[0].text = util.xml_valid_unicode(v)
                         for tag in tags[1:]:
                             tag_parent = tag.getparent()
                             tag_parent.remove(tag)
@@ -488,7 +488,8 @@ class Report(object):
                         elif val == None:
                             tags[0].text = ''
                         else:
-                            tags[0].text = unicode(val)
+                            #tags[0].text = unicode(val)
+                            tags[0].text = util.xml_valid_unicode(val)
                         for tag in tags[1:]:
                             tag_parent = tag.getparent()
                             tag_parent.remove(tag)
@@ -631,6 +632,7 @@ class Report(object):
                         ultimate_val = self._kb_val(finding_val, kb_val)
                         #print '+', alias_abs
                         #print '=',ultimate_val
+                        #print i['struct'], ultimate_val, i['sdt']
                         self._xml_apply_data(i['struct'], ultimate_val, i['sdt'], i['children'])
                         #print finding['Name'], i['struct']
                         alias_search = i['struct'][:]
@@ -968,6 +970,12 @@ if __name__ == '__main__':
     '''
 
     report = Report()
+    report.template_load_xml('../workbench/k1/t.xml', clean=True)
+    report.scan = Scan('../workbench/k1/e.xml')
+    report.xml_apply_meta()
+
+    '''
+    report = Report()
     #report.template_load_xml('../workbench/s/PT template v1.4.xml', clean=True)
     report.template_load_xml('../workbench/k/PT Polish template v1.0.xml', clean=True)
     #report.content_load_yaml('../workbench/s/x.yaml')
@@ -976,7 +984,8 @@ if __name__ == '__main__':
     #report.kb_load_csv('../workbench/j/KB_latest.csv')
     report.xml_apply_meta()
     report.save_report_xml('../workbench/k/!.xml')
-
+    '''
+    
     '''
     report = Report()
     report.template_load_xml('../workbench/p/templ.xml', clean=True)

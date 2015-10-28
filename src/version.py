@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.7.2'
-    date = 'Fri Jul 10 13:29:38 2015'
+    version = '0.7.3'
+    date = 'Mon Oct 26 15:59:34 2015'
     changelog = '''
+    0.7.3 - Mon Oct 26 15:59:34 2015
+    - FIX: XML characters validation missing
+    
     0.7.2 - Fri Jul 10 13:29:38 2015
     - If there will be no Finding.Summary.X, it will fallback to Finding.X value
     - Yamled sets bold for a value of first key in dictionary
