@@ -68,7 +68,10 @@ def valid_xml_char_ordinal(c):
         0x10000 <= codepoint <= 0x10FFFF
         )
 def xml_valid_unicode(s):
-    return ''.join(filter(lambda x: valid_xml_char_ordinal(x), unicode(s)))
+    try:
+        return ''.join(filter(lambda x: valid_xml_char_ordinal(x), unicode(s)))
+    except:
+        return '(binary data)'
 
 def binary_safe(data, cut='[...]'):
     for i in range(len(data)):

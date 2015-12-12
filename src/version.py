@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.7.3'
-    date = 'Mon Oct 26 15:59:34 2015'
+    version = '0.7.4'
+    date = 'Mon Nov 30 12:00:35 2015'
     changelog = '''
+    0.7.4 - Mon Nov 30 12:00:35 2015
+    - FIX: Burp edge case issues
+    
     0.7.3 - Mon Oct 26 15:59:34 2015
     - FIX: XML characters validation missing
     

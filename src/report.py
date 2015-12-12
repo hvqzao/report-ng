@@ -970,8 +970,8 @@ if __name__ == '__main__':
     '''
 
     report = Report()
-    report.template_load_xml('../workbench/k1/t.xml', clean=True)
-    report.scan = Scan('../workbench/k1/e.xml')
+    report.template_load_xml('../workbench/mk1/tw.xml', clean=True)
+    report.scan = Scan('../workbench/mk1/test1.xml')
     report.xml_apply_meta()
 
     '''

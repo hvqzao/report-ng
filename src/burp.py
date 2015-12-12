@@ -87,10 +87,12 @@ def burp_import(xml, requests_and_responses=False):
             response = ''
             method = None
         status_parts = response.split('\n')[0].split(' ')
-        if response_element:
-            status_code, status_description = (int(status_parts[1]), ' '.join(status_parts[2:]))
-        else:
-            status_code, status_description = (None, None)
+        status_code, status_description = (None, None)
+        if response_element and len(status_parts) > 1:
+            try:
+                status_code, status_description = (int(status_parts[1]), ' '.join(status_parts[2:]))
+            except:
+                pass
         del status_parts
         location = ' '.join(request.split('\n')[0].split(' ')[1:-1])
         vulnparam = issue.xpath('./location')[0].text[len(issue.xpath('./path')[0].text):]
@@ -242,11 +244,11 @@ if __name__ == '__main__':
 
     import yaml
     from lxml import etree
-    #xml = etree.parse('../workbench/b.xml')
-    #scan = burp_import(xml)
+    xml = etree.parse('../workbench/mk1/a.xml')
+    scan = burp_import(xml)
     
-    xml = etree.parse('../workbench/xss-2-intruder-items.xml')
-    scan = burp_items_import(xml)
+    #xml = etree.parse('../workbench/xss-2-intruder-items.xml')
+    #scan = burp_items_import(xml)
     
     #for i in scan['Findings']:
     #    print i['Name']
