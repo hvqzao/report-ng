@@ -21,6 +21,7 @@ import wx.html2
 import cgi
 import base64
 import cStringIO
+import os
 
 from resources.icon import icon
 from report import Report
@@ -45,6 +46,7 @@ class GUI(Version):
         #template
         #icon
         #statusbar
+        #save_into_directory
         #menu_file_open_c
         #menu_file_open_k
         #menu_file_generate_c
@@ -91,6 +93,7 @@ class GUI(Version):
             self.report = Report()
             self.application = application
             self.scan = None
+            self.save_into_directory = ''
             wx.Frame.__init__(self, parent, title=self.application.title + ' ' + self.application.version, *args,
                               **kwargs)  #style=style
             self.Bind(wx.EVT_CLOSE, lambda x: self.Destroy())
@@ -572,6 +575,7 @@ class GUI(Version):
                 self.report.content_load_json(filename)
             else:
                 self.report.content_load_yaml(filename)
+            self.save_into_directory = os.path.dirname(filename)
             self.__show_content()
             self.ctrl_st_c.Enable(True)
             self.menu_file_save_r.Enable(True)
@@ -634,7 +638,7 @@ class GUI(Version):
         #def Generate_Report (self, e):
         #    pass
         def Save_Template_As(self, e):
-            openFileDialog = wx.FileDialog(self, 'Save Template As', '', '',
+            openFileDialog = wx.FileDialog(self, 'Save Template As', self.save_into_directory, '',
                                            'Content files (*.yaml; *.json)|*.yaml;*.json|All files (*.*)|*.*',
                                            wx.FD_SAVE | wx.wx.FD_OVERWRITE_PROMPT)
             if openFileDialog.ShowModal() == wx.ID_CANCEL:
@@ -651,7 +655,7 @@ class GUI(Version):
             self.status('Template content saved')
 
         def Save_Content_As(self, e):
-            openFileDialog = wx.FileDialog(self, 'Save Content As', '', '',
+            openFileDialog = wx.FileDialog(self, 'Save Content As', self.save_into_directory, '',
                                            'Content files (*.yaml; *.json)|*.yaml;*.json|All files (*.*)|*.*',
                                            wx.FD_SAVE | wx.wx.FD_OVERWRITE_PROMPT)
             if openFileDialog.ShowModal() == wx.ID_CANCEL:
@@ -668,7 +672,7 @@ class GUI(Version):
             self.status('Content saved')
 
         def Save_Scan_As(self, e):
-            openFileDialog = wx.FileDialog(self, 'Save Scan As', '', '',
+            openFileDialog = wx.FileDialog(self, 'Save Scan As', self.save_into_directory, '',
                                            'Content files (*.yaml; *.json)|*.yaml;*.json|All files (*.*)|*.*',
                                            wx.FD_SAVE | wx.wx.FD_OVERWRITE_PROMPT)
             if openFileDialog.ShowModal() == wx.ID_CANCEL:
@@ -710,7 +714,7 @@ class GUI(Version):
         #def Save_Knowledge_Base_As (self, e):
         #    pass
         def Save_Report_As(self, e):
-            openFileDialog = wx.FileDialog(self, 'Save Report As', '', '',
+            openFileDialog = wx.FileDialog(self, 'Save Report As', self.save_into_directory, '',
                                            'XML files (*.xml)|*.xml|All files (*.*)|*.*',
                                            wx.FD_SAVE | wx.wx.FD_OVERWRITE_PROMPT)
             if openFileDialog.ShowModal() == wx.ID_CANCEL:

@@ -99,7 +99,7 @@ class YamledWindow(wx.Frame):
             self.Edit()
             e.Skip()
 
-        def Edit(self):
+        def Edit(self, select_all=False):
             focused = self.frame.FindFocus()
             if focused == self:
                 pass
@@ -149,19 +149,25 @@ class YamledWindow(wx.Frame):
                                 pass
                         edit.Bind(wx.EVT_KILL_FOCUS, edit_OnKillFocus)
                         def edit_OnKey(e):
+                            keyCode = None
                             try:
                                 keyCode = e.GetKeyCode()
-                                e.Skip()
-                                if keyCode == wx.WXK_ESCAPE:
-                                    self.SetFocus()
                             except:
                                 pass
+                            e.Skip()
+                            if keyCode == wx.WXK_ESCAPE:
+                                try:
+                                    self.SetFocus()
+                                except:
+                                    pass
                         edit.Bind(wx.EVT_CHAR_HOOK, edit_OnKey)
                         edit.Raise()
-                        #orig = unicode(self.frame.d[index])
-                        orig = self.frame.d[index] #.encode('utf-8')
+                        orig = unicode(self.frame.d[index])
+                        #orig = self.frame.d[index] #.encode('utf-8')
                         edit.SetValue(orig)
                         edit.SetFocus()
+                        if select_all:
+                            edit.SelectAll()
                         self.frame.tree.SetItemDropHighlight(self.frame.n[index])
                     
     def __init__(self, parent=None, title='', content=None, size=(800, 600,), *args, **kwargs):
@@ -348,19 +354,28 @@ class YamledWindow(wx.Frame):
         self.splitter.SetDoubleBuffered(True)
         #self.stack.SetBackgroundColour((240,255,255,255))
         def tree_OnKey(e):
-            keyCode = e.GetKeyCode()
+            keyCode = None
+            try:
+                keyCode = e.GetKeyCode()
+            except:
+                pass
             e.Skip()
             if keyCode == wx.WXK_RETURN:
-                sel = self.tree.GetSelections()
-                if len(sel) > 0:
-                    self.t[self.n.index(sel[0])].Edit()
+                self.tree_selected_edit()
+            if keyCode == 65 and e.ControlDown():
+                self.tree_selected_edit(True)
         self.tree.Bind(wx.EVT_CHAR_HOOK, tree_OnKey)
         #extract = self.Extract()
         #if self.orig != extract:
         #    #print extract
         #    print yaml.dump(extract, default_flow_style=False, allow_unicode=True).decode('utf-8').encode('utf-8')
         #self.Destroy()
-            
+
+    def tree_selected_edit(self, select_all=False):
+        sel = self.tree.GetSelections()
+        if len(sel) > 0:
+            self.t[self.n.index(sel[0])].Edit(select_all)
+                    
     def Extract(self):
         #print
         #for i in range(len(self.n)):
@@ -618,6 +633,8 @@ class YamledWindow(wx.Frame):
                 node = self.InsertNode(pos, self.SPACER+self.d[index][0]+':', '', '', self.n[index], bold=True)
                 for i in range(1, len(self.d[index][1:])+1):
                     self.InsertNode(pos+i, self.d[index][i]+':', '', '', node)
+                    # TODO recurrent clone
+                    # InsertNode(self, after, name, value, data=None, parent=None, bold=False)
                 self._title_update(contents_changed=True)
                 self.tree.Expand(node)
             if isinstance(self.d[index], UnsortableOrderedDict):
