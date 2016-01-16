@@ -11,7 +11,7 @@ value in production use for over a year now.
 
 https://github.com/hvqzao/report-ng/releases/download/report-ng-0.7.2/report-ng-0.7.2.zip
 
-## Demo
+## Demo videos
 
 Watch it in action on Youtube:
 https://www.youtube.com/watch?v=F6F4648hj2c&t=4m54s
@@ -230,6 +230,9 @@ HP WebInspect 10.1.177.0 and Burp Suite Pro 1.6beta2 / 1.6.01 were used
 during initial tests. To prepare source scan data within HP WebInspect, Export
 Scan Details (Full) with XML Export Format. For Burp use Report Selected
 Issues, select XML and pick Base64-encode requests and responses.
+At the time of writing, everything works smoothly with HP WebInspect 10.50,
+BurpSuite Pro 1.6.34 and Microsoft Office 2013. No modifications were
+necessary.
 
 ## License
 
