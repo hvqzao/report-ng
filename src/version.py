@@ -22,7 +22,7 @@ if __name__ == '__main__':
 class Version(object):
     title = 'report-ng'
     long_title = 'Web application security assessment reporting tool'
-    c = 'Copyright (C) 2014 Marcin Woloszyn (@hvqzao)'
+    c = 'Copyright (C) 2014-2016 Marcin Woloszyn (@hvqzao)'
     #url = 'https://github.com/hvqzao/report-ng'
     url = ''
     #license = 'Distributed under GNU General Public License, Version 2, June 1991'
