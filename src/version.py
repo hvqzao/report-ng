@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.7.5'
-    date = 'Thu Jan 14 11:00:04 2016'
+    version = '0.7.6'
+    date = 'Thu Apr  7 14:35:07 2016'
     changelog = '''
+    0.7.6 - Thu Apr  7 14:35:07 2016
+    - FIX: making sure burp request/reponses are properly encoded
+
     0.7.5 - Thu Jan 14 11:00:04 2016
     - yamled: Ctrl+A will now start editing given cell and select all content
     - report-ng: content directory is now default location for saving generated content

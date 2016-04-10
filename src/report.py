@@ -969,10 +969,12 @@ if __name__ == '__main__':
     print report.kb_dump_yaml()
     '''
 
-    report = Report()
-    report.template_load_xml('../workbench/mk1/tw.xml', clean=True)
-    report.scan = Scan('../workbench/mk1/test1.xml')
-    report.xml_apply_meta()
+    #report = Report()
+    #report.template_load_xml('../workbench/pb1/templ.xml', clean=True)
+    #report.scan = Scan('../workbench/pb1/is.xml')
+    #report.scan.dump_yaml()
+    #report.xml_apply_meta()
+    #report.save_report_xml('../workbench/pb1/!.xml')
 
     '''
     report = Report()

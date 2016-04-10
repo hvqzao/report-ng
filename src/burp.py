@@ -244,9 +244,10 @@ if __name__ == '__main__':
 
     import yaml
     from lxml import etree
-    xml = etree.parse('../workbench/mk1/a.xml')
+    xml = etree.parse('../workbench/pb1/is.xml')
     scan = burp_import(xml)
-    
+    #print yaml.dump(scan)
+
     #xml = etree.parse('../workbench/xss-2-intruder-items.xml')
     #scan = burp_items_import(xml)
     

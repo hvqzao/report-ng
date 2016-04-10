@@ -19,11 +19,20 @@
 #def line_cap(content,cap=1000):
 #    return '\n'.join(map(lambda x: x[:cap], content.split('\n')))
 
+def basic(content):
+    try:
+        content = content.decode('utf-8')
+    except:
+        pass
+    return content
+
 def request_tune(content):
+    content = basic(content)
     #content = line_cap(content)
     return content.strip()
 
 def response_tune(content):
+    content = basic(content)
     #content = line_cap(content)
     blank = content.find('\n\n')
     if blank == -1:
