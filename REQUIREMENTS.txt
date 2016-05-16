@@ -1,0 +1,24 @@
+c:\Python27\5>pip freeze
+anyreadline==0.1.1
+PyInstaller==2.1
+pyreadline==2.1
+pywin32==219
+lxml==3.3.5
+beautifulsoup==3.2.1
+
+---
+
+python-2.7.11.msi - python installation (python is on the path)
+pip install --upgrade pip (8.1.2)
+
+pip install cx_freeze (newest, 4.3.4)
+pip install lxml==3.3.5
+
+pywin32-220.win32-py2.7.exe  (https://sourceforge.net/projects/pywin32/files/pywin32)
+wxPython3.0-win32-3.0.2.0-py27.exe (http://www.wxpython.org/download.php)
+
+pip install pillow (newest)
+pip install pyaml (newest, 3.11)
+
+pip install beautifulsoup==3.2.1
+pip install beautifulsoup4 (optional? not sure...)
