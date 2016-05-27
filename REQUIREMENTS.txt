@@ -11,7 +11,7 @@ beautifulsoup==3.2.1
 python-2.7.11.msi - python installation (python is on the path)
 pip install --upgrade pip (8.1.2)
 
-pip install cx_freeze (newest, 4.3.4)
+pip install cx_freeze==4.3.3 (newest, 4.3.4 have some issue with DLLs)
 pip install lxml==3.3.5
 
 pywin32-220.win32-py2.7.exe  (https://sourceforge.net/projects/pywin32/files/pywin32)
