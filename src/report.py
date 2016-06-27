@@ -441,11 +441,13 @@ class Report(object):
             #print '+',struct
             build = []
             for row in value:
-                #print row
+                #print type(row), row
+                if isinstance(row, str) or isinstance(row, unicode):
+                    continue
                 block = etree.fromstring(etree.tostring(children[0]))
                 aliases = self._xml_block_aliases(block)
                 for col in row:
-                    #print 'x',col
+                    #print 'x', col
                     alias_match_q = filter(lambda x: x['struct'] == struct + [str(col)+'?'], aliases)
                     if alias_match_q:
                         if row[col]:
@@ -958,6 +960,18 @@ class Report(object):
 if __name__ == '__main__':
     pass
 
+    report = Report()
+    report.template_load_xml('../workbench/pd1/x.xml', clean=True)
+    report.content_load_yaml('../workbench/pd1/x.yaml')
+    report.xml_apply_meta()
+    #report.save_report_xml('../workbench/pd1/!.xml')
+
+    #report = Report()
+    #report.template_load_xml('../workbench/pd1/x.xml', clean=True)
+    #report.content_load_yaml('../workbench/pd1/y.yaml')
+    #report.xml_apply_meta()
+    #report.save_report_xml('../workbench/pd1/!!.xml')
+    
     '''
     report = Report()
     #report.kb_load_yaml('../examples/example-2-kb.yaml')

@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.7.7'
-    date = 'Mon May 16 15:39:02 2016'
+    version = '0.7.8'
+    date = 'Mon Jun 27 15:39:34 2016'
     changelog = '''
+    0.7.8 - Mon Jun 27 15:39:34 2016
+    - Improper input check
+    
     0.7.7 - Mon May 16 15:39:02 2016
     - FIX: VIEWSTATE truncation should now work properly
     - Upgrade to Python 2.7.11 and upstream modules

@@ -19,6 +19,12 @@
 #def line_cap(content,cap=1000):
 #    return '\n'.join(map(lambda x: x[:cap], content.split('\n')))
 
+#def safe(text):
+#    return ''.join(filter(lambda x: x not in [u'\xa0', u'\x3f'], list(text)))
+#
+#def safestr(text):
+#    return str(safe(text))
+
 def basic(content):
     try:
         content = content.decode('utf-8')
