@@ -3,9 +3,9 @@
 The idea behind is to speed up the preparation stage of penetration
 testing and automated scan reports as well as make it more uniform.
 
-Developed with Python 2.7 on Windows. Code is a little bit messy,
-it does not contain tests, but application itself has proven its
-value in production use for over a year now.
+Developed with Python 2.7 on Windows. Code does not contain tests,
+but application itself has proven its value in production use for
+over two years now.
 
 ## Download
 
@@ -230,8 +230,9 @@ HP WebInspect 10.1.177.0 and Burp Suite Pro 1.6beta2 / 1.6.01 were used
 during initial tests. To prepare source scan data within HP WebInspect, Export
 Scan Details (Full) with XML Export Format. For Burp use Report Selected
 Issues, select XML and pick Base64-encode requests and responses.
+
 At the time of writing, everything works smoothly with HP WebInspect 10.50,
-BurpSuite Pro 1.6.34 and Microsoft Office 2013. No modifications were
+BurpSuite Pro 1.7.03 and Microsoft Office 2013. No modifications were
 necessary.
 
 ## License
