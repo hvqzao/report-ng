@@ -1,5 +1,5 @@
 # report-ng
-# Copyright (c) 2015 Marcin Woloszyn (@hvqzao)
+# Copyright (c) 2017 Marcin Woloszyn (@hvqzao)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -101,7 +101,7 @@ class Report(object):
         if self._meta:
             del self._meta
         self._meta_init()
-        if self._kb:  # TODO ?
+        if self._kb:
             del self._kb
         self._kb = None
 
@@ -546,6 +546,62 @@ class Report(object):
         else:
             return ''
 
+    ''' get knowledgebase item for given finding [name, severity] '''
+    def _kb_match(self, name, severity, knowledgebase):
+        kb = None
+        if self._kb:
+            kb_match = filter(lambda x: x['Name'] == name and x['Severity'] == severity, knowledgebase)
+            if kb_match:
+                kb = kb_match[0]
+            del kb_match
+            if kb == None:
+                # find matching alias, if such exist
+                #kb_match_aliases = filter(lambda x: 'Aliases' in x and name in x['Aliases'].split('\n') and x['Severity'] == severity, knowledgebase)
+                kb_match_aliases = filter(lambda x: 'Aliases' in x and unicode(name).replace(u'\u200b','') in x['Aliases'].split('\n'), knowledgebase)
+                #for i in map(lambda x: x['Aliases'].split('\n'), knowledgebase):
+                #    print [name], unicode(name).replace(u'\u200b','') in i, i
+                #print name, kb_match_aliases != []
+                if kb_match_aliases:
+                    kb = kb_match_aliases[0]
+                del kb_match_aliases
+        return kb
+
+    def remove_kb(self):
+        self._kb_filename = None
+        self._kb_type = None
+        if self._kb:
+            del self._kb
+        self._kb = None
+
+    ''' added later, unnecessary for actual generation of report '''
+    def merge_kb(self):
+        #self._content
+        #self._kb
+        #print self._dump_yaml(self._kb)
+    
+        def submerge(block, knowledge, path):
+            for node in block:
+                if path == [] and node in ['Name', 'Severity']:
+                    continue
+                if isinstance(block[node], dict) and knowledge.has_key(node):
+                    #print len(path)*2*' ', node + ':'
+                    submerge(block[node], knowledge[node], path + [node])
+                    continue
+                #print len(path)*2*' ', node + ':', type(finding[node])
+                if len(block[node].strip()) == 0 and knowledge.has_key(node):
+                    block[node] = knowledge[node]
+            
+        knowledgebase = self._kb[self._kb.keys()[0]][:]
+        #print self._dump_yaml(kb)
+        if self._content != None and isinstance(self._content, dict) and self._content.has_key('Findings'):
+            for finding in self._content['Findings']:
+                kb = self._kb_match(finding['Name'], finding['Severity'], knowledgebase)
+                if kb != None:
+                    submerge(finding, kb, [])
+        #print self._dump_yaml(self._content)
+        del kb
+        return self._content
+        
     def _xml_apply_findings(self):
         finding_struct = filter(lambda x: x[0] == ['Finding'], self._struct)
         #print map(lambda x: x['Name'], self._meta['Findings'])
@@ -566,23 +622,7 @@ class Report(object):
                 #print summary_placeholder_parent
             for finding in severity_findings:
                 #print '[*]',finding['Name']
-                kb = None
-                if self._kb:
-                    kb_match = filter(lambda x: x['Name'] == finding['Name'] and x['Severity'] == finding['Severity'],
-                                      self._meta['KB'])
-                    if kb_match:
-                        kb = kb_match[0]
-                    del kb_match
-                    if kb == None:
-                        # find matching alias, if such exist
-                        #kb_match_aliases = filter(lambda x: 'Aliases' in x and finding['Name'] in x['Aliases'].split('\n') and x['Severity'] == finding['Severity'], self._meta['KB'])
-                        kb_match_aliases = filter(lambda x: 'Aliases' in x and unicode(finding['Name']).replace(u'\u200b','') in x['Aliases'].split('\n'), self._meta['KB'])
-                        #for i in map(lambda x: x['Aliases'].split('\n'), self._meta['KB']):
-                        #    print [finding['Name']], unicode(finding['Name']).replace(u'\u200b','') in i, i
-                        #print finding['Name'], kb_match_aliases != []
-                        if kb_match_aliases:
-                            kb = kb_match_aliases[0]
-                        del kb_match_aliases
+                kb = self._kb_match(finding['Name'], finding['Severity'], self._meta['KB'])
                 #print '?',kb != None
                 # Build Finding xml block
                 block = etree.Element('Finding')
@@ -595,7 +635,7 @@ class Report(object):
                     #print ' ',alias_abs
                     if alias_abs[-1] == '?':
                         # is this finding.[severity]? -> if yes, replace content, otherwise delete me
-                        if i['struct'][-1] in  map(lambda x: self._severity_tag(x)+'?', self.severity.keys()):
+                        if i['struct'][-1] in map(lambda x: self._severity_tag(x)+'?', self.severity.keys()):
                             if i['struct'][-1] == severity_tag+'?':
                                 self._xml_sdt_replace(i['sdt'], i['children'])
                                 #print '+', finding['Name'], finding['Severity']
@@ -960,12 +1000,37 @@ class Report(object):
 if __name__ == '__main__':
     pass
 
+    '''
+    report = Report()
+    report.template_load_xml('../workbench/1-template.xml', clean=True)
+    report.content_load_yaml('../workbench/2-content.yaml')
+    #scan = Scan('../workbench/3-scan.yaml')
+    #scan.dump_yaml()
+    #report.merge_scan(scan)
+    report.kb_load_csv('../workbench/4-kb.csv')
+    report.merge_kb()
+    #print '---'
+    print report.content_dump_yaml()
+    #
+    #print report._dump_yaml(report._content)
+    #print report._dump_yaml(report._meta)
+    #print report._dump_yaml(report._kb)
+    #print report._kb['KB'][0]
+    #print report.meta_dump_yaml()
+    #print report.kb_dump_yaml()
+    #report.xml_apply_meta()
+    #report.save_report_xml('../workbench/!.xml')
+    #print report.content_dump_yaml()
+    '''
+    
+    '''
     report = Report()
     report.template_load_xml('../workbench/pd1/x.xml', clean=True)
     report.content_load_yaml('../workbench/pd1/x.yaml')
     report.xml_apply_meta()
     #report.save_report_xml('../workbench/pd1/!.xml')
-
+    '''
+    
     #report = Report()
     #report.template_load_xml('../workbench/pd1/x.xml', clean=True)
     #report.content_load_yaml('../workbench/pd1/y.yaml')

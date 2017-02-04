@@ -1,5 +1,5 @@
 # report-ng
-# Copyright (c) 2015 Marcin Woloszyn (@hvqzao)
+# Copyright (c) 2017 Marcin Woloszyn (@hvqzao)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -67,6 +67,7 @@ class GUI(Version):
         #menu_view_t
         #menu_tools_template_structure_preview
         #menu_tools_merge_scan_into_content
+        #menu_tools_merge_kb_into_content
         #menu_tools_generate_few_passwords
         #ctrl_st_t
         #ctrl_tc_t
@@ -196,6 +197,9 @@ class GUI(Version):
             self.menu_tools_merge_scan_into_content = menu_tools.Append(index.next(), 'Mer&ge Scan into Content')
             self.menu_tools_merge_scan_into_content.Enable(False)
             self.Bind(wx.EVT_MENU, self.Merge_Scan_Into_Content, id=index.current)
+            self.menu_tools_merge_kb_into_content = menu_tools.Append(index.next(), 'Merge KB into Content')
+            self.menu_tools_merge_kb_into_content.Enable(False)
+            self.Bind(wx.EVT_MENU, self.Merge_KB_Into_Content, id=index.current)
             self.menu_tools_generate_few_passwords = menu_tools.Append(index.next(), 'Generate &few passwords')
             self.Bind(wx.EVT_MENU, self.Generate_few_passwords, id=index.current)
             menu.Append(menu_tools, '&Tools')
@@ -551,6 +555,8 @@ class GUI(Version):
                 self.menu_file_save_r.Enable(True)
             if self.ctrl_st_s.IsEnabled():
                 self.menu_tools_merge_scan_into_content.Enable(True)
+            if self.ctrl_st_k.IsEnabled():
+                self.menu_tools_merge_kb_into_content.Enable(True)
             self.status('Template loaded')
 
         def Open_Content(self, e):
@@ -582,6 +588,8 @@ class GUI(Version):
             self.menu_file_save_c.Enable(True)
             #if self.scan:
             #    self.menu_tools_merge_scan_into_content.Enable(True)
+            if self.ctrl_st_k.IsEnabled():
+                self.menu_tools_merge_kb_into_content.Enable(True)
             self.status('Content loaded')
 
         def Open_Scan(self, e):
@@ -624,6 +632,18 @@ class GUI(Version):
             self.__show_content()
             self.menu_tools_merge_scan_into_content.Enable(False)
             self.report.content_refresh()
+            self.status('Merged')
+
+        def Merge_KB_Into_Content(self, e):
+            self.status('Merging KB into Content...')
+            self.report.merge_kb()
+            self.__show_content()
+            #
+            # TODO
+            #
+            self.report.remove_kb()
+            self.ctrl_tc_k.SetValue('')
+            self.menu_tools_merge_kb_into_content.Enable(False)
             self.status('Merged')
 
         def Generate_few_passwords(self, e):
@@ -812,6 +832,9 @@ class GUI(Version):
             self.ctrl_st_k.Enable(True)
             #self.menu_file_save_k.Enable (True)
             self.menu_file_save_r.Enable(True)
+            if self.ctrl_st_c.IsEnabled():
+                self.menu_tools_merge_kb_into_content.Enable(True)
+            self.menu_tools_merge_kb_into_content.Enable(True)
 
     class YamledWindowWrapper(YamledWindow):
 

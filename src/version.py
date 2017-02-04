@@ -1,5 +1,5 @@
 # report-ng
-# Copyright (c) 2015 Marcin Woloszyn (@hvqzao)
+# Copyright (c) 2017 Marcin Woloszyn (@hvqzao)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,7 +22,7 @@ if __name__ == '__main__':
 class Version(object):
     title = 'report-ng'
     long_title = 'Web application security assessment reporting tool'
-    c = 'Copyright (C) 2014-2016 Marcin Woloszyn (@hvqzao)'
+    c = 'Copyright (C) 2014-2017 Marcin Woloszyn (@hvqzao)'
     #url = 'https://github.com/hvqzao/report-ng'
     url = ''
     #license = 'Distributed under GNU General Public License, Version 2, June 1991'
@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.7.8'
-    date = 'Mon Jun 27 15:39:34 2016'
+    version = '0.7.9'
+    date = 'Sat Feb  4 19:18:06 2017'
     changelog = '''
+    0.7.9 - Sat Feb  4 19:18:06 2017
+    - New feature available from menu item added: Merge KB into Content
+
     0.7.8 - Mon Jun 27 15:39:34 2016
     - Improper input check
     
