@@ -1,0 +1,25 @@
+Findings:
+
+- Name: 'One'
+  Severity: 'Critical'
+  Sections:
+    Description: 'desc desc'
+  Alternative: 'alt alt'
+  Extras:
+    Recommendation: 'asdf'
+
+- Name: 'Two'
+  Severity: 'High'
+  Sections:
+    Description: ''
+  Alternative: 'bzz bzz'
+
+- Name: 'Three'
+  Severity: 'Medium'
+  Sections:
+    Ignored: ''
+  Alternative: 'gzz gzz'
+
+- Name: 'Four'
+  Severity: 'Low'
+  Alternative: 'ezz ezz'

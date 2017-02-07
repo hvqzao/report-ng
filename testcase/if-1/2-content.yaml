@@ -1,0 +1,29 @@
+Findings:
+
+- Name: 'One'
+  Severity: 'Critical'
+  Description: 'desc1'
+  Details: 'details1'
+  Extras:
+    Recommendation: 'recomm1'
+
+- Name: 'Two'
+  Severity: 'High'
+  Description: ''
+  Details: 'details2'
+  Extras:
+    Recommendation: 'recomm2'
+
+- Name: 'Three'
+  Severity: 'Medium'
+  Description: 'desc3'
+  Details: 'details3'
+  Extras:
+    Recommendation: 'recomm3'
+
+- Name: 'Four'
+  Severity: 'Low'
+  Description: 'desc4'
+  Details: 'details4'
+  Extras:
+    Recommendation: ''

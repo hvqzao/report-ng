@@ -412,7 +412,10 @@ class Version(object):
       causes block to appear only for critical findings.
     - If finding includes some tag, e.g. Finding.Description, conditional
       block Finding.Description? could be added to the template. Content will
-      only be rendered if finding have Finding.Description set.
+      only be rendered if finding have Finding.Description set. IMPORTANT:
+      Make sure Conditional is created as block (multi-line). Once tested
+      it can an attempt can be made to join it back to a single line.
+      Block tag seen in Word "Developer Mode" have named closing tag.
 
     "if not exists"
     - if fining does not include some tag or its value is set to '',

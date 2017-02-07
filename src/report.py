@@ -1010,12 +1010,31 @@ class Report(object):
 if __name__ == '__main__':
     pass
 
-    #report = Report()
-    #report.template_load_xml('../workbench/if-not-1/1-template.xml', clean=True)
-    #report.content_load_yaml('../workbench/if-not-1/2-content.yaml')
-    #report.xml_apply_meta()
-    #report.save_report_xml('../workbench/if-not-1/!.xml')
+    # conditional "if not" for Finding child nodes
+    report = Report()
+    report.template_load_xml('../testcase/if-not-2/1-template.xml', clean=True)
+    report.content_load_yaml('../testcase/if-not-2/2-content.yaml')
+    report.xml_apply_meta()
+    report.save_report_xml('../testcase/if-not-2/!.xml')
 
+    '''
+    # conditional "if not" for Finding root nodes
+    report = Report()
+    report.template_load_xml('../testcase/if-not-1/1-template.xml', clean=True)
+    report.content_load_yaml('../testcase/if-not-1/2-content.yaml')
+    report.xml_apply_meta()
+    report.save_report_xml('../testcase/if-not-1/!.xml')
+    '''
+    
+    '''
+    # conditional "if"
+    report = Report()
+    report.template_load_xml('../testcase/if-1/1-template.xml', clean=True)
+    report.content_load_yaml('../testcase/if-1/2-content.yaml')
+    report.xml_apply_meta()
+    report.save_report_xml('../testcase/if-1/!.xml')
+    '''
+    
     '''
     report = Report()
     report.template_load_xml('../workbench/1-template.xml', clean=True)
