@@ -635,14 +635,33 @@ class Report(object):
                     alias_abs = '.'.join(i['struct'])
                     #print ' ',alias_abs
                     # handle aliases ending with ! (acts as "if not", eg. Finding.Node not set or set to '')
-                    if alias_abs[-1] == '!' and len(i['struct'][1:]) == 1:
-                        needle = i['struct'][-1][:-1]
-                        if not finding.has_key(needle) or not len(finding[needle]):
-                            self._xml_sdt_replace(i['sdt'], i['children'])
-                        else:
+
+                    #if alias_abs[-1] == '!' and len(i['struct'][1:]) == 1:
+                    #    needle = i['struct'][-1][:-1]
+                    #    if not finding.has_key(needle) or not len(finding[needle]):
+                    #        self._xml_sdt_replace(i['sdt'], i['children'])
+                    #    else:
+                    #        self._xml_sdt_remove(i['sdt'])
+                    #    del needle
+                    #    continue
+
+                    # instead of above, should handle Finding.root and Finding.[...].child elements
+                    if alias_abs[-1] == '!' and len(i['struct'][1:]) >= 1:
+                        #print i['struct']
+                        val = finding
+                        for j in i['struct'][1:][:-1] + [i['struct'][-1][:-1]]:
+                            if val.has_key(j):
+                                val = val[j]
+                                #print 'o', val
+                            else:
+                                val = None
+                                break
+                        if val != None and len(val) > 0:
                             self._xml_sdt_remove(i['sdt'])
-                        del needle
+                        else:
+                            self._xml_sdt_replace(i['sdt'], i['children'])
                         continue
+
                     if alias_abs[-1] == '?':
                         # is this finding.[severity]? -> if yes, replace content, otherwise delete me
                         if i['struct'][-1] in map(lambda x: self._severity_tag(x)+'?', self.severity.keys()):
@@ -1010,21 +1029,21 @@ class Report(object):
 if __name__ == '__main__':
     pass
 
+    '''
     # conditional "if not" for Finding child nodes
     report = Report()
     report.template_load_xml('../testcase/if-not-2/1-template.xml', clean=True)
     report.content_load_yaml('../testcase/if-not-2/2-content.yaml')
     report.xml_apply_meta()
     report.save_report_xml('../testcase/if-not-2/!.xml')
-
     '''
+
     # conditional "if not" for Finding root nodes
     report = Report()
     report.template_load_xml('../testcase/if-not-1/1-template.xml', clean=True)
     report.content_load_yaml('../testcase/if-not-1/2-content.yaml')
     report.xml_apply_meta()
     report.save_report_xml('../testcase/if-not-1/!.xml')
-    '''
     
     '''
     # conditional "if"

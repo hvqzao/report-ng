@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.8.0'
-    date = 'Mon Feb  6 21:14:08 2017'
+    version = '0.8.1'
+    date = 'Tue Feb  7 14:24:30 2017'
     changelog = '''
+    0.8.1 - Tue Feb  7 14:24:30 2017
+    - "If not exists" should now work for both Finding root and child nodes
+    
     0.8.0 - Mon Feb  6 21:14:08 2017
     - "If not exists" handling added to Finding section (basic functionality)
 
