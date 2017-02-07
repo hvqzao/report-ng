@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.7.9'
-    date = 'Sat Feb  4 19:18:06 2017'
+    version = '0.8.0'
+    date = 'Mon Feb  6 21:14:08 2017'
     changelog = '''
+    0.8.0 - Mon Feb  6 21:14:08 2017
+    - "If not exists" handling added to Finding section (basic functionality)
+
     0.7.9 - Sat Feb  4 19:18:06 2017
     - New feature available from menu item added: Merge KB into Content
 
@@ -403,11 +406,17 @@ class Version(object):
     Conditionals
 
     Conditional blocks have been introduced to findings in the following ways:
+
+    "if exists"
     - Surrounding template data within e.g. Finding.Critical?
       causes block to appear only for critical findings.
     - If finding includes some tag, e.g. Finding.Description, conditional
       block Finding.Description? could be added to the template. Content will
       only be rendered if finding have Finding.Description set.
+
+    "if not exists"
+    - if fining does not include some tag or its value is set to '',
+      given block will be visible, otherwise it is removed.
 
     It is now also possible to add root conditional blocks for content itself.
     Example use would be e.g. adding Pentest? conditional block and few tags,

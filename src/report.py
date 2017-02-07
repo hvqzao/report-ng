@@ -113,7 +113,7 @@ class Report(object):
         return yaml.dump(target, default_flow_style=False, allow_unicode=True).decode('utf-8')
 
     def _reserved(self, value):
-        if value[-1][-1] == '?':
+        if value[-1][-1] in ['?', '!']:
             return True
         severity_keys = map(lambda x: self._severity_tag(x), self.severity.keys())
         if value == ['Findings', 'Chart']:
@@ -622,6 +622,7 @@ class Report(object):
                 #print summary_placeholder_parent
             for finding in severity_findings:
                 #print '[*]',finding['Name']
+                #print finding
                 kb = self._kb_match(finding['Name'], finding['Severity'], self._meta['KB'])
                 #print '?',kb != None
                 # Build Finding xml block
@@ -633,6 +634,15 @@ class Report(object):
                 for i in aliases:
                     alias_abs = '.'.join(i['struct'])
                     #print ' ',alias_abs
+                    # handle aliases ending with ! (acts as "if not", eg. Finding.Node not set or set to '')
+                    if alias_abs[-1] == '!' and len(i['struct'][1:]) == 1:
+                        needle = i['struct'][-1][:-1]
+                        if not finding.has_key(needle) or not len(finding[needle]):
+                            self._xml_sdt_replace(i['sdt'], i['children'])
+                        else:
+                            self._xml_sdt_remove(i['sdt'])
+                        del needle
+                        continue
                     if alias_abs[-1] == '?':
                         # is this finding.[severity]? -> if yes, replace content, otherwise delete me
                         if i['struct'][-1] in map(lambda x: self._severity_tag(x)+'?', self.severity.keys()):
@@ -999,6 +1009,12 @@ class Report(object):
 
 if __name__ == '__main__':
     pass
+
+    #report = Report()
+    #report.template_load_xml('../workbench/if-not-1/1-template.xml', clean=True)
+    #report.content_load_yaml('../workbench/if-not-1/2-content.yaml')
+    #report.xml_apply_meta()
+    #report.save_report_xml('../workbench/if-not-1/!.xml')
 
     '''
     report = Report()
