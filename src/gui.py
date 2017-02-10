@@ -69,6 +69,7 @@ class GUI(Version):
         #menu_tools_merge_scan_into_content
         #menu_tools_merge_kb_into_content
         #menu_tools_generate_few_passwords
+        #menu_tools_switch_to_yamled
         #ctrl_st_t
         #ctrl_tc_t
         #ctrl_st_c
@@ -202,6 +203,10 @@ class GUI(Version):
             self.Bind(wx.EVT_MENU, self.Merge_KB_Into_Content, id=index.current)
             self.menu_tools_generate_few_passwords = menu_tools.Append(index.next(), 'Generate &few passwords')
             self.Bind(wx.EVT_MENU, self.Generate_few_passwords, id=index.current)
+
+            self.menu_tools_switch_toyamled = menu_tools.Append(index.next(), 'Switch to &Yamled')
+            self.Bind(wx.EVT_MENU, self.Switch_to_Yamled, id=index.current)
+
             menu.Append(menu_tools, '&Tools')
             menu_help = wx.Menu()
             menu_help.Append(index.next(), '&Usage')
@@ -468,6 +473,10 @@ class GUI(Version):
         def Exit(self, e):
             self.Close()
 
+        def Switch_to_Yamled(self, e):
+            YamledWindow()
+            self.Close()
+
         def About(self, e):
             dialog = wx.AboutDialogInfo()
             #dialog.SetIcon (wx.Icon('icon.ico', wx.BITMAP_TYPE_PNG))
@@ -638,9 +647,6 @@ class GUI(Version):
             self.status('Merging KB into Content...')
             self.report.merge_kb()
             self.__show_content()
-            #
-            # TODO
-            #
             self.report.remove_kb()
             self.ctrl_tc_k.SetValue('')
             self.menu_tools_merge_kb_into_content.Enable(False)

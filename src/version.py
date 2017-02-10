@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.8.1'
-    date = 'Tue Feb  7 14:24:30 2017'
+    version = '0.8.2'
+    date = 'Fri Feb 10 21:14:03 2017'
     changelog = '''
+    0.8.2 - Fri Feb 10 21:14:03 2017
+    - New: "Menu Tools / Switch to Yamled" - closes report-ng, starts Yamled
+
     0.8.1 - Tue Feb  7 14:24:30 2017
     - "If not exists" should now work for both Finding root and child nodes
     

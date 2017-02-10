@@ -2,7 +2,7 @@ c:\Python27\5>pip freeze
 anyreadline==0.1.1
 PyInstaller==2.1
 pyreadline==2.1
-pywin32==219
+pywin32==220
 lxml==3.3.5
 beautifulsoup==3.2.1
 
