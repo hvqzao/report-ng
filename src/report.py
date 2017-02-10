@@ -924,6 +924,10 @@ class Report(object):
                 yield line.decode(decode).encode(encode)
         data = []
         with open(filename, 'rb') as csvfile:
+
+            # CSV Reader - make it compatible with Polish regional settings. To adjust English settings:
+            #     open Control Panel, Region and Language, Additional settings... List separator: ";"
+
             for row in csv.reader(transcode(csvfile), delimiter=';', quotechar='"'):
                 data += [row]
         columns = data[0]
