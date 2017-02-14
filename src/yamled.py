@@ -127,6 +127,12 @@ class YamledWindow(wx.Frame):
                             diff = 0
                         edit = wx.TextCtrl(self.frame.stack, pos=map(lambda x: (x[0], x[1]-diff*self.frame.item_height), [self.GetPosition()])[0], size=map(lambda x: (x[0]+15, x[1]*length), [self.GetSize()])[0], style=wx.BORDER_NONE | wx.TE_MULTILINE)
                         self.frame.edit_ctrl = edit
+                        def edit_OnChar(e):
+                            keyInput = e.GetKeyCode()
+                            if keyInput == 1:  # Ctrl + A
+                                edit.SelectAll()
+                            e.Skip()
+                        edit.Bind(wx.EVT_CHAR, edit_OnChar)
                         def edit_OnDestroy(e):
                             try:
                                 val = edit.GetValue()

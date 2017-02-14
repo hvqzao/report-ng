@@ -31,9 +31,13 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.8.2'
-    date = 'Fri Feb 10 21:14:03 2017'
+    version = '0.8.3'
+    date = 'Tue Feb 14 11:04:55 2017'
     changelog = '''
+    0.8.3 - Tue Feb 14 11:04:55 2017
+    - New: Yamled edit now suports "Ctrl+A", it should now be possible to work
+    with it using keyboard only
+    
     0.8.2 - Fri Feb 10 21:14:03 2017
     - New: "Menu Tools / Switch to Yamled" - closes report-ng, starts Yamled
 
