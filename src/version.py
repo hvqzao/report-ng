@@ -31,9 +31,13 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.8.3'
-    date = 'Tue Feb 14 11:04:55 2017'
+    version = '0.8.4'
+    date = 'Wed Feb 22 12:58:11 2017'
     changelog = '''
+    0.8.4 - Wed Feb 22 12:58:11 2017
+    - FIX: Finding placeholders for given severities (eg. Best Practices) can
+    now be removed from templates
+    
     0.8.3 - Tue Feb 14 11:04:55 2017
     - New: Yamled edit now suports "Ctrl+A", it should now be possible to work
     with it using keyboard only

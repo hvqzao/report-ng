@@ -768,10 +768,11 @@ class Report(object):
             if len(severity_findings) > 0:
                 findings_placeholder_parent.remove(findings_placeholder)
             else:
-                if self._xml_val(findings_placeholder_row[0][2]).strip() != '':
-                    self._xml_sdt_replace(findings_placeholder, findings_placeholder_row[0][2])
-                else:
-                    self._xml_sdt_remove(findings_placeholder)
+                if len(findings_placeholder_row):
+                    if self._xml_val(findings_placeholder_row[0][2]).strip() != '':
+                        self._xml_sdt_replace(findings_placeholder, findings_placeholder_row[0][2])
+                    else:
+                        self._xml_sdt_remove(findings_placeholder)
             if findings_placeholder_row:
                 del findings_placeholder, findings_placeholder_parent
             del findings_placeholder_row
@@ -1033,6 +1034,12 @@ class Report(object):
 if __name__ == '__main__':
     pass
 
+    report = Report()
+    report.template_load_xml('../workbench/no-bestpractices-1/3.xml', clean=True)
+    report.content_load_yaml('../workbench/no-bestpractices-1/3.yaml')
+    report.xml_apply_meta()
+    report.save_report_xml('../workbench/no-bestpractices-1/!.xml')
+
     '''
     # conditional "if not" for Finding child nodes
     report = Report()
@@ -1042,12 +1049,14 @@ if __name__ == '__main__':
     report.save_report_xml('../testcase/if-not-2/!.xml')
     '''
 
+    '''
     # conditional "if not" for Finding root nodes
     report = Report()
     report.template_load_xml('../testcase/if-not-1/1-template.xml', clean=True)
     report.content_load_yaml('../testcase/if-not-1/2-content.yaml')
     report.xml_apply_meta()
     report.save_report_xml('../testcase/if-not-1/!.xml')
+    '''
     
     '''
     # conditional "if"
