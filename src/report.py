@@ -764,17 +764,17 @@ class Report(object):
                         summary_placeholder_parent.insert(summary_placeholder_parent.index(summary_placeholder), i)
                     del block, aliases
                 del kb
-            if summary_struct:
-                summary_placeholder_parent.remove(summary_placeholder)
-            if len(severity_findings) > 0:
-                findings_placeholder_parent.remove(findings_placeholder)
-            else:
-                if len(findings_placeholder_row):
-                    if self._xml_val(findings_placeholder_row[0][2]).strip() != '':
-                        self._xml_sdt_replace(findings_placeholder, findings_placeholder_row[0][2])
-                    else:
-                        self._xml_sdt_remove(findings_placeholder)
             if findings_placeholder_row:
+                if summary_struct:
+                    summary_placeholder_parent.remove(summary_placeholder)
+                if len(severity_findings) > 0:
+                    findings_placeholder_parent.remove(findings_placeholder)
+                else:
+                    if len(findings_placeholder_row):
+                        if self._xml_val(findings_placeholder_row[0][2]).strip() != '':
+                            self._xml_sdt_replace(findings_placeholder, findings_placeholder_row[0][2])
+                        else:
+                            self._xml_sdt_remove(findings_placeholder)
                 del findings_placeholder, findings_placeholder_parent
             del findings_placeholder_row
             if summary_struct:
@@ -1036,6 +1036,13 @@ if __name__ == '__main__':
     pass
 
     report = Report()
+    report.template_load_xml('../workbench/no-bestpractices-2/1.xml', clean=True)
+    report.content_load_yaml('../workbench/no-bestpractices-2/2.yaml')
+    report.xml_apply_meta()
+    #report.save_report_xml('../workbench/no-bestpractices-2/!.xml')
+
+    '''
+    report = Report()
     report.template_load_xml('../workbench/merge-kb-fix-1/1.xml', clean=True)
     report.content_load_yaml('../workbench/merge-kb-fix-1/2.yaml')
     report.kb_load_csv('../workbench/merge-kb-fix-1/4.csv')
@@ -1044,6 +1051,7 @@ if __name__ == '__main__':
     print report.content_dump_yaml()
     #report.xml_apply_meta()
     #report.save_report_xml('../workbench/merge-kb-fix-1/!.xml')
+    '''
 
     #report = Report()
     #report.template_load_xml('../workbench/no-bestpractices-1/3.xml', clean=True)
