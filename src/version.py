@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.8.4'
-    date = 'Wed Feb 22 12:58:11 2017'
+    version = '0.8.5'
+    date = 'Mon Feb 27 10:18:59 2017'
     changelog = '''
+    0.8.5 - Mon Feb 27 10:18:59 2017
+    - FIX: crash at Merge KB into Content
+    
     0.8.4 - Wed Feb 22 12:58:11 2017
     - FIX: Finding placeholders for given severities (eg. Best Practices) can
     now be removed from templates

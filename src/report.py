@@ -588,8 +588,9 @@ class Report(object):
                     submerge(block[node], knowledge[node], path + [node])
                     continue
                 #print len(path)*2*' ', node + ':', type(finding[node])
-                if len(block[node].strip()) == 0 and knowledge.has_key(node):
-                    block[node] = knowledge[node]
+                if not filter(lambda x: isinstance(block[node], x), [list, dict]):
+                    if len(block[node].strip()) == 0 and knowledge.has_key(node):
+                        block[node] = knowledge[node]
             
         knowledgebase = self._kb[self._kb.keys()[0]][:]
         #print self._dump_yaml(kb)
@@ -1035,10 +1036,20 @@ if __name__ == '__main__':
     pass
 
     report = Report()
-    report.template_load_xml('../workbench/no-bestpractices-1/3.xml', clean=True)
-    report.content_load_yaml('../workbench/no-bestpractices-1/3.yaml')
-    report.xml_apply_meta()
-    report.save_report_xml('../workbench/no-bestpractices-1/!.xml')
+    report.template_load_xml('../workbench/merge-kb-fix-1/1.xml', clean=True)
+    report.content_load_yaml('../workbench/merge-kb-fix-1/2.yaml')
+    report.kb_load_csv('../workbench/merge-kb-fix-1/4.csv')
+    report.merge_kb()
+    #print '---'
+    print report.content_dump_yaml()
+    #report.xml_apply_meta()
+    #report.save_report_xml('../workbench/merge-kb-fix-1/!.xml')
+
+    #report = Report()
+    #report.template_load_xml('../workbench/no-bestpractices-1/3.xml', clean=True)
+    #report.content_load_yaml('../workbench/no-bestpractices-1/3.yaml')
+    #report.xml_apply_meta()
+    #report.save_report_xml('../workbench/no-bestpractices-1/!.xml')
 
     '''
     # conditional "if not" for Finding child nodes
