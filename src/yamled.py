@@ -129,9 +129,10 @@ class YamledWindow(wx.Frame):
                         self.frame.edit_ctrl = edit
                         def edit_OnChar(e):
                             keyInput = e.GetKeyCode()
-                            if keyInput == 1:  # Ctrl + A
+                            if keyInput == 1:  # Ctrl+A
                                 edit.SelectAll()
-                            e.Skip()
+                            else:
+                                e.Skip()
                         edit.Bind(wx.EVT_CHAR, edit_OnChar)
                         def edit_OnDestroy(e):
                             try:
