@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.8.6'
-    date = 'Mon Feb 27 10:51:56 2017'
+    version = '0.8.7'
+    date = 'Mon Feb 27 14:32:29 2017'
     changelog = '''
+    0.8.7 - Mon Feb 27 14:32:29 2017
+    - "Merge KB into Content" is now performed before report is generated.
+    
     0.8.6 - Mon Feb 27 10:51:56 2017
     - FIX: crash when findings severity is present which is not on a template
     
@@ -45,7 +48,7 @@ class Version(object):
     now be removed from templates
     
     0.8.3 - Tue Feb 14 11:04:55 2017
-    - New: Yamled edit now suports "Ctrl+A", it should now be possible to work
+    - added: Yamled edit now suports "Ctrl+A", it should now be possible to work
     with it using keyboard only
     
     0.8.2 - Fri Feb 10 21:14:03 2017

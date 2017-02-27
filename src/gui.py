@@ -757,6 +757,11 @@ class GUI(Version):
             self.report.xml_apply_meta(vulnparam_highlighting=self.menu_view_v.IsChecked(), truncation=self.menu_view_i.IsChecked())
             self.report.save_report_xml(filename)
             #self._clean_template()
+
+            # merge kb before generate
+            self.ctrl_tc_k.SetValue('')
+            self.menu_tools_merge_kb_into_content.Enable(False)
+
             self.status('Report saved')
 
         def _Use_yaml(self):

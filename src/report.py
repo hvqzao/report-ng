@@ -572,9 +572,13 @@ class Report(object):
         if self._kb:
             del self._kb
         self._kb = None
+        self._meta['KB'] = []
 
-    ''' added later, unnecessary for actual generation of report '''
+    ''' replaces kb updates during report generation '''
     def merge_kb(self):
+        if self._kb == None or self._kb.keys() == []:
+            return
+        
         #self._content
         #self._kb
         #print self._dump_yaml(self._kb)
@@ -824,6 +828,11 @@ class Report(object):
         chart_parent.replace(chart_struct[0][1], chart_struct[0][2][0])
 
     def xml_apply_meta(self, vulnparam_highlighting=True, truncation=True):
+
+        # merge kb before generate
+        self.merge_kb()
+        self.remove_kb()
+        
         self.template_cleanup_required = True
         self.__vulnparam_highlighting = vulnparam_highlighting
         self.__truncate = truncation
