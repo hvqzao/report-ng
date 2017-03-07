@@ -450,6 +450,7 @@ class Report(object):
                     #print 'x', col
                     alias_match_q = filter(lambda x: x['struct'] == struct + [str(col)+'?'], aliases)
                     if alias_match_q:
+                        #print 'q'
                         if row[col]:
                             self._xml_sdt_replace(alias_match_q[0]['sdt'], alias_match_q[0]['children'])
                         else:
@@ -515,9 +516,9 @@ class Report(object):
 
     def _xml_sdt_replace (self, sdt, children):
         parent = sdt.getparent()
-        for i in children:
-            parent.insert(parent.index(sdt), i)
         if parent != None:
+            for i in children:
+                parent.insert(parent.index(sdt), i)
             parent.remove(sdt)
 
     def _xml_sdt_remove (self, sdt):
@@ -831,7 +832,6 @@ class Report(object):
 
         # merge kb before generate
         self.merge_kb()
-        self.remove_kb()
         
         self.template_cleanup_required = True
         self.__vulnparam_highlighting = vulnparam_highlighting
@@ -842,10 +842,14 @@ class Report(object):
         # apply
         self._apply_scan()
         # find conditional root elements and make them dictionaries
-        root = dict()
+        cond = dict()
         for i in filter(lambda x: len(x[0]) == 1 and x[0][-1][-1] == '?', self._struct):
-            root[i[0][-1][:-1]] = []
-        #print root
+            cond[i[0][-1][:-1]] = []
+        #print cond
+        # find if-not-exists
+        notx = dict()
+        for i in filter(lambda x: len(x[0]) == 1 and x[0][-1][-1] == '!', self._struct):
+            notx[i[0][-1][:-1]] = []
         # process Data.*
         #for i in self._struct:
         def dict_count(block, key, fallback=1):
@@ -853,7 +857,7 @@ class Report(object):
                 return len(block[key]) or fallback
             else:
                 return fallback
-        for i in filter(lambda x: x[0][-1][-1] != '?', self._struct):
+        for i in filter(lambda x: x[0][-1][-1] not in ['?', '!'], self._struct):
             p = self._p(self._meta['Data'], i[0])
             #if p is not None and i[0] != ['Finding']:
             #    match_q = i[0][:]
@@ -863,8 +867,10 @@ class Report(object):
                 #print '+',i[0]
                 val = self._v(self._meta['Data'], i[0])
                 #print i[0], bool(val)
-                if i[0][0] in root.keys() and bool(val):
-                    root[i[0][0]] += [i[0]]
+                if i[0][0] in cond.keys() and bool(val):
+                    cond[i[0][0]] += [i[0]]
+                if i[0][0] in notx.keys() and bool(val):
+                    notx[i[0][0]] += [i[0]]
                 if val == None:
                     val = ''
                 self._xml_apply_data(i[0], val, i[1], i[2])
@@ -879,15 +885,39 @@ class Report(object):
                     else:
                         self._xml_sdt_remove(match[1])
                 del i_search_match
+                # handle if-not-exists sub elements 
+                x_search = i[0][:]
+                x_search[-1] = x_search[-1]+'!'
+                x_search_match = filter(lambda x: x_search == x[0], self._struct)
+                for match in x_search_match:
+                    #print x_search, x_search_match
+                    if val:
+                        self._xml_sdt_remove(match[1])
+                    else:
+                        self._xml_sdt_replace(match[1], match[2])
+                del x_search_match
+
+                
         # if conditional root element does not have any members with values, remove them
-        #print root
-        for i in root.keys():
+        #print cond
+        for i in cond.keys():
             i_struct = filter(lambda x: x[0] == [i+'?'], self._struct)
-            if len(root[i]):
+            if len(cond[i]):
                 self._xml_sdt_replace(i_struct[0][1], i_struct[0][2])
             else:
                 self._xml_sdt_remove(i_struct[0][1])
             del i_struct
+
+        # if if-not-exists root element does not have any members with values, remove them
+        #print notx
+        for i in notx.keys():
+            x_struct = filter(lambda x: x[0] == [i+'!'], self._struct)
+            if len(cond[i]):
+                self._xml_sdt_remove(x_struct[0][1])
+            else:
+                self._xml_sdt_replace(x_struct[0][1], x_struct[0][2])
+            del x_struct
+
         # Findings
         self._xml_apply_findings()
         # Findings.Chart
@@ -919,6 +949,8 @@ class Report(object):
             self._xml_sdt_replace(sdt, children)
         # restore path
         os.chdir(pwd)
+
+        self.remove_kb()
 
     def _kb_meta_update(self):
         if 'KB' in self._kb:
@@ -1044,12 +1076,21 @@ class Report(object):
 if __name__ == '__main__':
     pass
 
+    # conditional "if not" for non-finding root nodes
+    report = Report()
+    report.template_load_xml('../testcase/non-finding-if-not-1/1-template.xml', clean=True)
+    report.content_load_yaml('../testcase/non-finding-if-not-1/2-content.yaml')
+    report.xml_apply_meta()
+    report.save_report_xml('../testcase/non-finding-if-not-1/!.xml')
+
+    '''
     report = Report()
     report.template_load_xml('../workbench/no-bestpractices-2/1.xml', clean=True)
     report.content_load_yaml('../workbench/no-bestpractices-2/2.yaml')
     report.xml_apply_meta()
     #report.save_report_xml('../workbench/no-bestpractices-2/!.xml')
-
+    '''
+    
     '''
     report = Report()
     report.template_load_xml('../workbench/merge-kb-fix-1/1.xml', clean=True)

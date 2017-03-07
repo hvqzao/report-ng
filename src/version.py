@@ -31,9 +31,15 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.8.7'
-    date = 'Mon Feb 27 14:32:29 2017'
+    version = '0.8.9'
+    date = 'Tue Mar  7 19:50:56 2017'
     changelog = '''
+    0.8.9 - Tue Mar  7 19:50:56 2017
+    - added: if-not for non-finding elements: root (tested) and child (not-tested)
+    
+    0.8.8 - Tue Mar  7 13:56:31 2017
+    - FIX: Premature KB cleanup prevented populating Summary descriptions fields
+
     0.8.7 - Mon Feb 27 14:32:29 2017
     - "Merge KB into Content" is now performed before report is generated.
     
