@@ -65,6 +65,7 @@ class GUI(Version):
         #menu_view_i
         #menu_view_r
         #menu_view_t
+        #menu_view_p
         #menu_tools_template_structure_preview
         #menu_tools_merge_scan_into_content
         #menu_tools_merge_kb_into_content
@@ -187,6 +188,9 @@ class GUI(Version):
             self.menu_view_i.Check(True)
             self.menu_view_r = menu_view.Append(index.next(), 'Include &requests and responses', 'Warning! Have a small scan or be very patient!', kind=wx.ITEM_CHECK)
             self.menu_view_r.Check(False)
+            self.menu_view_p = menu_view.Append(index.next(), 'Propagate paragraph style annotation', kind=wx.ITEM_CHECK)
+            self.menu_view_p.Check(True)
+
             menu_view.AppendSeparator()
             self.menu_view_t = menu_view.Append(index.next(), 'Always on &top', kind=wx.ITEM_CHECK)
             self.Bind(wx.EVT_MENU, self.Always_on_top, id=index.current)
@@ -754,7 +758,7 @@ class GUI(Version):
             self.report.scan = self.scan
             self._clean_template()
             #self.report.xml_apply_meta()
-            self.report.xml_apply_meta(vulnparam_highlighting=self.menu_view_v.IsChecked(), truncation=self.menu_view_i.IsChecked())
+            self.report.xml_apply_meta(vulnparam_highlighting=self.menu_view_v.IsChecked(), truncation=self.menu_view_i.IsChecked(), pPr_annotation=self.menu_view_p.IsChecked())
             self.report.save_report_xml(filename)
             #self._clean_template()
 

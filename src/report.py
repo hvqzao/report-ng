@@ -69,6 +69,7 @@ class Report(object):
     template_cleanup_required = None
     #__vulnparam_highlighting = True
     #__truncate = True
+    _pPr_annotation = False
 
     def __init__(self):
         self._meta_init()
@@ -353,7 +354,7 @@ class Report(object):
             return str(value).strip().lower()[:len(preamble)] == preamble
 
     def _xml_sdt_single(self, value, sdt, children, struct=None):
-        #print value
+        #print children
         #if struct:
         #    print struct
         p_r = filter(lambda x: x.tag in ['{%s}p' % self.ns.w, '{%s}r' % self.ns.w], children)
@@ -375,20 +376,33 @@ class Report(object):
                 block = etree.Element('Summary')
                 for i in children:
                     block.append(etree.fromstring(etree.tostring(i)))
+                if self._pPr_annotation == True:
+                    pPr = None
                 if len(tc):
                     _tc = filter(lambda x: x.tag in ['{%s}tc' % self.ns.w], block.getchildren())
                     _p_r = filter(lambda x: x.tag in ['{%s}p' % self.ns.w, '{%s}r' % self.ns.w], _tc[0])
                     cursor = _p_r[0]
                 else:
                     _p_r = filter(lambda x: x.tag in ['{%s}p' % self.ns.w, '{%s}r' % self.ns.w], block.getchildren())
+                    if self._pPr_annotation == True:
+                        # try to get the formatting (pPr)
+                        _p = filter(lambda x: x.tag in ['{%s}p' % self.ns.w], block.getchildren())
+                        if len(_p) > 0:
+                            pPrs = etree.ETXPath('./{%s}pPr' % self.ns.w)(_p[0])
+                            if len(pPrs) > 0:
+                                pPr = pPrs[0]
+                                #print etree.tostring(pPr)
+                        del _p
                     cursor = _p_r[0]
                 self._openxml.set_sdt_cursor(cursor=cursor)
                 self._openxml.parse(value, [self._html_parser, self._ihtml_parser][self._is_ihtml(value)])
                 self._openxml.remove_sdt_cursor()
                 parent = sdt.getparent()
                 for i in block.getchildren():
+                    if self._pPr_annotation == True and pPr != None and i.tag in ['{%s}p' % self.ns.w] and len(filter(lambda x: x.tag in ['{%s}pPr' % self.ns.w], i.getchildren())) == 0:
+                        i.insert(0, etree.fromstring(etree.tostring(pPr)))
                     parent.insert(parent.index(sdt), i)
-                parent.remove(sdt)                    
+                parent.remove(sdt)
             else:
                 if util.binary(value):
                     value = util.binary_safe(value)
@@ -828,7 +842,7 @@ class Report(object):
         chart_parent = chart_struct[0][1].getparent()
         chart_parent.replace(chart_struct[0][1], chart_struct[0][2][0])
 
-    def xml_apply_meta(self, vulnparam_highlighting=True, truncation=True):
+    def xml_apply_meta(self, vulnparam_highlighting=True, truncation=True, pPr_annotation=True):
 
         # merge kb before generate
         self.merge_kb()
@@ -836,6 +850,7 @@ class Report(object):
         self.template_cleanup_required = True
         self.__vulnparam_highlighting = vulnparam_highlighting
         self.__truncate = truncation
+        self._pPr_annotation = pPr_annotation
         # change dir (for the purpose of images handling relatively to template path)
         pwd = os.getcwd()
         os.chdir(os.path.dirname(self._template_filename))
@@ -1076,13 +1091,22 @@ class Report(object):
 if __name__ == '__main__':
     pass
 
+    # html-formatting-1
+    report = Report()
+    report.template_load_xml('../testcase/html-formatting-1/1-template.xml', clean=True)
+    report.content_load_yaml('../testcase/html-formatting-1/2-content.yaml')
+    report.xml_apply_meta()
+    report.save_report_xml('../testcase/html-formatting-1/!.xml')
+
+    '''
     # conditional "if not" for non-finding root nodes
     report = Report()
     report.template_load_xml('../testcase/non-finding-if-not-1/1-template.xml', clean=True)
     report.content_load_yaml('../testcase/non-finding-if-not-1/2-content.yaml')
     report.xml_apply_meta()
     report.save_report_xml('../testcase/non-finding-if-not-1/!.xml')
-
+    '''
+    
     '''
     report = Report()
     report.template_load_xml('../workbench/no-bestpractices-2/1.xml', clean=True)

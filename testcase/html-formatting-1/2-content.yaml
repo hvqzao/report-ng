@@ -1,0 +1,9 @@
+Findings:
+- Name: 'Test'
+  Severity: 'Critical'
+  Description: '<html>HTML lorem ipsum lorem lorem<br/>lorem ipsum<br/>sum sum<br/>xxx</html>'
+  Recommendation: 'PLAIN lorem ipsum lorem lorem
+  
+  lorem ipsum
+  
+  sum sum'

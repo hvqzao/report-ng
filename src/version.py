@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.8.9'
-    date = 'Tue Mar  7 19:50:56 2017'
+    version = '0.9.0'
+    date = 'Wed Mar  8 13:00:21 2017'
     changelog = '''
+    0.9.0 - Wed Mar  8 13:00:21 2017
+    - added: new switch (enabled by default) to propagate paragraph style annotation
+    
     0.8.9 - Tue Mar  7 19:50:56 2017
     - added: if-not for non-finding elements: root (tested) and child (not-tested)
     
