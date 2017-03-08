@@ -894,11 +894,19 @@ class GUI(Version):
 
             tc = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY)
 
+            def tc_OnChar(e):
+                keyInput = e.GetKeyCode()
+                if keyInput == 1:  # Ctrl+A
+                    tc.SelectAll()
+                else:
+                    e.Skip()
+            tc.Bind(wx.EVT_CHAR, tc_OnChar)
+                        
             def tc_OnFocus(e):
                 tc.ShowNativeCaret(False)
                 e.Skip()
-
             tc.Bind(wx.EVT_SET_FOCUS, tc_OnFocus)
+
             tc.SetValue(content)
 
             #self.Center()
