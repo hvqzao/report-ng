@@ -148,8 +148,7 @@ class Report(object):
                 for i in range(len(value)):
                     if value[i] not in skel.keys():
                         skel[value[i]] = UnsortableOrderedDict()
-                        if value == ['Finding'] or i == len(value) - 1 and len(children) == 1 and children[
-                            0].tag == '{%s}tr' % self.ns.w:
+                        if value == ['Finding'] or i == len(value) - 1 and len(children) == 1 and children[0].tag == '{%s}tr' % self.ns.w:
                             skel[value[i]] = [UnsortableOrderedDict()]
                     skel = skel[value[i]]
                     if isinstance(skel, list):
@@ -572,7 +571,7 @@ class Report(object):
             if kb == None:
                 # find matching alias, if such exist
                 #kb_match_aliases = filter(lambda x: 'Aliases' in x and name in x['Aliases'].split('\n') and x['Severity'] == severity, knowledgebase)
-                kb_match_aliases = filter(lambda x: 'Aliases' in x and unicode(name).replace(u'\u200b','') in x['Aliases'].split('\n'), knowledgebase)
+                kb_match_aliases = filter(lambda x: 'Aliases' in x and unicode(name).replace(u'\u200b','').lower() in x['Aliases'].lower().split('\n'), knowledgebase)
                 #for i in map(lambda x: x['Aliases'].split('\n'), knowledgebase):
                 #    print [name], unicode(name).replace(u'\u200b','') in i, i
                 #print name, kb_match_aliases != []

@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.9.1'
-    date = 'Wed Mar  8 18:09:27 2017'
+    version = '0.9.2'
+    date = 'Thu Mar  9 09:58:26 2017'
     changelog = '''
+    0.9.2 - Thu Mar  9 09:58:26 2017
+    - added: KB Aliases are now case-insensitive
+
     0.9.1 - Wed Mar  8 18:09:27 2017
     - added: enabled Ctrl+A selection on TextWindow (yaml preview on doubleclick)
     
