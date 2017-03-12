@@ -617,8 +617,8 @@ class Report(object):
                 kb = self._kb_match(finding['Name'], finding['Severity'], knowledgebase)
                 if kb != None:
                     submerge(finding, kb, [])
-        #print self._dump_yaml(self._content)
-        del kb
+                #print self._dump_yaml(self._content)
+                del kb
         return self._content
         
     def _xml_apply_findings(self):
