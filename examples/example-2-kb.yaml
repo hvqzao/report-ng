@@ -5,3 +5,6 @@
 - Name: ASP.NET Application Level-Trace Log
   Severity: High
   TestersComment: Less wise words here.
+- Name: Cross-site scripting (reflected)
+  Severity: High 
+  TestersComment: <html><b><redwhite>A</redwhite></b> <red>B</red> <yellow>C</yellow>.</html>

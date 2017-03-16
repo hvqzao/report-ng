@@ -1,5 +1,5 @@
 # report-ng
-# Copyright (c) 2017 Marcin Woloszyn (@hvqzao)
+# Copyright (c) 2014-2017 Marcin Woloszyn (@hvqzao)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -926,71 +926,6 @@ class GUI(Version):
             self.CenterOnScreen()
             self.Show()
             
-    def CLI(self):
-        self.__CLI(application=self)
-
-    class __CLI(wx.Frame):
-
-        # application
-
-        def __init__(self, application=None, *args, **kwargs):
-            self.application = application
-            wx.Frame.__init__(self, None, *args, **kwargs)
-            self.Bind(wx.EVT_CLOSE, lambda x: self.Destroy())
-            #self.Show()
-            import sys
-
-            def val (key):
-                if key in sys.argv:
-                    return sys.argv[sys.argv.index('-t')+1]
-                else:
-                    return None
-
-            def is_yaml (filename):
-                ext = '.yaml'
-                return filename[-len(ext):] == ext
-
-            template_file = val('-t')
-            content_file = val('-c')
-            kb_file = val('-k')
-            scan_file = val('-s')
-            report_file = val('-r')
-
-            if template_file and report_file:
-                report = Report()
-                report.template_load_xml(template_file)
-                if content_file:
-                    if is_yaml(content_file):
-                        report.content_load_yaml(content_file)
-                    else:
-                        report.content_load_json(content_file)
-                if kb_file:
-                    if is_yaml(kb_file):
-                        report.kb_load_yaml(kb_file)
-                    else:
-                        report.kb_load_json(kb_file)
-                if scan_file:
-                    report.scan = Scan(scan_file)
-                report.xml_apply_meta(vulnparam_highlighting=self.menu_view_v.IsChecked(), truncation=self.menu_view_i.IsChecked())
-                report.save_report_xml(report_file)
-            else:
-                print 'Usage: '
-                print
-                print '    '+self.application.title+'.exe'
-                print '        start GUI application'
-                print
-                print '    '+self.application.title+'.exe -t template-file [-c content-file] [-k kb-file] [-s scan-file] -r report-file'
-                print '        generate report'
-                print
-                print '    '+self.application.title+'.exe [any other arguments]'
-                print '        display usage and exit'
-
-            self.Close()
-
-        def Destroy(self):
-            #print 'destroying CLI'
-            super(wx.Frame, self).Destroy()
-
     # GUI class
 
     def __init__(self):
@@ -999,12 +934,7 @@ class GUI(Version):
         wx_app = wx.App(redirect=True) # redirect in wxpython 3.0 defaults to False
         #self.TextWindow(None, title='asdasd', content='bsdsdasd')
         import sys
-        #sys.argv = [sys.argv[0], '--help']
-        #sys.argv = [sys.argv[0], '-t', 'asdad']
-        if len(sys.argv) > 1:
-            self.CLI()
-        else:
-            self.MainWindow()
+        self.MainWindow()
         wx_app.MainLoop()
 
 

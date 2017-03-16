@@ -59,6 +59,12 @@ of report-files. Application currently supports one set of switches:
 -r report-file
 ```
 
+Example use:
+
+```
+python report-ng.py -t examples/example-2-scan-report-template.xml -c examples/example-2-content.yaml -k examples/example-2-kb.yaml -s examples/example-2-scan-export-Burp.xml -r examples/\!.xml
+```
+
 ## Word Template Preparation
 
 This application was tested with Office 2010 Word documents saved with
@@ -232,7 +238,7 @@ Scan Details (Full) with XML Export Format. For Burp use Report Selected
 Issues, select XML and pick Base64-encode requests and responses.
 
 At the time of writing, everything works smoothly with HP WebInspect 10.50,
-BurpSuite Pro 1.7.03 and Microsoft Office 2013. No modifications were
+BurpSuite Pro 1.7.19 and Microsoft Office 2013. No modifications were
 necessary.
 
 ## License

@@ -1,5 +1,5 @@
 # report-ng
-# Copyright (c) 2015 Marcin Woloszyn (@hvqzao)
+# Copyright (c) 2014-2017 Marcin Woloszyn (@hvqzao)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -16,7 +16,11 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
-from src.gui import GUI
-
 if __name__ == '__main__':
-    GUI()
+    import sys
+    if len(sys.argv) > 1:
+        from src.cli import CLI
+        CLI()
+    else:
+        from src.gui import GUI
+        GUI()

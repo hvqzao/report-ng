@@ -1,5 +1,5 @@
 # report-ng
-# Copyright (c) 2017 Marcin Woloszyn (@hvqzao)
+# Copyright (c) 2014-2017 Marcin Woloszyn (@hvqzao)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.9.3'
-    date = 'Sun Mar 12 09:18:34 2017'
+    version = '0.9.4'
+    date = 'Thu Mar 16 12:46:37 2017'
     changelog = '''
+    0.9.4 - Thu Mar 16 12:46:37 2017
+    - CLI support was rewritten and tested (confirmed to work on Linux)
+
     0.9.3 - Sun Mar 12 09:18:34 2017
     - FIX: reported crash on KB merging
     
@@ -324,6 +327,7 @@ class Version(object):
     #'0.1.8 Sat Apr  5 19:06:10 2014'
     #'0.1.7 Fri Apr  4 23:41:16 2014'
     #'0.1.6 Sun Mar 23 14:01:58 2014'
+
     usage = '''
     # Web Application Security Assessment Reporting
 
