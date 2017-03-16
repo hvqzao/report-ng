@@ -1,5 +1,5 @@
 # report-ng
-# Copyright (c) 2014-2015 Marcin Woloszyn (@hvqzao)
+# Copyright (c) 2014-2017 Marcin Woloszyn (@hvqzao)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -104,7 +104,7 @@ def burp_import(xml, requests_and_responses=False):
         if severity == 'Information':
             severity = 'Informational'
         severity_id = ['Informational', 'Low', 'Medium', 'High'].index(severity)
-        #confidence = issue.xpath('./confidence')[0].text
+        confidence = issue.xpath('./confidence')[0].text
         name = issue.xpath('./name')[0].text
         vuln_id = issue.xpath('./type')[0].text
         issue_background_element = issue.xpath('./issueBackground')
@@ -136,6 +136,7 @@ def burp_import(xml, requests_and_responses=False):
             ['Severity', severity],
             ['severity_id', severity_id],
             ['Name', name],
+            ['Confidence', confidence],
             ['vuln_id', vuln_id],
             ['Scheme', scheme],
             ['Host', host],
@@ -165,7 +166,7 @@ def burp_import(xml, requests_and_responses=False):
     for vuln_name in sorted(set(map(lambda x: x['Name'], issues_list))):
         issue = UnsortableOrderedDict()
         for i in filter(lambda x: x['Name'] == vuln_name, issues_list):
-            for j in ['Name', 'Severity', 'severity_id', 'ReportSections', 'Example']:  #, 'Classifications'
+            for j in ['Name', 'Severity', 'severity_id', 'Confidence', 'ReportSections', 'Example']:  #, 'Classifications'
                 if j not in issue:
                     issue[j] = i[j]
                     #else:
@@ -244,8 +245,14 @@ if __name__ == '__main__':
 
     import yaml
     from lxml import etree
-    xml = etree.parse('../workbench/pb1/is.xml')
+    xml = etree.parse('../examples/example-2-scan-export-Burp (XSS only).xml')
     scan = burp_import(xml)
+    print yaml.dump(scan)
+
+    #import yaml
+    #from lxml import etree
+    #xml = etree.parse('../workbench/pb1/is.xml')
+    #scan = burp_import(xml)
     #print yaml.dump(scan)
 
     #xml = etree.parse('../workbench/xss-2-intruder-items.xml')
