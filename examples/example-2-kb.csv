@@ -1,3 +1,0 @@
-Name;Severity;Aliases;TestersComment
-Cross-Site Scripting;Critical;Cross-site scripting (reflected);<html>Few <b><redwhite>wise</redwhite></b> <red>words</red> <yellow>here</yellow>.        <-- Im from Knowledge Base! :)</html>
-ASP.NET Application Level-Trace Log;High;;Less wise words here.

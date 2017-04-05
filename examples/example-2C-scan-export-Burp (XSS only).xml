@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!DOCTYPE issues [
+<!ELEMENT issues (issue*)>
+<!ATTLIST issues burpVersion CDATA "">
+<!ATTLIST issues exportTime CDATA "">
+<!ELEMENT issue (serialNumber, type, name, host, path, location, severity, confidence, issueBackground?, remediationBackground?, issueDetail?, issueDetailItems?, remediationDetail?, requestresponse*)>
+<!ELEMENT serialNumber (#PCDATA)>
+<!ELEMENT type (#PCDATA)>
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT host (#PCDATA)>
+<!ATTLIST host ip CDATA "">
+<!ELEMENT path (#PCDATA)>
+<!ELEMENT location (#PCDATA)>
+<!ELEMENT severity (#PCDATA)>
+<!ELEMENT confidence (#PCDATA)>
+<!ELEMENT issueBackground (#PCDATA)>
+<!ELEMENT remediationBackground (#PCDATA)>
+<!ELEMENT issueDetail (#PCDATA)>
+<!ELEMENT issueDetailItems (issueDetailItem*)>
+<!ELEMENT issueDetailItem (#PCDATA)>
+<!ELEMENT remediationDetail (#PCDATA)>
+<!ELEMENT requestresponse (request?, response?, responseRedirected?)>
+<!ELEMENT request (#PCDATA)>
+<!ATTLIST request method CDATA "">
+<!ATTLIST request base64 (true|false) "false">
+<!ELEMENT response (#PCDATA)>
+<!ATTLIST response base64 (true|false) "false">
+<!ELEMENT responseRedirected (#PCDATA)>
+]>
+<issues burpVersion="1.6.05" exportTime="Sat Sep 13 22:38:18 CEST 2014">
+  <issue>
+    <serialNumber>1136920954635853824</serialNumber>
+    <type>2097920</type>
+    <name>Cross-site scripting (reflected)</name>
+    <host ip="192.168.187.137">http://bwa</host>
+    <path><![CDATA[/bodgeit/search.jsp]]></path>
+    <location><![CDATA[/bodgeit/search.jsp [q parameter]]]></location>
+    <severity>High</severity>
+    <confidence>Certain</confidence>
+    <issueBackground><![CDATA[Reflected cross-site scripting vulnerabilities arise when data is copied from a request and echoed into the application's immediate response in an unsafe way. An attacker can use the vulnerability to construct a request which, if issued by another application user, will cause JavaScript code supplied by the attacker to execute within the user's browser in the context of that user's session with the application.<br><br>The attacker-supplied code can perform a wide variety of actions, such as stealing the victim's session token or login credentials, performing arbitrary actions on the victim's behalf, and logging their keystrokes.<br><br>Users can be induced to issue the attacker's crafted request in various ways. For example, the attacker can send a victim a link containing a malicious URL in an email or instant message. They can submit the link to popular web sites that allow content authoring, for example in blog comments. And they can create an innocuous looking web site which causes anyone viewing it to make arbitrary cross-domain requests to the vulnerable application (using either the GET or the POST method).<br><br>The security impact of cross-site scripting vulnerabilities is dependent upon the nature of the vulnerable application, the kinds of data and functionality which it contains, and the other applications which belong to the same domain and organization. If the application is used only to display non-sensitive public content, with no authentication or access control functionality, then a cross-site scripting flaw may be considered low risk. However, if the same application resides on a domain which can access cookies for other more security-critical applications, then the vulnerability could be used to attack those other applications, and so may be considered high risk. Similarly, if the organization which owns the application is a likely target for phishing attacks, then the vulnerability could be leveraged to lend credibility to such attacks, by injecting Trojan functionality into the vulnerable application, and exploiting users' trust in the organization in order to capture credentials for other applications which it owns. In many kinds of application, such as those providing online banking functionality, cross-site scripting should always be considered high risk.]]></issueBackground>
+    <remediationBackground><![CDATA[In most situations where user-controllable data is copied into application responses, cross-site scripting attacks can be prevented using two layers of defenses:<ul><li>Input should be validated as strictly as possible on arrival, given the kind of content which it is expected to contain. For example, personal names should consist of alphabetical and a small range of typographical characters, and be relatively short; a year of birth should consist of exactly four numerals; email addresses should match a well-defined regular expression. Input which fails the validation should be rejected, not sanitized.</li><li>User input should be HTML-encoded at any point where it is copied into application responses. All HTML metacharacters, including &lt; &gt; " ' and =, should be replaced with the corresponding HTML entities (&amp;lt; &amp;gt; etc).</li></ul>In cases where the application's functionality allows users to author content using a restricted subset of HTML tags and attributes (for example, blog comments which allow limited formatting and linking), it is necessary to parse the supplied HTML to validate that it does not use any dangerous syntax; this is a non-trivial task.]]></remediationBackground>
+    <issueDetail><![CDATA[The value of the <b>q</b> request parameter is copied into the HTML document as plain text between tags. The payload <b>5d4ff&lt;script&gt;alert(1)&lt;/script&gt;18327</b> was submitted in the q parameter. This input was echoed unmodified in the application's response.<br><br>This proof-of-concept attack demonstrates that it is possible to inject arbitrary JavaScript into the application's response.]]></issueDetail>
+    <requestresponse>
+      <request method="GET" base64="true"><![CDATA[R0VUIC9ib2RnZWl0L3NlYXJjaC5qc3A/cT01NTUtNTU1LTAxOTlAZXhhbXBsZS5jb201ZDRmZjxzY3JpcHQ+YWxlcnQoMSk8JTJmc2NyaXB0PjE4MzI3IEhUVFAvMS4xDQpIb3N0OiBid2ENCkFjY2VwdDogKi8qDQpBY2NlcHQtTGFuZ3VhZ2U6IGVuDQpVc2VyLUFnZW50OiBNb3ppbGxhLzUuMCAoY29tcGF0aWJsZTsgTVNJRSA5LjA7IFdpbmRvd3MgTlQgNi4xOyBXaW42NDsgeDY0OyBUcmlkZW50LzUuMCkNCkNvbm5lY3Rpb246IGNsb3NlDQpSZWZlcmVyOiBodHRwOi8vYndhL2JvZGdlaXQvc2VhcmNoLmpzcA0KQ29va2llOiBhY29wZW5kaXZpZHM9c3dpbmdzZXQsam90dG8scGhwYmIyLHJlZG1pbmU7IGFjZ3JvdXBzd2l0aHBlcnNpc3Q9bmFkYTsgSlNFU1NJT05JRD1BRDAwMjQwQTkzMjgzNUVERDYwQjNGNzQ4N0E5RDE1RDsgUEhQU0VTU0lEPWhzaTZxcTFiYnA4Z3JnNmFoajk1czF1ZHY0OyBiX2lkPTk1DQoNCg==]]></request>
+      <response base64="true"><![CDATA[SFRUUC8xLjEgMjAwIE9LDQpEYXRlOiBTYXQsIDEzIFNlcCAyMDE0IDIwOjI1OjI0IEdNVA0KU2VydmVyOiBBcGFjaGUtQ295b3RlLzEuMQ0KQ29udGVudC1UeXBlOiB0ZXh0L2h0bWwNCkNvbnRlbnQtTGVuZ3RoOiAyMDY0DQpWaWE6IDEuMSAxMjcuMC4xLjENClZhcnk6IEFjY2VwdC1FbmNvZGluZw0KQ29ubmVjdGlvbjogY2xvc2UNCg0KCgoKCgoKCjwhRE9DVFlQRSBIVE1MIFBVQkxJQyAiLS8vVzNDLy9EVEQgSFRNTCAzLjIvL0VOIj4KPGh0bWw+CjxoZWFkPgo8dGl0bGU+VGhlIEJvZGdlSXQgU3RvcmU8L3RpdGxlPgo8bGluayBocmVmPSJzdHlsZS5jc3MiIHJlbD0ic3R5bGVzaGVldCIgdHlwZT0idGV4dC9jc3MiIC8+CjxzY3JpcHQgdHlwZT0idGV4dC9qYXZhc2NyaXB0IiBzcmM9Ii4vanMvdXRpbC5qcyI+PC9zY3JpcHQ+CjwvaGVhZD4KPGJvZHk+Cgo8Y2VudGVyPgo8dGFibGUgd2lkdGg9IjgwJSIgY2xhc3M9ImJvcmRlciI+Cjx0ciBCR0NPTE9SPSNDM0Q5RkY+Cjx0ZCBhbGlnbj0iY2VudGVyIiBjb2xzcGFuPSI2Ij4KPEgxPlRoZSBCb2RnZUl0IFN0b3JlPC9IMT4KPHRhYmxlIHdpZHRoPSIxMDAlIiBjbGFzcz1cIm5vYm9yZGVyXCI+Cjx0ciBCR0NPTE9SPSNDM0Q5RkY+Cjx0ZCBhbGlnbj0iY2VudGVyIiB3aWR0aD0iMzAlIj4mbmJzcDs8L3RkPgo8dGQgYWxpZ249ImNlbnRlciIgd2lkdGg9IjQwJSI+V2UgYm9kZ2UgaXQsIHNvIHlvdSBkb250IGhhdmUgdG8hPC90ZD4KPHRkIGFsaWduPSJjZW50ZXIiIHdpZHRoPSIzMCUiIHN0eWxlPSJ0ZXh0LWFsaWduOiByaWdodCIgPgpHdWVzdCB1c2VyCgo8L3RyPgo8L3RhYmxlPgo8L3RkPgo8L3RyPgo8dHI+Cjx0ZCBhbGlnbj0iY2VudGVyIiB3aWR0aD0iMTYlIiBCR0NPTE9SPSNFRUVFRUU+PGEgaHJlZj0iaG9tZS5qc3AiPkhvbWU8L2E+PC90ZD4KPHRkIGFsaWduPSJjZW50ZXIiIHdpZHRoPSIxNiUiIEJHQ09MT1I9I0VFRUVFRT48YSBocmVmPSJhYm91dC5qc3AiPkFib3V0IFVzPC9hPjwvdGQ+Cgo8dGQgYWxpZ249ImNlbnRlciIgd2lkdGg9IjE2JSIgQkdDT0xPUj0jRUVFRUVFPjxhIGhyZWY9ImNvbnRhY3QuanNwIj5Db250YWN0IFVzPC9hPjwvdGQ+CjwhLS0gdGQgYWxpZ249ImNlbnRlciIgd2lkdGg9IjE2JSI+PGEgaHJlZj0iYWRtaW4uanNwIj5BZG1pbjwvYT48L3RkLS0+Cgo8dGQgYWxpZ249ImNlbnRlciIgd2lkdGg9IjE2JSIgQkdDT0xPUj0jRUVFRUVFPgoKCQk8YSBocmVmPSJsb2dpbi5qc3AiPkxvZ2luPC9hPgoKPC90ZD4KCjx0ZCBhbGlnbj0iY2VudGVyIiB3aWR0aD0iMTYlIiBCR0NPTE9SPSNFRUVFRUU+PGEgaHJlZj0iYmFza2V0LmpzcCI+WW91ciBCYXNrZXQ8L2E+PC90ZD4KCjx0ZCBhbGlnbj0iY2VudGVyIiB3aWR0aD0iMTYlIiBCR0NPTE9SPSNFRUVFRUU+PGEgaHJlZj0ic2VhcmNoLmpzcCI+U2VhcmNoPC9hPjwvdGQ+CjwvdHI+Cjx0cj4KPHRkIGFsaWduPSJjZW50ZXIiIGNvbHNwYW49IjYiPgo8dGFibGUgd2lkdGg9IjEwMCUiIGNsYXNzPSJib3JkZXIiPgo8dHI+Cjx0ZCBhbGlnbj0ibGVmdCIgdmFsaWduPSJ0b3AiIHdpZHRoPSIyNSUiPgo8YSBocmVmPSJwcm9kdWN0LmpzcD90eXBlaWQ9NiI+RG9vZGFoczwvYT48YnIvPgo8YSBocmVmPSJwcm9kdWN0LmpzcD90eXBlaWQ9NSI+R2l6bW9zPC9hPjxici8+CjxhIGhyZWY9InByb2R1Y3QuanNwP3R5cGVpZD0zIj5UaGluZ2FtYWppZ3M8L2E+PGJyLz4KPGEgaHJlZj0icHJvZHVjdC5qc3A/dHlwZWlkPTIiPlRoaW5naWVzPC9hPjxici8+CjxhIGhyZWY9InByb2R1Y3QuanNwP3R5cGVpZD03Ij5XaGF0Y2hhbWFjYWxsaXRzPC9hPjxici8+CjxhIGhyZWY9InByb2R1Y3QuanNwP3R5cGVpZD00Ij5XaGF0c2l0czwvYT48YnIvPgo8YSBocmVmPSJwcm9kdWN0LmpzcD90eXBlaWQ9MSI+V2lkZ2V0czwvYT48YnIvPgoKPGJyLz48YnIvPjxici8+PGJyLz48YnIvPjxici8+PGJyLz48YnIvPjxici8+PGJyLz48YnIvPjxici8+PGJyLz48YnIvPjxici8+CjwvdGQ+Cjx0ZCB2YWxpZ249InRvcCIgd2lkdGg9IjcwJSI+Cgo8aDM+U2VhcmNoPC9oMz4KPGZvbnQgc2l6ZT0iLTEiPgoKPGI+WW91IHNlYXJjaGVkIGZvcjo8L2I+IDU1NS01NTUtMDE5OUBleGFtcGxlLmNvbTVkNGZmPHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0PjE4MzI3PGJyLz48YnIvPgo8ZGl2PjxiPk5vIFJlc3VsdHMgRm91bmQ8L2I+PC9kaXY+Cgo8L2ZvbnQ+CjwvdGQ+CjwvdHI+CjwvdGFibGU+CjwvdGQ+CjwvdHI+CjwvdGFibGU+CjwvY2VudGVyPgo8L2JvZHk+CjwvaHRtbD4K]]></response>
+      <responseRedirected>false</responseRedirected>
+    </requestresponse>
+  </issue>
+</issues>

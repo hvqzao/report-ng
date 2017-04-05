@@ -1,0 +1,61 @@
+﻿# comment 1
+Report:
+  # comment 2
+  Name: Name1 łąść ŁĄŚĆ # <-- file encoding must be "UTF-8" in order for this to work!
+  # comment 3
+  Type: "Type1"
+  Environment: Environment1
+  Owner: 'Owner1'
+  Testers: Tester1, Tester2
+  QA: QA1
+  Version: 1.0
+  LastUpdate: LastUpdate1
+  Status: Final1
+History:
+- Version: 0.1
+  Date: Date1
+  Author: Author1
+  Description: Description1
+- Version: 1.0
+  Date: Date2
+  Author: Author2
+  Description: <ihtml><i>Description2</i></ihtml>
+Summary:
+  Description: 'example 
+
+multiline
+
+text'
+  Recommendations: <html>pseudo-html parsing <b>example</b>.</html>
+Pentest:
+  Scope:
+  - Host: 10.0.0.1
+    Methodology: '<ihtml><i>Blackbox</i></ihtml>'
+  - Host: 1.2.3.4
+    Methodology: Graybox
+Findings:
+- Name: Finding Yaml
+  Severity: Critical
+  Summary:
+    ShortDescription:
+    ShortRecommendation: 'a asdasd asd a a'
+  Recommendation:
+- Name: Missing CSRF Protection
+  Severity: High
+  Summary:
+    ShortDescription: There is no CSRF protection in place
+    ShortRecommendation: <html>It <i>should</i> be added</html>
+  Description: 
+  Recommendation: '
+It is recommended to have it.
+Some new line
+Other line
+'
+- Name: session cookie is missing httpOnly attribute
+  Severity: Best Practices
+  Summary:
+    ShortDescription: some text
+    ShortRecommendation: another text
+  Description: Here is some description
+  Recommendation: '<html>another <y>example</y> of <r>pseudo-html</r>.<br/>... <b>Line</b><img src="test-image.png" alt="some picture" width="300" />
+<ul><li>one</li><xl>note</xl><li>two</li></ul><ol><li>number</li><xl>comment</xl><li>more</li></ol>sth<ul><xl>somewhere</xl></ul><a href="http://www.github.com">Github</a><br/>End</html>'
