@@ -49,6 +49,11 @@ def _extract_post(request, method):
         post = ''
     return post
 
+def _soap_flatten(text):
+    if len(text.strip()) == 0 or '<' not in text:
+        return text
+    return etree.tostring(soupparser.fromstring(text))
+
 def burp_import(xml, requests_and_responses=False):
     # initially: Burp Suite Pro (1.6beta2 / 1.6.01 used), recently: 1.6.16
     issues_list = []
@@ -123,9 +128,9 @@ def burp_import(xml, requests_and_responses=False):
         else:
             remediation_background = ''
         report_sections = UnsortableOrderedDict([
-            ['issueBackground', etree.tostring(soupparser.fromstring(issue_background))],
-            ['issueDetail', etree.tostring(soupparser.fromstring(issue_detail))],
-            ['remediationBackground', etree.tostring(soupparser.fromstring(remediation_background))],
+            ['issueBackground', _soap_flatten(issue_background)],
+            ['issueDetail', _soap_flatten(issue_detail)],
+            ['remediationBackground', _soap_flatten(remediation_background)],
         ])
         #if 'Host header poisoning' in name:
         #if vuln_id == '134217728':

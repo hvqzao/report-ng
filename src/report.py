@@ -607,7 +607,7 @@ class Report(object):
                     continue
                 #print len(path)*2*' ', node + ':', type(finding[node])
                 if not filter(lambda x: isinstance(block[node], x), [list, dict]):
-                    if len(block[node].strip()) == 0 and knowledge.has_key(node):
+                    if block[node] != None and len(block[node].strip()) == 0 and knowledge.has_key(node):
                         block[node] = knowledge[node]
             
         knowledgebase = self._kb[self._kb.keys()[0]][:]
@@ -1068,6 +1068,7 @@ class Report(object):
             self._content['Findings'] = scan['Findings'][:]
         else:
             # for each finding in scan['Findings']
+            #for finding in scan._scan['Findings']:
             for finding in scan['Findings']:
                 # if name and severity matches:
                 finding_match = filter(lambda x: x['Name'] == finding['Name'] and x['Severity'] == finding['Severity'], self._content['Findings'])
@@ -1090,13 +1091,32 @@ class Report(object):
 if __name__ == '__main__':
     pass
 
+    # Standard, demo operation (example with two scans and knowledge base)
+    report = Report()
+    report.template_load_xml('../examples/example-2A-scan-report-template.xml', clean=True)
+    report.content_load_yaml('../examples/example-2B-content.yaml')
+    #report.scan = Scan('../examples/example-2-scan-export-Burp.xml')
+    scan = Scan('../examples/example-2C-scan-export-Burp.xml')
+    report.merge_scan(scan.modify())
+    report.content_refresh()
+    scan2 = Scan('../examples/example-2C-scan-export-WebInspect.xml')
+    report.merge_scan(scan2.modify())
+    report.content_refresh()
+    #report.kb_load_yaml('../examples/example-2D-kb.yaml')
+    report.kb_load_csv('../examples/example-2D-kb.csv')
+    report.merge_kb()
+    report.xml_apply_meta()
+    report.save_report_xml('../examples/\!.xml')
+
+    '''
     # html-formatting-1
     report = Report()
     report.template_load_xml('../testcase/html-formatting-1/1-template.xml', clean=True)
     report.content_load_yaml('../testcase/html-formatting-1/2-content.yaml')
     report.xml_apply_meta()
     report.save_report_xml('../testcase/html-formatting-1/!.xml')
-
+    '''
+    
     '''
     # conditional "if not" for non-finding root nodes
     report = Report()

@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.9.5'
-    date = 'Thu Mar 16 13:43:41 2017'
+    version = '0.9.6'
+    date = 'Wed Apr  5 08:19:48 2017'
     changelog = '''
+    0.9.6 - Wed Apr  5 08:19:48 2017
+    - CLI command-line now accepts multiple scans, added demo to report.py
+
     0.9.5 - Thu Mar 16 13:43:41 2017
     - Burp scan import will now include confidence value for each finding
     

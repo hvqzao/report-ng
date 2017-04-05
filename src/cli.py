@@ -36,6 +36,15 @@ class CLI(Version):
                     return sys.argv[index + 1]
             return None
 
+        def values (key):
+            if key in sys.argv:
+                return map(lambda x: sys.argv[x + 1], filter(lambda x: x + 1 < len(sys.argv), filter(lambda x: sys.argv[x] == key, range(len(sys.argv)))))
+            return None
+        
+        def is_csv (filename):
+            ext = '.csv'
+            return filename[-len(ext):] == ext
+
         def is_yaml (filename):
             ext = '.yaml'
             return filename[-len(ext):] == ext
@@ -43,7 +52,7 @@ class CLI(Version):
         template_file = value('-t')
         content_file = value('-c')
         kb_file = value('-k')
-        scan_file = value('-s')
+        scan_files = values('-s')
         report_file = value('-r')
 
         if template_file and report_file:
@@ -54,20 +63,26 @@ class CLI(Version):
                     report.content_load_yaml(content_file)
                 else:
                     report.content_load_json(content_file)
+            for scan_file in scan_files:
+                #report.scan = Scan(scan_file)
+                scan = Scan(scan_file)
+                report.merge_scan(scan.modify())
+                report.content_refresh()
+                del scan
             if kb_file:
-                if is_yaml(kb_file):
+                if is_csv(kb_file):
+                    report.kb_load_csv(kb_file)
+                elif is_yaml(kb_file):
                     report.kb_load_yaml(kb_file)
                 else:
                     report.kb_load_json(kb_file)
-            if scan_file:
-                report.scan = Scan(scan_file)
             report.xml_apply_meta()
             report.save_report_xml(report_file)
             print 'Report saved.'
         else:
             print 'Usage: '
             print
-            print '    ' + self.title + '.exe -t template-file [-c content-file] [-k kb-file] [-s scan-file] -r report-file'
+            print '    ' + self.title + '.exe -t template-file [-c content-file] [-k kb-file] [[-s scan-file] ...] -r report-file'
             print '        generate report'
             print
             print '    ' + self.title + '.exe [--help]'
