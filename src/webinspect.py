@@ -24,6 +24,8 @@ from lxml.html import soupparser
 import re
 import mangle
 
+#from scan import add_extra_fields
+
 
 def fine_tune(content, fullurl):
     if filter(lambda x: x == content[:len(x)], ['<html>', '<ihtml>']):
@@ -98,7 +100,7 @@ def webinspect_import(xml, requests_and_responses=False):
                               issue.xpath('./ReportSection'))
         for i in range(len(report_sections)):
             if report_sections[i][1]:
-                report_sections[i][1] = fine_tune(etree.tostring(soupparser.fromstring(report_sections[i][1])), fullurl)
+                report_sections[i][1] = fine_tune(mangle.soap_flatten(report_sections[i][1]), fullurl)
         #print issue.xpath ('./DetectionSelection/*')
         issues_item = [
             ['Severity', severity],
@@ -131,13 +133,15 @@ def webinspect_import(xml, requests_and_responses=False):
     for vuln_id in sorted(set(map(lambda x: str(x['vuln_id']), issues_list))):
         issue = UnsortableOrderedDict()
         for i in filter(lambda x: str(x['vuln_id']) == vuln_id, issues_list):
-            for j in ['Name', 'Severity', 'severity_id', 'ReportSections', 'Classifications', 'Example']:
+            for j in ['Name', 'Severity', 'severity_id']:
                 if j not in issue:
                     issue[j] = i[j]
-                    #else:
-                    #    if issue[j] != i[j]:
-                    #        print j
-            for j in ['Occurrences']:
+            issue['Summary'] = UnsortableOrderedDict()
+            issue['Summary']['Description'] = ''
+            issue['Summary']['Recommendation'] = ''
+            issue['Description'] = ''
+            issue['Recommendation'] = ''
+            for j in ['ReportSections', 'Classifications', 'Example', 'Occurrences']:
                 if j not in issue:
                     issue[j] = []
                 v = UnsortableOrderedDict()
@@ -151,6 +155,7 @@ def webinspect_import(xml, requests_and_responses=False):
     findings.sort(key=lambda x: x['severity_id'], reverse=True)
     for i in findings:
         del i['severity_id']
+    #add_extra_fields(findings)
     return UnsortableOrderedDict([['Findings', findings], ])
 
 if __name__ == '__main__':

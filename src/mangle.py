@@ -25,6 +25,14 @@
 #def safestr(text):
 #    return str(safe(text))
 
+from lxml import etree
+from lxml.html import soupparser
+
+def soap_flatten(text):
+    if len(text.strip()) == 0 or '<' not in text:
+        return text
+    return etree.tostring(soupparser.fromstring(text))
+
 def basic(content):
     try:
         content = content.decode('utf-8')

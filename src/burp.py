@@ -24,6 +24,8 @@ from lxml.html import soupparser
 import re
 import mangle
 
+#from scan import add_extra_fields
+
 
 def fine_tune(content, section_name):
     if filter(lambda x: x == content[:len(x)], ['<html>', '<ihtml>']):
@@ -48,11 +50,6 @@ def _extract_post(request, method):
     else:
         post = ''
     return post
-
-def _soap_flatten(text):
-    if len(text.strip()) == 0 or '<' not in text:
-        return text
-    return etree.tostring(soupparser.fromstring(text))
 
 def burp_import(xml, requests_and_responses=False):
     # initially: Burp Suite Pro (1.6beta2 / 1.6.01 used), recently: 1.6.16
@@ -128,9 +125,9 @@ def burp_import(xml, requests_and_responses=False):
         else:
             remediation_background = ''
         report_sections = UnsortableOrderedDict([
-            ['issueBackground', _soap_flatten(issue_background)],
-            ['issueDetail', _soap_flatten(issue_detail)],
-            ['remediationBackground', _soap_flatten(remediation_background)],
+            ['issueBackground', mangle.soap_flatten(issue_background)],
+            ['issueDetail', mangle.soap_flatten(issue_detail)],
+            ['remediationBackground', mangle.soap_flatten(remediation_background)],
         ])
         #if 'Host header poisoning' in name:
         #if vuln_id == '134217728':
@@ -171,12 +168,17 @@ def burp_import(xml, requests_and_responses=False):
     for vuln_name in sorted(set(map(lambda x: x['Name'], issues_list))):
         issue = UnsortableOrderedDict()
         for i in filter(lambda x: x['Name'] == vuln_name, issues_list):
-            for j in ['Name', 'Severity', 'severity_id', 'Confidence', 'ReportSections', 'Example']:  #, 'Classifications'
+            for j in ['Name', 'Severity', 'severity_id', 'Confidence']:  #, 'Classifications'
                 if j not in issue:
                     issue[j] = i[j]
-                    #else:
-                    #    if issue[j] != i[j]:
-                    #        print j
+            issue['Summary'] = UnsortableOrderedDict()
+            issue['Summary']['Description'] = ''
+            issue['Summary']['Recommendation'] = ''
+            issue['Description'] = ''
+            issue['Recommendation'] = ''
+            for j in ['ReportSections', 'Example']:
+                if j not in issue:
+                    issue[j] = i[j]
             for j in ['Occurrences']:
                 if j not in issue:
                     issue[j] = []
@@ -191,6 +193,7 @@ def burp_import(xml, requests_and_responses=False):
     findings.sort(key=lambda x: x['severity_id'], reverse=True)
     for i in findings:
         del i['severity_id']
+    #add_extra_fields(findings)
     return UnsortableOrderedDict([['Findings', findings], ])
 
 def burp_items_import(xml, requests_and_responses=False):

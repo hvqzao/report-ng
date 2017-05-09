@@ -1,0 +1,7 @@
+Findings:
+- Name: 'B'
+  Severity: 'Critical'
+- Name: 'A'
+  Severity: 'Critical'
+- Name: 'C'
+  Severity: 'Critical'

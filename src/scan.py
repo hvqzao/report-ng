@@ -23,6 +23,17 @@ import copy
 from util import yaml_load, UnsortableOrderedDict
 import mangle
 
+#def add_extra_fields(findings):
+#    def add(where, what, value = ''):
+#        if what not in where:
+#            where[what] = value
+#    for i in range(len(findings)):
+#        if 'Summary' not in findings[i]:
+#           findings[i]['Summary'] = UnsortableOrderedDict()
+#        for j in [findings[i], findings[i]['Summary']]:
+#            add(j, 'Description')
+#            add(j, 'Recommendation')
+
 class Scan(object):
     # _xml
     # _scan
@@ -85,7 +96,6 @@ class Scan(object):
 
     def findings(self):
         return self._scan['Findings']
-
 
 if __name__ == '__main__':
     pass
