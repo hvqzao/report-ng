@@ -693,12 +693,11 @@ class GUI(Version):
             json_ext = '.json'
             filename = openFileDialog.GetPath()
             self.status('Saving Content...')
-            h = open(filename, 'w')
-            if filename[-len(json_ext):] == json_ext:
-                h.write(self.report.content_dump_json().encode('utf-8'))
-            else:
-                h.write(self.report.content_dump_yaml().encode('utf-8'))
-            h.close()
+            with open(filename, 'w') as h:
+                if filename[-len(json_ext):] == json_ext:
+                    h.write(self.report.content_dump_json().encode('utf-8'))
+                else:
+                    h.write(self.report.content_dump_yaml().encode('utf-8'))
             self.status('Content saved')
 
         def Save_Scan_As(self, e):

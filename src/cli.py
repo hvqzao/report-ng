@@ -54,6 +54,7 @@ class CLI(Version):
         kb_file = value('-k')
         scan_files = values('-s')
         report_file = value('-r')
+        output_content_file = value('-o')
 
         if template_file and report_file:
             report = Report()
@@ -76,14 +77,21 @@ class CLI(Version):
                     report.kb_load_yaml(kb_file)
                 else:
                     report.kb_load_json(kb_file)
+            if output_content_file:
+                json_ext = '.json'
+                with open(output_content_file, 'w') as h:
+                    if output_content_file[-len(json_ext):] == json_ext:
+                        h.write(report.content_dump_json().encode('utf-8'))
+                    else:
+                        h.write(report.content_dump_yaml().encode('utf-8'))
             report.xml_apply_meta()
             report.save_report_xml(report_file)
             print 'Report saved.'
         else:
             print 'Usage: '
             print
-            print '    ' + self.title + '.exe -t template-file [-c content-file] [-k kb-file] [[-s scan-file] ...] -r report-file'
-            print '        generate report'
+            print '    ' + self.title + '.exe -t template-file [-c content-file] [-k kb-file] [[-s scan-file] ...] -r output-report-file [-o output-content-file]'
+            print '        generate report (and optionally - content yaml)'
             print
             print '    ' + self.title + '.exe [--help]'
             print '        display usage and exit'
