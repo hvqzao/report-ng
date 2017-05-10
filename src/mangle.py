@@ -31,7 +31,7 @@ from lxml.html import soupparser
 def soap_flatten(text):
     if len(text.strip()) == 0 or '<' not in text:
         return text
-    return etree.tostring(soupparser.fromstring(text))
+    return etree.tostring(soupparser.fromstring(text, features='html.parser'))
 
 def basic(content):
     try:

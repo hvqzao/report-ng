@@ -20,7 +20,7 @@ from util import UnsortableOrderedDict
 import zlib
 import base64
 from lxml import etree
-from lxml.html import soupparser
+#from lxml.html import soupparser
 import re
 import mangle
 
