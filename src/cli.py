@@ -54,7 +54,7 @@ class CLI(Version):
         kb_file = value('-k')
         scan_files = values('-s')
         report_file = value('-r')
-        output_content_file = value('-o')
+        output_file = value('-o')
 
         if template_file and report_file:
             report = Report()
@@ -77,21 +77,37 @@ class CLI(Version):
                     report.kb_load_yaml(kb_file)
                 else:
                     report.kb_load_json(kb_file)
-            if output_content_file:
+            if output_file:
                 json_ext = '.json'
-                with open(output_content_file, 'w') as h:
-                    if output_content_file[-len(json_ext):] == json_ext:
+                with open(output_file, 'w') as h:
+                    if output_file[-len(json_ext):] == json_ext:
                         h.write(report.content_dump_json().encode('utf-8'))
                     else:
                         h.write(report.content_dump_yaml().encode('utf-8'))
+                print 'Output content file saved.'
             report.xml_apply_meta()
             report.save_report_xml(report_file)
             print 'Report saved.'
+        elif scan_files and output_file:
+            if len(scan_files) > 1:
+                print 'Only single scan-file can be provided!'
+            else:
+                scan = Scan(scan_files[0])
+                json_ext = '.json'
+                with open(output_file, 'w') as h:
+                    if output_file[-len(json_ext):] == json_ext:
+                        h.write(scan.dump_json().encode('utf-8'))
+                    else:
+                        h.write(scan.dump_yaml().encode('utf-8'))
+                print 'Output scan file saved.'
         else:
             print 'Usage: '
             print
             print '    ' + self.title + '.exe -t template-file [-c content-file] [-k kb-file] [[-s scan-file] ...] -r output-report-file [-o output-content-file]'
-            print '        generate report (and optionally - content yaml)'
+            print '        generate report (and optionally - content as yaml / json)'
+            print
+            print '    ' + self.title + '.exe -s scan-file -o output-scan-file'
+            print '        convert scan xml to yaml or json format (derived from output file extension)'
             print
             print '    ' + self.title + '.exe [--help]'
             print '        display usage and exit'

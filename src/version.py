@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '0.9.8'
-    date = 'Tue May  9 10:21:47 2017'
+    version = '0.9.9'
+    date = 'Wed May 10 09:42:18 2017'
     changelog = '''
+    0.9.9 - Wed May 10 09:42:18 2017
+    - Added CLI option for converting scan xml file to yaml or json
+    
     0.9.8 - Tue May  9 10:21:47 2017
     - Added CLI option for (optional) outputting content to file (yaml / json) 
 
