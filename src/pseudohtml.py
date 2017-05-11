@@ -185,7 +185,7 @@ if __name__ == '__main__':
     # pseudo-html parser use
     html_parser = etree.XMLParser (target=HtmlParser (o), resolve_entities=False)
     data = open ('d7-input.txt').read() #.replace (chr(146),'\'')
-    data = etree.tostring (soupparser.fromstring (data, features='html.parser'))[len('<html>'):-len('</html>')]
+    data = etree.tostring (soupparser.fromstring (data))[len('<html>'):-len('</html>')] #, features='html.parser'
     o.set_sdt_cursor (title='Replace')
     for i in map (lambda x: '<html>'+x.replace('<br/><br/>','<br/>').replace('\n','<br/>').replace('<br/><br/>','<br/>')+'</html>', data.split('\n\n')): #[:1]
         #print i

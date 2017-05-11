@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '1.0.0'
-    date = 'Wed May 10 10:08:41 2017'
+    version = '1.0.1'
+    date = 'Thu May 11 11:48:56 2017'
     changelog = '''
+    1.0.1 - Thu May 11 11:48:56 2017
+    - Reverted last change
+    
     1.0.0 - Wed May 10 10:08:41 2017
     - BeautifulSoup parser was explicitly set
     

@@ -681,7 +681,7 @@ class Openxml(object):
     def parse(self, data, parser):
         # TODO, workaround for workbench/p/
         try:
-            clean =  etree.tostring(soupparser.fromstring(data, features='html.parser'))
+            clean =  etree.tostring(soupparser.fromstring(data)) #, features='html.parser'
             #clean = clean.replace('<br/><br/>','<br/>') #.replace('\n','')
             #print clean
             pre_before = '<html><ihtml>'
