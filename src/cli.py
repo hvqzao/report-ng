@@ -55,6 +55,7 @@ class CLI(Version):
         scan_files = values('-s')
         report_file = value('-r')
         output_file = value('-o')
+        summary_file = value('-u')
 
         if template_file and report_file:
             report = Report()
@@ -100,6 +101,14 @@ class CLI(Version):
                     else:
                         h.write(scan.dump_yaml().encode('utf-8'))
                 print 'Output scan file saved.'
+        elif scan_files and summary_file:
+            if len(scan_files) > 1:
+                print 'Only single scan-file can be provided!'
+            else:
+                scan = Scan(scan_files[0])
+                with open(summary_file, 'w') as h:
+                    for i in scan.findings():
+                        h.write('\t'.join([i['Severity'], str(len(i['Occurrences'])), i['Name']])+'\n')
         else:
             print 'Usage: '
             print
@@ -108,6 +117,9 @@ class CLI(Version):
             print
             print '    ' + self.title + '.exe -s scan-file -o output-scan-file'
             print '        convert scan xml to yaml or json format (derived from output file extension)'
+            print
+            print '    ' + self.title + '.exe -s scan-file -u output-summary-file'
+            print '        save findings summary to file (severities and names)'
             print
             print '    ' + self.title + '.exe [--help]'
             print '        display usage and exit'
