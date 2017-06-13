@@ -108,7 +108,7 @@ class CLI(Version):
                 scan = Scan(scan_files[0])
                 with open(summary_file, 'w') as h:
                     for i in scan.findings():
-                        h.write('\t'.join([i['Severity'], i['Name']])+'\n')
+                        h.write('\t'.join([i['Severity'], str(len(i['Occurrences'])), i['Name']])+'\n')
         else:
             print 'Usage: '
             print
