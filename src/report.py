@@ -1091,6 +1091,9 @@ class Report(object):
 if __name__ == '__main__':
     pass
 
+    Scan('../workbench/burp-1/burp.xml')
+    
+    '''
     # Standard, demo operation (example with two scans and knowledge base)
     report = Report()
     report.template_load_xml('../examples/example-2A-scan-report-template.xml', clean=True)
@@ -1107,6 +1110,7 @@ if __name__ == '__main__':
     report.merge_kb()
     report.xml_apply_meta()
     report.save_report_xml('../examples/\!.xml')
+    '''
 
     '''
     # html-formatting-1

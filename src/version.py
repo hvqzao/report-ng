@@ -31,9 +31,12 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '1.0.1'
-    date = 'Thu May 11 11:48:56 2017'
+    version = '1.0.2'
+    date = 'Tue Nov 14 12:12:45 2017'
     changelog = '''
+    1.0.2 - Tue Nov 14 12:12:45 2017
+    - FIX: Handle null value in Burp custom finding description fields
+
     1.0.1 - Thu May 11 11:48:56 2017
     - Reverted last change
     
