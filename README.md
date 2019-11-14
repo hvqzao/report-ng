@@ -9,7 +9,7 @@ over two years now.
 
 ## Download
 
-https://github.com/hvqzao/report-ng/releases/download/report-ng-0.7.2/report-ng-0.7.2.zip
+https://github.com/hvqzao/report-ng/releases/download/report-ng-0.9.9/report-ng-0.9.9.zip
 
 ## Demo videos
 
