@@ -39,7 +39,7 @@ class CLI(Version):
         def values (key):
             if key in sys.argv:
                 return map(lambda x: sys.argv[x + 1], filter(lambda x: x + 1 < len(sys.argv), filter(lambda x: sys.argv[x] == key, range(len(sys.argv)))))
-            return None
+            return [] #None caused error if empty.
         
         def is_csv (filename):
             ext = '.csv'
@@ -53,6 +53,7 @@ class CLI(Version):
         content_file = value('-c')
         kb_file = value('-k')
         scan_files = values('-s')
+        nmap_files = values('-n')
         report_file = value('-r')
         output_file = value('-o')
         summary_file = value('-u')
@@ -60,17 +61,23 @@ class CLI(Version):
         if template_file and report_file:
             report = Report()
             report.template_load_xml(template_file)
+
             if content_file:
                 if is_yaml(content_file):
                     report.content_load_yaml(content_file)
                 else:
                     report.content_load_json(content_file)
+
             for scan_file in scan_files:
                 #report.scan = Scan(scan_file)
                 scan = Scan(scan_file)
                 report.merge_scan(scan.modify())
                 report.content_refresh()
                 del scan
+
+            for nmap_file in nmap_files:
+                report.nmap_load_xml(nmap_file)
+
             if kb_file:
                 if is_csv(kb_file):
                     report.kb_load_csv(kb_file)
@@ -112,7 +119,7 @@ class CLI(Version):
         else:
             print 'Usage: '
             print
-            print '    ' + self.title + '.exe -t template-file [-c content-file] [-k kb-file] [[-s scan-file] ...] -r output-report-file [-o output-content-file]'
+            print '    ' + self.title + '.exe -t template-file [-c content-file] [-k kb-file] [[-s scan-file] ...] [[-n nmap-file] ...] -r output-report-file [-o output-content-file]'
             print '        generate report (and optionally - content as yaml / json)'
             print
             print '    ' + self.title + '.exe -s scan-file -o output-scan-file'
