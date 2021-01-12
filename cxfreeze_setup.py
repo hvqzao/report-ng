@@ -2,7 +2,7 @@ from cx_Freeze import setup, Executable
 
 # Dependencies are automatically detected, but it might need
 # fine tuning.
-buildOptions = dict(packages=['lxml._elementpath', 'gzip'], excludes=[], compressed=True)
+buildOptions = dict(packages=['lxml._elementpath', 'gzip'], excludes=['collections.abc'], compressed=True)
 
 import sys
 base = 'Win32GUI' if sys.platform=='win32' else None

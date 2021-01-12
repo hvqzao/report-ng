@@ -190,6 +190,7 @@ class YamledWindow(wx.Frame):
         self.icon = wx.EmptyIcon()
         self.icon.CopyFromBitmap(myBitmap)
         self.SetIcon(self.icon)
+
         # tree image list
         if self.T:
             self.tree_image_list = wx.ImageList(16, 16)
@@ -563,7 +564,8 @@ class YamledWindow(wx.Frame):
             self.DeleteNode(child)
         pos = self.n.index(item)
         self.stack_sizer.Hide(self.t[pos])
-        self.stack_sizer.Remove(self.t[pos])
+
+        self.stack_sizer.Remove(self.t[pos]) # todo: compare changelogs of WX library and find out why it's not passing
         self.t[pos].Destroy()
         self.tree.Delete(self.n[pos])
         del self.n[pos]
@@ -798,7 +800,7 @@ class YamledWindow(wx.Frame):
     def File_Save_As(self, e):
         openFileDialog = wx.FileDialog(self, 'Save Yaml As', '', '',
                                        'Yaml files (*.yaml)|*.yaml|All files (*.*)|*.*',
-                                       wx.FD_SAVE | wx.wx.FD_OVERWRITE_PROMPT)
+                                       wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
         if openFileDialog.ShowModal() == wx.ID_CANCEL:
                 return
         filename = openFileDialog.GetPath()

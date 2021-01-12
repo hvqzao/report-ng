@@ -30,6 +30,10 @@ import os.path
 from cgi import escape
 #import base64
 #import docx
+
+import copy
+from datetime import datetime
+
 docx = None
 
 
@@ -62,6 +66,8 @@ class Report(object):
     _kb_filename = None
     _kb_type = None
     _kb = None
+    _nmap = None
+    _nmap_filenames = []
     _openxml = None
     _html_parser = None
     _ihtml_parser = None
@@ -70,6 +76,7 @@ class Report(object):
     #__vulnparam_highlighting = True
     #__truncate = True
     _pPr_annotation = False
+    chartIterator = 0
 
     def __init__(self):
         self._meta_init()
@@ -105,7 +112,9 @@ class Report(object):
         if self._kb:
             del self._kb
         self._kb = None
-
+        if self._nmap:
+            del self._nmap
+        self._nmap = None
     @staticmethod
     def _dump_json(target):
         return json.dumps(target, indent=2, ensure_ascii=False)  #.decode('utf-8')
@@ -208,7 +217,6 @@ class Report(object):
             self._skel['Findings'][0][i] = self._skel['Finding'][i]
             del self._skel['Finding'][i]
         del self._skel['Finding']
-        #print self._skel
 
     def template_dump_json(self):
         return self._dump_json(self._skel)
@@ -237,6 +245,9 @@ class Report(object):
     def template_load_xml(self, filename, clean=False):
         self._template_filename = filename
         return self.template_reload(clean=clean)
+
+    def is_template_with_nmap(self):
+        return 'OpenPorts' in self._skel
 
     #def template_load_docx(self, filename, clean=False):
     #   self._docx = docx.Document(docx=filename)
@@ -620,9 +631,9 @@ class Report(object):
                 #print self._dump_yaml(self._content)
                 del kb
         return self._content
-        
+    
     def _xml_apply_findings(self):
-        finding_struct = filter(lambda x: x[0] == ['Finding'], self._struct)
+        finding_struct = filter(lambda x: x[0] == ['Finding'], self._struct) #the whole Finding object in Word template (including Factors/Description etc.)
         #print map(lambda x: x['Name'], self._meta['Findings'])
         findings = self._meta['Findings']
         for severity in self.severity.keys():
@@ -685,20 +696,45 @@ class Report(object):
                         # is this finding.[severity]? -> if yes, replace content, otherwise delete me
                         if i['struct'][-1] in map(lambda x: self._severity_tag(x)+'?', self.severity.keys()):
                             if i['struct'][-1] == severity_tag+'?':
-                                self._xml_sdt_replace(i['sdt'], i['children'])
+                                factorsArr = [1,1,1,1]
+
+                                if 'Factors' in finding:
+                                    factors = finding['Factors']
+
+                                    factorsArr = map(lambda x: x if ("" + x).isdigit() else 1, [
+                                        factors['Impact']['Business'],
+                                        factors['Impact']['Technical'],
+                                        factors['Likelihood']['Vulnerability'],
+                                        factors['Likelihood']['ThreatAgent']
+                                    ])
+                                # if it's not a chart, then simply replace. otherwise apply to a chart
+                                if not map(lambda x: etree.ETXPath('.//{%s}chart' % self.ns.c)(x), i['children'])[0]:
+                                    self._xml_sdt_replace(i['sdt'], i['children'])
+                                else:
+                                    self._xml_apply_chart([[i['struct'], i['sdt'], i['children']]], factorsArr)
+                                #self._xml_sdt_replace(i['sdt'], i['children'])
                                 #print '+', finding['Name'], finding['Severity']
                             else:
                                 self._xml_sdt_remove(i['sdt'])
                                 #print '-', finding['Name'], finding['Severity']
-                        # commented out because might have kb value
-                        #else:
+                        else:
                         #    # is this finding.[key_not_found]? -> if yes, delete me
                         #    #print '?', alias_abs
-                        #    alias_search = i['struct'][:]
-                        #    alias_search[-1] = alias_search[-1][:-1]
-                        #    if not filter(lambda x: x['struct'] == alias_search, aliases):
-                        #        self._xml_sdt_remove(i['sdt'])
-                        #    #del alias_search
+                            val = finding
+                            for j in i['struct'][1:][:-1] + [i['struct'][-1][:-1]]:
+                                if isinstance(val, list):
+                                    if not self._check_list_for_key(val, j):
+                                        val = None
+                                        break
+                                elif val.has_key(j):
+                                    val = val[j]
+                                    #print 'o', val
+                                else:
+                                    val = None
+                                    break
+
+                            if val == None or len(val) == 0:
+                                self._xml_sdt_remove(i['sdt'])
                     else:
                         # TODO recent fixes
                         #print 's',i['struct']
@@ -804,6 +840,16 @@ class Report(object):
         template_parent.remove(template)
         del template_parent, template
 
+    def _check_list_for_key(self, target_list, key):
+        for obj in target_list:
+            if isinstance(obj, list):
+                return False
+            
+            if not obj.has_key(key):
+                return False
+        
+        return True
+    # Generate Chart
     def _xml_apply_chart(self, chart_struct, values):
         #if not self._docx:
         #...
@@ -817,29 +863,98 @@ class Report(object):
         #   #chart_num = etree.ETXPath('//{%s}val/{%s}numRef/{%s}f' % ((self.ns.c,)*3)) (chart)[0]
         #   #print chart_num
         #chart_rid = etree.ETXPath ('.//{%s}chart' % self.ns.c) (chart_struct[0][2][0])[0].attrib['{%s}id' % self.ns.r]
-        chart_rid = \
+        #chart_struct = copy.deepcopy(chart_structOrg)
+       # structOrgParent = chart_structOrg.getparent()
+       # structOrgParent.append(chart_struct)
+        chart = \
             reduce(lambda x, y: x + y,
-                   map(lambda x: etree.ETXPath('.//{%s}chart' % self.ns.c)(x), chart_struct[0][2]))[
-                0].attrib['{%s}id' % self.ns.r]
-        #print chart_rid
-        chart_rel_target = filter(lambda x: x['Id'] == chart_rid and x[
+                   map(lambda x: etree.ETXPath('.//{%s}chart' % self.ns.c)(x), chart_struct[0][2]))[0]
+        chart_rid = chart.attrib['{%s}id' % self.ns.r]
+
+        # iterator used for identifying copies of charts
+        self.chartIterator += 1
+        chartNewId = chart_rid + 'copy' + str(self.chartIterator)
+
+        chart.attrib['{%s}id' % self.ns.r] = chartNewId
+
+        # charts/chart.xml
+        chart_rel = filter(lambda x: x.attrib['Id'] == chart_rid and x.attrib[
             'Type'] == 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart',
-                                  map(lambda x: x.attrib,
-                                      etree.ETXPath('//{%s}Relationship' % self.ns.a)(self._xml)))[0]['Target']
+                                      etree.ETXPath('//{%s}Relationship' % self.ns.a)(self._xml))[0]
+
+        chart_rel_target = chart_rel.attrib['Target']
+        chart_rel_targetCopy = 'copy' + str(self.chartIterator) + chart_rel_target
+        chart_relCopy = copy.deepcopy(chart_rel)
+        chart_relCopy.attrib['Id'] = chartNewId
+        chart_relCopy.attrib['Target'] = chart_rel_targetCopy
+        chart_relParent = chart_rel.getparent()
+        chart_relParent.append(chart_relCopy)
+
         #print chart_rel_target
         chart_part = filter(lambda x: x.attrib['{%s}name' % self.ns.pkg] == '/word/%s' % chart_rel_target,
                             etree.ETXPath('/{%s}package/{%s}part' % ((self.ns.pkg,) * 2))(self._xml))[0]
-        chart = etree.ETXPath('.//{%s}chart' % self.ns.c)(chart_part)[0]
+        
+        chart_partCopy = copy.deepcopy(chart_part)
+        chart_partCopy.attrib['{%s}name' % self.ns.pkg] = '/word/%s' % chart_rel_targetCopy
+        chart_partParent = chart_part.getparent()
+        chart_partParent.append(chart_partCopy)
+
+        # <pkg:part pkg:name="/word/charts/chart5.xml" pkg:contentType="
+
+        # /word/charts/_rels/chart1.xml.rels
+        rels_part_name = "/word/" + chart_rel_target.replace("/", "/_rels/") + ".rels"
+        rels_part_nameCopy = "/word/" + chart_rel_targetCopy.replace("/", "/_rels/") + ".rels"
+
+        rels_part = filter(lambda x: x.attrib['{%s}name' % self.ns.pkg] == rels_part_name,
+                            etree.ETXPath('/{%s}package/{%s}part' % ((self.ns.pkg,) * 2))(self._xml))[0]
+
+        rels_partCopy = copy.deepcopy(rels_part)
+        rels_partCopy.attrib['{%s}name' % self.ns.pkg] = rels_part_nameCopy
+        rels_partCopy_rels = etree.ETXPath('//{%s}Relationship' % self.ns.a)(rels_partCopy)
+       # rels_partCopy_drawing = rels_partCopy_rels[0]
+        #rels_partCopy_worksheet = rels_partCopy_rels[1]
+
+        
+        def copyRelPackages(relationship):
+             # the original drawing name used for the chart
+            relationshipName = relationship.attrib["Target"]
+            relationshipCopyName = relationshipName.replace("../", "../copy" + str(self.chartIterator))
+            relationship.attrib["Target"] = relationshipCopyName
+
+            pkgName = relationshipName.replace("../", "/word/")
+            pkgCopyName = relationshipCopyName.replace("../", "/word/")
+            pkg = filter(lambda x: x.attrib['{%s}name' % self.ns.pkg] == pkgName,
+                                etree.ETXPath('/{%s}package/{%s}part' % ((self.ns.pkg,) * 2))(self._xml))[0]
+            
+            pkgCopy = copy.deepcopy(pkg)
+            pkgCopy.attrib['{%s}name' % self.ns.pkg] = pkgCopyName
+            pkgParent = pkg.getparent()
+            pkgParent.append(pkgCopy)
+        
+        [copyRelPackages(rel) for rel in rels_partCopy_rels]
+
+        rels_partParent = rels_part.getparent()
+        rels_partParent.append(rels_partCopy)
+
+        chart = etree.ETXPath('.//{%s}chart' % self.ns.c)(chart_partCopy)[0]
         #print etree.ETXPath('.//{%s}t' % 'http://schemas.openxmlformats.org/drawingml/2006/main')(chart)[0].text
         chart_num = etree.ETXPath('.//{%s}val/{%s}numRef/{%s}f' % ((self.ns.c,) * 3))(chart)[0]
         chart_values = etree.ETXPath('.//{%s}v' % self.ns.c)(chart_num.getparent().getparent())
         for i in range(len(chart_values)):
-            if values[i]:
+            if len(values) > i and values[i]:
                 chart_values[i].text = str(values[i])
             else:
                 chart_values[i].text = '0'
+        #self._xml_sdt_replace(chart_struct['sdt'], chart_struct['children'])
         chart_parent = chart_struct[0][1].getparent()
         chart_parent.replace(chart_struct[0][1], chart_struct[0][2][0])
+
+    def _set_document_name(self, test_type, test_name):
+        pkg = filter(lambda x: x.attrib['{%s}name' % self.ns.pkg] == '/docProps/core.xml',
+                                etree.ETXPath('/{%s}package/{%s}part' % ((self.ns.pkg,) * 2))(self._xml))[0]
+        coreProperties = etree.ETXPath('.//{%s}coreProperties/{%s}title' \
+            % ('http://schemas.openxmlformats.org/package/2006/metadata/core-properties', 'http://purl.org/dc/elements/1.1/'))(pkg)[0]
+        coreProperties.text = '%s - %s' % (test_type, test_name)
 
     def xml_apply_meta(self, vulnparam_highlighting=True, truncation=True, pPr_annotation=True):
 
@@ -852,9 +967,10 @@ class Report(object):
         self._pPr_annotation = pPr_annotation
         # change dir (for the purpose of images handling relatively to template path)
         pwd = os.getcwd()
-        os.chdir(os.path.dirname(self._template_filename))
+        os.chdir(os.path.dirname(os.path.abspath(self._template_filename))) #abspath needed for CLI
         # apply
         self._apply_scan()
+
         # find conditional root elements and make them dictionaries
         cond = dict()
         for i in filter(lambda x: len(x[0]) == 1 and x[0][-1][-1] == '?', self._struct):
@@ -961,6 +1077,12 @@ class Report(object):
             sdt = alias.getparent().getparent()
             children = etree.ETXPath('./{%s}sdtContent' % self.ns.w)(sdt)[0].getchildren()
             self._xml_sdt_replace(sdt, children)
+
+        if 'Test' in self._meta['Data']:
+            test_type = self._meta['Data']['Test']['Type'] if 'Type' in self._meta['Data']['Test'] else 'Test'
+            test_name = self._meta['Data']['Test']['Name'] if 'Name' in self._meta['Data']['Test'] else 'Application'
+
+            self._set_document_name(test_type, test_name)
         # restore path
         os.chdir(pwd)
 
@@ -1051,6 +1173,68 @@ class Report(object):
 
     def kb_dump_yaml(self):
         return self._dump_yaml(self._kb)
+
+    def nmap_load_xml(self, filename):
+        self._nmap_filenames.append(filename)
+        return self.nmap_reload()
+
+    def nmap_remove(self):
+        self._nmap = None
+        self._nmap_filenames = []
+        self._meta['Data']['OpenPorts'] = None
+
+    def nmap_reload(self):
+        self._nmap = ""
+        
+        if not hasattr(self, '_nmap_filenames') or len(self._nmap_filenames) == 0:
+            return False
+
+        def append_to_nmap(text):
+            self._nmap += text + "\n"
+
+        for filename in self._nmap_filenames:
+            with open(filename) as fd:
+                try:
+                    doc = etree.fromstring(fd.read())
+                except etree.XMLSyntaxError:
+                    self.nmap_remove()
+                    #raise Exception('Error while parsing XML!')
+                    return False
+
+                date, params = None, None
+
+                for x in doc.xpath("//nmaprun"):
+                    date = datetime.fromtimestamp(float(x.attrib['start']))
+                    parameters = ' '.join(x.attrib['args'].split(' ')[1:])
+
+                for x in doc.xpath("//host"):
+                    for addr in x.xpath("address[@addrtype!='mac']/@addr"):
+                        h_host = "Open ports on host {}:".format(addr)
+                        append_to_nmap(h_host)
+                        append_to_nmap("-" * len(h_host))
+
+                    ports = []
+                    for open_p in x.xpath("ports/port[state[@state='open']]"):
+                        ports.append("{port}/{proto}".format(
+                                port=open_p.attrib['portid'],
+                                proto=open_p.attrib['protocol'].upper()))
+
+                    append_to_nmap("\n".join(ports))
+
+                    append_to_nmap("")
+
+                append_to_nmap("Scan date: " + str(date))
+
+            append_to_nmap("")
+        self._nmap = unicode(self._nmap)
+        self._apply_nmap_scan()
+        return True
+
+    def _apply_nmap_scan(self):
+        self._meta['Data']['OpenPorts'] = self._nmap
+
+    def nmap_dump(self):
+        return self._nmap
 
     def _apply_scan(self):
         if self.scan:

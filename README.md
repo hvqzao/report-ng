@@ -46,6 +46,8 @@ Main application window contains four fields that act as an input
 - Scan - HP WebInspect / Burp Suite Pro scan
 - Knowledge base - knowledge base that could be used to reinforce
   final report customization
+- Nmap scan - parse XML output files from Nmap scans and include them
+  in the report
 
 Double click on given text area will popup the content on larger area.
 
@@ -55,14 +57,14 @@ Command-line support has been added in order to allow bulk generation
 of report-files. Application currently supports one set of switches:
 
 ```
--t template-file [-c content-file] [-k kb-file] [-s scan-file]
--r report-file
+-t template-file [-c content-file] [-k kb-file] [-s scan-file] [-n nmap-file]
+-r report-file [-o output-content-file]
 ```
 
 Example use:
 
 ```
-python report-ng.py -t examples/example-2-scan-report-template.xml -c examples/example-2-content.yaml -k examples/example-2-kb.yaml -s examples/example-2-scan-export-Burp.xml -r examples/\!.xml
+python report-ng.py -t examples/example-2-scan-report-template.xml -c examples/example-2-content.yaml -k examples/example-2-kb.yaml -s examples/example-2-scan-export-Burp.xml -r examples/\!.xml -o examples/\!.yaml
 ```
 
 ## Word Template Preparation

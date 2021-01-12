@@ -134,6 +134,9 @@ class GUI(Version):
             self.menu_file_open_k = menu_file.Append(index.next(), 'Open &Knowledge Base...')
             self.menu_file_open_k.Enable(False)
             self.Bind(wx.EVT_MENU, self.Open_Knowledge_Base, id=index.current)
+            self.menu_file_open_m = menu_file.Append(index.next(), 'Open &Nmap Scan...')
+            self.menu_file_open_m.Enable(False)
+            self.Bind(wx.EVT_MENU, self.Open_Nmap_Scan, id=index.current)
             #menu_file.AppendSeparator()
             #self.menu_file_generate_c = menu_file.Append(index.next(), '&Generate Content')
             #self.menu_file_generate_c.Enable(False)
@@ -205,6 +208,11 @@ class GUI(Version):
             self.menu_tools_merge_kb_into_content = menu_tools.Append(index.next(), 'Merge KB into Content')
             self.menu_tools_merge_kb_into_content.Enable(False)
             self.Bind(wx.EVT_MENU, self.Merge_KB_Into_Content, id=index.current)
+            # remove nmap
+            self.menu_tools_remove_nmap_scan = menu_tools.Append(index.next(), 'Remove Nmap Scan')
+            self.menu_tools_remove_nmap_scan.Enable(False)
+            self.Bind(wx.EVT_MENU, self.Remove_Nmap_Scan, id=index.current)
+
             self.menu_tools_generate_few_passwords = menu_tools.Append(index.next(), 'Generate &few passwords')
             self.Bind(wx.EVT_MENU, self.Generate_few_passwords, id=index.current)
 
@@ -230,7 +238,7 @@ class GUI(Version):
                     self.target = target
                     self.handler = handler
                 def OnDropFiles(self, x, y, filenames):
-                    self.handler(filenames)
+                    return self.handler(filenames)
             panel = wx.Panel(self)
             vbox = wx.BoxSizer(wx.VERTICAL)
             fgs = wx.FlexGridSizer(5, 2, 9, 25)
@@ -260,8 +268,9 @@ class GUI(Version):
             def ctrl_tc_t_OnDropFiles(filenames):
                 if len(filenames) != 1:
                     wx.MessageBox('Single file is expected!', 'Error', wx.OK | wx.ICON_ERROR)
-                    return
+                    return False
                 self._open_template(filenames[0])
+                return True
             ctrl_tc_t_dt = FileDropTarget(self.ctrl_tc_t, ctrl_tc_t_OnDropFiles)
             self.ctrl_tc_t.SetDropTarget(ctrl_tc_t_dt)
             fgs.AddMany([(self.ctrl_st_t, 1, wx.EXPAND), (self.ctrl_tc_t, 1, wx.EXPAND)])
@@ -314,10 +323,12 @@ class GUI(Version):
             def ctrl_tc_c_OnDropFiles(filenames):
                 if len(filenames) != 1:
                     wx.MessageBox('Single file is expected!', 'Error', wx.OK | wx.ICON_ERROR)
-                    return
+                    return False
                 self._open_content(filenames[0])
                 if self.ctrl_st_c.IsEnabled(): # Yamled
                     self.ctrl_tc_c_b.Show()
+
+                return True
             ctrl_tc_c_dt = FileDropTarget(self.ctrl_tc_c, ctrl_tc_c_OnDropFiles)
             self.ctrl_tc_c.SetDropTarget(ctrl_tc_c_dt)
             fgs.AddMany([(self.ctrl_st_c, 1, wx.EXPAND), (self.ctrl_tc_c, 1, wx.EXPAND)])
@@ -367,10 +378,12 @@ class GUI(Version):
             def ctrl_tc_s_OnDropFiles(filenames):
                 if len(filenames) != 1:
                     wx.MessageBox('Single file is expected!', 'Error', wx.OK | wx.ICON_ERROR)
-                    return
+                    return False
                 self._open_scan(filenames[0])
                 if self.ctrl_st_s.IsEnabled(): # Yamled
                     self.ctrl_tc_s_b.Show()
+
+                return False
             ctrl_tc_s_dt = FileDropTarget(self.ctrl_tc_s, ctrl_tc_s_OnDropFiles)
             self.ctrl_tc_s.SetDropTarget(ctrl_tc_s_dt)
             fgs.AddMany([(self.ctrl_st_s, 1, wx.EXPAND), (self.ctrl_tc_s, 1, wx.EXPAND)])
@@ -401,11 +414,46 @@ class GUI(Version):
             def ctrl_tc_k_OnDropFiles(filenames):
                 if len(filenames) != 1:
                     wx.MessageBox('Single file is expected!', 'Error', wx.OK | wx.ICON_ERROR)
-                    return
+                    return False
                 self._open_kb(filenames[0])
+                return True
             ctrl_tc_k_dt = FileDropTarget(self.ctrl_tc_k, ctrl_tc_k_OnDropFiles)
             self.ctrl_tc_k.SetDropTarget(ctrl_tc_k_dt)
             fgs.AddMany([(self.ctrl_st_k, 1, wx.EXPAND), (self.ctrl_tc_k, 1, wx.EXPAND)])
+
+            # Nmap Scan
+            self.ctrl_st_n = wx.StaticText(panel, label='Nmap Scan:')
+            self.ctrl_st_n.Enable(False)
+            self.ctrl_tc_n = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(200, 3 * 17,))
+            self.ctrl_tc_n.Enable(False)
+            self.ctrl_tc_n.SetBackgroundColour(self.color_tc_bg_d)
+            def ctrl_tc_n_OnFocus(e):
+                self.ctrl_tc_n.ShowNativeCaret(False)
+                e.Skip()
+            def ctrl_tc_n_OnDoubleclick(e):
+                if self.ctrl_st_n.IsEnabled():
+                    self.application.TextWindow(self, title='Nmap Scan Preview', content=self.ctrl_tc_n.GetValue())
+                e.Skip()
+            self.ctrl_tc_n.Bind(wx.EVT_SET_FOCUS, ctrl_tc_n_OnFocus)
+            self.ctrl_tc_n.Bind(wx.EVT_LEFT_DCLICK, ctrl_tc_n_OnDoubleclick)
+            def ctrl_tc_n_OnMouseOver(e):
+                self.status('You might use drag & drop', hint=True)
+                e.Skip()
+            def ctrl_tc_n_OnMouseLeave(e):
+                self.status('')
+                e.Skip()
+            self.ctrl_tc_n.Bind(wx.EVT_ENTER_WINDOW, ctrl_tc_n_OnMouseOver)
+            self.ctrl_tc_n.Bind(wx.EVT_LEAVE_WINDOW, ctrl_tc_n_OnMouseLeave)
+            def ctrl_tc_n_OnDropFiles(filenames):
+                if self.ctrl_st_n.IsEnabled():
+                    for scan in filenames:
+                        self._open_nmap_scan(scan)
+                    return True
+
+            ctrl_tc_n_dt = FileDropTarget(self.ctrl_tc_n, ctrl_tc_n_OnDropFiles)
+            self.ctrl_tc_n.SetDropTarget(ctrl_tc_n_dt)
+            fgs.AddMany([(self.ctrl_st_n, 1, wx.EXPAND), (self.ctrl_tc_n, 1, wx.EXPAND)])
+            
             def panel_OnMouseOver(e):
                 self.status('')
                 self.ctrl_tc_c_b.Hide()
@@ -542,6 +590,12 @@ class GUI(Version):
             self.ctrl_tc_t.SetValue('')
             self.ctrl_st_c.Enable(False)
             self.ctrl_tc_c.SetValue('')
+
+            # nmap
+            self.ctrl_st_n.Enable(False)
+            self.ctrl_tc_n.SetValue('')
+            self.ctrl_tc_n.Enable(False)
+
             self.menu_file_open_k.Enable(False)
             self.menu_file_save_t.Enable(False)
             self.menu_file_save_r.Enable(False)
@@ -570,6 +624,11 @@ class GUI(Version):
                 self.menu_tools_merge_scan_into_content.Enable(True)
             if self.ctrl_st_k.IsEnabled():
                 self.menu_tools_merge_kb_into_content.Enable(True)
+            
+            if self.report.is_template_with_nmap():
+                self.ctrl_st_n.Enable(True)
+                self.ctrl_tc_n.Enable(True)
+                self.ctrl_tc_n.SetBackgroundColour(self.color_tc_bg_e)
             self.status('Template loaded')
 
         def Open_Content(self, e):
@@ -656,6 +715,11 @@ class GUI(Version):
             self.menu_tools_merge_kb_into_content.Enable(False)
             self.status('Merged')
 
+        def Remove_Nmap_Scan(self, e):
+            self.report.nmap_remove()
+            self.ctrl_tc_n.SetValue('')
+            self.status('Removed')
+
         def Generate_few_passwords(self, e):
             self.application.TextWindow(self, title='Random Password Generator', content='\n'.join(pwgen.Few(15)), size=(235, 270,))
 
@@ -670,7 +734,7 @@ class GUI(Version):
         def Save_Template_As(self, e):
             openFileDialog = wx.FileDialog(self, 'Save Template As', self.save_into_directory, '',
                                            'Content files (*.yaml; *.json)|*.yaml;*.json|All files (*.*)|*.*',
-                                           wx.FD_SAVE | wx.wx.FD_OVERWRITE_PROMPT)
+                                           wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
             if openFileDialog.ShowModal() == wx.ID_CANCEL:
                 return
             json_ext = '.json'
@@ -687,7 +751,7 @@ class GUI(Version):
         def Save_Content_As(self, e):
             openFileDialog = wx.FileDialog(self, 'Save Content As', self.save_into_directory, '',
                                            'Content files (*.yaml; *.json)|*.yaml;*.json|All files (*.*)|*.*',
-                                           wx.FD_SAVE | wx.wx.FD_OVERWRITE_PROMPT)
+                                           wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
             if openFileDialog.ShowModal() == wx.ID_CANCEL:
                 return
             json_ext = '.json'
@@ -703,7 +767,7 @@ class GUI(Version):
         def Save_Scan_As(self, e):
             openFileDialog = wx.FileDialog(self, 'Save Scan As', self.save_into_directory, '',
                                            'Content files (*.yaml; *.json)|*.yaml;*.json|All files (*.*)|*.*',
-                                           wx.FD_SAVE | wx.wx.FD_OVERWRITE_PROMPT)
+                                           wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
             if openFileDialog.ShowModal() == wx.ID_CANCEL:
                 return
             json_ext = '.json'
@@ -732,6 +796,9 @@ class GUI(Version):
                         self.report.content_reload()
                     if self.ctrl_st_k.IsEnabled():
                         self.report.kb_reload()
+                    if self.ctrl_st_n.IsEnabled():
+                        self.report.nmap_reload()
+
                     self._refresh()
             #    print 'cleanup performed.'
             #else:
@@ -745,7 +812,7 @@ class GUI(Version):
         def Save_Report_As(self, e):
             openFileDialog = wx.FileDialog(self, 'Save Report As', self.save_into_directory, '',
                                            'XML files (*.xml)|*.xml|All files (*.*)|*.*',
-                                           wx.FD_SAVE | wx.wx.FD_OVERWRITE_PROMPT)
+                                           wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
             if openFileDialog.ShowModal() == wx.ID_CANCEL:
                 return
             filename = openFileDialog.GetPath()
@@ -849,6 +916,26 @@ class GUI(Version):
             if self.ctrl_st_c.IsEnabled():
                 self.menu_tools_merge_kb_into_content.Enable(True)
             self.menu_tools_merge_kb_into_content.Enable(True)
+
+        def Open_Nmap_Scan(self, e):
+            openFileDialog = wx.FileDialog(self, 'Open Nmap Scan', '', '',
+                                           'Nmap XML output file (*.xml)|*.xml;|All files (*.*)|*.*',
+                                           wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
+            if openFileDialog.ShowModal() == wx.ID_CANCEL:
+                return
+            self._open_nmap_scan(openFileDialog.GetPath())
+
+        def _open_nmap_scan(self, filename):
+            self.ctrl_st_n.Enable(False)
+            result = self.report.nmap_load_xml(filename)
+            if result == True:
+                self.ctrl_tc_n.SetValue(self.report.nmap_dump())
+                self.menu_tools_remove_nmap_scan.Enable(True)
+            else:
+                self.ctrl_tc_n.SetValue("")
+                wx.MessageBox('There was an error parsing the file!', 'Error',
+                              wx.OK | wx.ICON_ERROR)
+            self.ctrl_st_n.Enable(True)
 
     class YamledWindowWrapper(YamledWindow):
 
