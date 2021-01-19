@@ -31,10 +31,13 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '1.0.3'
-    date = 'Tuesday Jan 12 11:00:00 2021'
+    version = '1.0.4'
+    date = 'Tue Jan 19 20:42:36 2021'
     changelog = '''
     ''' + version + ''' - ''' + date + '''
+    - Fixed HTML support
+
+    1.0.3 - Tuesday Jan 12 11:00:00 2021
     - Nmap scan support for multiple XML files - gets enabled if 'OpenPorts' directive is found in the template
     - FIX: Fixed deprecated functions e.g. icon/OnFileDrop handling
     - Added support for multiple charts in the _xml_apply_chart functions via objects cloning
