@@ -580,7 +580,7 @@ class Openxml(object):
         self._insert(e)
         return e
 
-    def picture(self, filename, name='', descr='', cap=627):
+    def picture(self, filename, name='', descr='', cap=None):
         # ext, content_type, relationships
         ext = filename.split('.')[-1]
         if ext == 'jpg':
@@ -618,9 +618,8 @@ class Openxml(object):
         im = Image.open(filename)
         x, y = im.size
         if cap != None:
-            if x > cap:
-                y = int(round(float(cap * y) / x))
-                x = cap
+          y = int(round(float(cap * y) / x))
+          x = cap
         x = str(x * 9525)
         y = str(y * 9525)
         e = etree.fromstring('''

@@ -76,7 +76,6 @@ class Report(object):
     #__vulnparam_highlighting = True
     #__truncate = True
     _pPr_annotation = False
-    chartIterator = 0
 
     def __init__(self):
         self._meta_init()
@@ -872,10 +871,8 @@ class Report(object):
         chart_rid = chart.attrib['{%s}id' % self.ns.r]
 
         # iterator used for identifying copies of charts
-        self.chartIterator += 1
-        chartNewId = chart_rid + 'copy' + str(self.chartIterator)
-
-        chart.attrib['{%s}id' % self.ns.r] = chartNewId
+        newId = self._openxml.new_rel_id()
+        chart.attrib['{%s}id' % self.ns.r] = "rId" + str(newId)
 
         # charts/chart.xml
         chart_rel = filter(lambda x: x.attrib['Id'] == chart_rid and x.attrib[
@@ -883,9 +880,9 @@ class Report(object):
                                       etree.ETXPath('//{%s}Relationship' % self.ns.a)(self._xml))[0]
 
         chart_rel_target = chart_rel.attrib['Target']
-        chart_rel_targetCopy = 'copy' + str(self.chartIterator) + chart_rel_target
+        chart_rel_targetCopy = 'copy' + str(newId) + chart_rel_target
         chart_relCopy = copy.deepcopy(chart_rel)
-        chart_relCopy.attrib['Id'] = chartNewId
+        chart_relCopy.attrib['Id'] = "rId" + str(newId)
         chart_relCopy.attrib['Target'] = chart_rel_targetCopy
         chart_relParent = chart_rel.getparent()
         chart_relParent.append(chart_relCopy)
@@ -918,7 +915,7 @@ class Report(object):
         def copyRelPackages(relationship):
              # the original drawing name used for the chart
             relationshipName = relationship.attrib["Target"]
-            relationshipCopyName = relationshipName.replace("../", "../copy" + str(self.chartIterator))
+            relationshipCopyName = relationshipName.replace("../", "../copy" + str(newId))
             relationship.attrib["Target"] = relationshipCopyName
 
             pkgName = relationshipName.replace("../", "/word/")
