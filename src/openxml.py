@@ -689,6 +689,9 @@ class Openxml(object):
             post_remove = '</html>'
             if clean[:len(pre_before)] == pre_before:
                 clean = clean[len(pre_remove):-len(post_remove)]
+
+            if clean == '<html></html>':
+              pass
             etree.XML(clean, parser)
         except:
             pass
