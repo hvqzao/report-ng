@@ -33,6 +33,8 @@ from cgi import escape
 
 import copy
 from datetime import datetime
+from cvss import CVSS3
+from num2words import num2words
 
 docx = None
 
@@ -362,6 +364,10 @@ class Report(object):
         except:
             return str(value).strip().lower()[:len(preamble)] == preamble
 
+    @staticmethod
+    def _remove_empty_tags(value):
+        return value.replace("<html></html>", "").replace("<ihtml></ihtml>", "")
+
     def _xml_sdt_single(self, value, sdt, children, struct=None):
         #print children
         #if struct:
@@ -381,6 +387,10 @@ class Report(object):
                 self._openxml.parse(value, self._ihtml_parser)
                 self._openxml.remove_sdt_cursor()
             '''
+            # dirty hotfix
+            if isinstance(value, unicode):
+                value = self._remove_empty_tags(value)
+
             if not util.binary(value) and (self._is_html(value) or self._is_ihtml(value)):
                 block = etree.Element('Summary')
                 for i in children:
@@ -469,6 +479,15 @@ class Report(object):
                     continue
                 block = etree.fromstring(etree.tostring(children[0]))
                 aliases = self._xml_block_aliases(block)
+                #test
+                for alias in aliases:
+                    alias_name = alias['struct'][-1]
+                    if alias_name[-1] != '?':
+                        continue
+                    full_name = alias_name[0:-1]
+                    if full_name not in row:
+                        self._xml_sdt_remove(alias['sdt'])
+                #test
                 for col in row:
                     #print 'x', col
                     alias_match_q = filter(lambda x: x['struct'] == struct + [str(col)+'?'], aliases)
@@ -500,6 +519,8 @@ class Report(object):
                                     if self.__vulnparam_highlighting and 'VulnParam' in row and row['VulnParam']:
                                         val = self.surround(val,row['VulnParam'],'red')
                         if self._is_html(val):
+                            #tags[0].text = ''
+                            #1+1
                             self._openxml.set_sdt_cursor(cursor=tags[0])
                             self._openxml.parse(val, self._html_parser)
                             self._openxml.remove_sdt_cursor()
@@ -631,6 +652,46 @@ class Report(object):
                 del kb
         return self._content
     
+    def process_zerodays(self):
+        findings = self._meta['Findings']
+        #severity_findings = filter(lambda x: x['Severity'] in severity, findings)
+
+        zero_days = filter(lambda x: "ZeroDay" in x, findings)
+        if not len(zero_days):
+            return
+
+        zero_days_info = []
+        for zero_day in zero_days:
+           sev_id = self.severity.keys().index(zero_day['Severity']) + 1
+           f_id = filter(lambda x: x['Severity'] == zero_day['Severity'], findings).index(zero_day) + 1
+           zero_days_info.append("F" + str(sev_id) + "." + str(f_id))
+        
+        appendix = " vulnerabilities were" if len(zero_days) > 1 else " vulnerability was"
+        self._meta['Data']['Test']['ZeroDayInfo_gen'] = ", ".join(zero_days_info) + appendix
+        #print(zero_days)
+    
+    def process_issuessummary(self):
+        findings = self._meta['Findings']
+        if len(findings) == 0:
+            self._meta['Data']['Test']['IssuesSummary_gen'] = 'no risk issues'
+            return
+
+        summary = []
+
+        for severity in self.severity.keys():
+            severity_findings_len = len(filter(lambda x: x['Severity'] in severity, findings))
+            if severity_findings_len > 0:
+                summary.append(num2words(severity_findings_len) + " " + severity.lower())
+
+        if len(findings) == 1:
+            summary_gen = summary[0] + " risk issue was"
+        elif len(summary) == 1:
+            summary_gen = summary[0] + " risk issues were"
+        else:
+            summary_gen = ", ".join(summary[:-1]) + " and " + summary[-1] + " risk issues were"
+
+        self._meta['Data']['Test']['IssuesSummary_gen'] = summary_gen
+
     def _xml_apply_findings(self):
         finding_struct = filter(lambda x: x[0] == ['Finding'], self._struct) #the whole Finding object in Word template (including Factors/Description etc.)
         #print map(lambda x: x['Name'], self._meta['Findings'])
@@ -696,6 +757,17 @@ class Report(object):
                         if i['struct'][-1] in map(lambda x: self._severity_tag(x)+'?', self.severity.keys()):
                             if i['struct'][-1] == severity_tag+'?':
                                 factorsArr = [1,1,1,1]
+
+                                if 'CVSS' in finding:
+                                    cvss_gen = CVSS3(finding['CVSS'])
+                                    
+                                    finding['CVSS_gen'] = cvss_gen.as_json()
+
+                                    if finding['CVSS_gen']['environmentalScore'] == 0:
+                                        finding['CVSS_gen']['environmentalScore'] = "0.0"
+
+                                    ms_value = cvss_gen.get_value_description("MS") # a bug in the library
+                                    finding['CVSS_gen']['modifiedScope'] = ms_value.upper() if ms_value != "Not Defined" else cvss_gen.get_value_description("S").upper()
 
                                 if 'Factors' in finding:
                                     factors = finding['Factors']
@@ -790,6 +862,8 @@ class Report(object):
                         #print '+',i['struct']
                         if i['struct'] == ['Summary', severity_tag, 'Finding']:
                             self._xml_sdt_single(finding['Name'], i['sdt'], i['children'])
+                        elif i['struct'] == ['Summary', severity_tag, 'CVSS_gen', 'environmentalScore']: #TODO: allow all properties, do not hardcode
+                            self._xml_sdt_single(finding['CVSS_gen']['environmentalScore'], i['sdt'], i['children'])
                         elif i['struct'][-1][-1] == '#':
                             i_hash = i['struct'][:]
                             i_hash[-1] = i_hash[-1][:-1]
@@ -957,7 +1031,9 @@ class Report(object):
 
         # merge kb before generate
         self.merge_kb()
-        
+        self.process_zerodays()
+        self.process_issuessummary()
+
         self.template_cleanup_required = True
         self.__vulnparam_highlighting = vulnparam_highlighting
         self.__truncate = truncation
@@ -985,7 +1061,9 @@ class Report(object):
             else:
                 return fallback
         for i in filter(lambda x: x[0][-1][-1] not in ['?', '!'], self._struct):
+            
             p = self._p(self._meta['Data'], i[0])
+
             #if p is not None and i[0] != ['Finding']:
             #    match_q = i[0][:]
             #    match_q[-1] += '?'
@@ -1004,6 +1082,7 @@ class Report(object):
                 # handle conditional sub elements 
                 i_search = i[0][:]
                 i_search[-1] = i_search[-1]+'?'
+                #test = i_search[0]
                 i_search_match = filter(lambda x: i_search == x[0], self._struct)
                 for match in i_search_match:
                     #print i_search, i_search_match

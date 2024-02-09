@@ -31,10 +31,19 @@ class Version(object):
     Generate reports based on HP WebInspect, BurpSuite Pro scans,
     own custom data, knowledge base and Microsoft Office Word templates.
     '''
-    version = '1.0.5'
-    date = 'Wed Jan 20 13:38:46 2021'
+    version = '1.0.7'
+    date = 'Tue Mar 28 13:38:46 2023'
     changelog = '''
     ''' + version + ''' - ''' + date + '''
+    - Fixed an exception caused by empty <html> tag
+    - Changed Summary object to include all Finding proprties
+    - Fixed conditional children elements not being removed from the structure if it was not defined in the provided data
+    - Auto-generate _gen tags for Finding.CVSS, Test.IssuesSummary and Test.ZeroDayInfo
+
+    1.0.6 - Wed Aug 10 01:38:46 2022
+    - Fixed CLI parsing of the template (forcing clean-up)
+
+    1.0.5 - Wed Jan 20 13:38:46 2021
     - Fixed images not resizing for width exceeding the inital size
 
     1.0.4 - Tue Jan 19 20:42:36 2021

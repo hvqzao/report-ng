@@ -60,7 +60,7 @@ class CLI(Version):
 
         if template_file and report_file:
             report = Report()
-            report.template_load_xml(template_file)
+            report.template_load_xml(template_file, True)
 
             if content_file:
                 if is_yaml(content_file):
